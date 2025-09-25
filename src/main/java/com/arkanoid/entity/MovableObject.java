@@ -1,4 +1,4 @@
-package main.java.com.arkanoid.entity;
+package com.arkanoid.entity;
 
 import java.awt.*;
 
