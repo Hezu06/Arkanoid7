@@ -1,0 +1,1 @@
+package com.arkanoid.entity.powerUp;
