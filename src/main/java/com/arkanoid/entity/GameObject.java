@@ -2,6 +2,7 @@ package com.arkanoid.entity;
 
 import java.awt.*;
 
+// GameObject class
 public abstract class GameObject {
     protected double x, y;
     protected int width, height;
