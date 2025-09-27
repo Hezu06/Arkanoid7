@@ -1,5 +1,7 @@
 package com.arkanoid.entity;
 
+import javafx.geometry.Rectangle2D;
+
 import java.awt.*;
 
 // GameObject class
@@ -48,4 +50,6 @@ public abstract class GameObject {
     public void setHeight(int height) {
         this.height = height;
     }
+
+    public abstract Rectangle2D getBounds();
 }
