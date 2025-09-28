@@ -20,7 +20,7 @@ public abstract class GameObject {
 
     public abstract void update();
     public abstract void render(GraphicsContext gc);
-//    public abstract boolean takeHit();
+    public abstract boolean takeHit();
 
     // Getters and Setters
     public double getX() {
@@ -54,4 +54,6 @@ public abstract class GameObject {
     public void setHeight(int height) {
         this.height = height;
     }
+
+    public Rectangle getRect() { return this.rect; }
 }
