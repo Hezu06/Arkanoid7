@@ -27,7 +27,6 @@ public class Ball extends MovableObject {
         double length = Math.sqrt(dxBall * dxBall + dyBall * dyBall);
         double nx, ny;
         if (length == 0) {
-            // nếu tâm ball nằm đúng trong object, lấy pháp tuyến dựa trên vận tốc hiện tại
             double norm = Math.sqrt(dx * dx + dy * dy);
             nx = dx / norm;
             ny = dy / norm;
