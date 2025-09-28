@@ -1,6 +1,7 @@
 package com.arkanoid.entity.powerUp;
 
 import com.arkanoid.entity.GameObject;
+import javafx.scene.canvas.GraphicsContext;
 
 import java.awt.*;
 
@@ -17,7 +18,7 @@ public class PowerUp extends GameObject {
     }
 
     @Override
-    public void render(Graphics g) {
+    public void render(GraphicsContext gc) {
 
     }
 }

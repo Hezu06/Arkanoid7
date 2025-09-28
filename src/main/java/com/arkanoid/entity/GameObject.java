@@ -1,22 +1,28 @@
 package com.arkanoid.entity;
 
-import java.awt.*;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.canvas.GraphicsContext;
 
 // GameObject class
 public abstract class GameObject {
     protected double x, y;
-    protected int width, height;
+    protected double width;
+    protected double height;
+    protected Rectangle rect;
 
-    public GameObject(double x, double y, int width, int height) {
-        this.x = x;
-        this.y = y;
+    public GameObject(double posX, double posY, double width, double height) {
+        this.x = posX;
+        this.y = posY;
         this.width = width;
         this.height = height;
+        this.rect = new Rectangle(posX, posY, width, height);
     }
 
     public abstract void update();
-    public abstract void render(Graphics g);
+    public abstract void render(GraphicsContext gc);
+//    public abstract boolean takeHit();
 
+    // Getters and Setters
     public double getX() {
         return x;
     }
@@ -33,7 +39,7 @@ public abstract class GameObject {
         this.y = y;
     }
 
-    public int getWidth() {
+    public double getWidth() {
         return width;
     }
 
@@ -41,7 +47,7 @@ public abstract class GameObject {
         this.width = width;
     }
 
-    public int getHeight() {
+    public double getHeight() {
         return height;
     }
 
