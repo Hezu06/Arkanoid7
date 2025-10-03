@@ -13,14 +13,16 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
-
 public class GameMenu extends Application {
+    final int Width = 600;
+    final int Height = 950;
 //    static void applyHoverEffect(Button button) {
 //        button.setOnMouseEntered(e -> {
 //            button.setScaleX(1.1); // to hơn 10%
@@ -74,7 +76,7 @@ public class GameMenu extends Application {
 
         root.getChildren().add(vbox);
 
-        Scene scene = new Scene(root, 600, 900);
+        Scene scene = new Scene(root, Width, Height);
 
         primaryStage.setScene(scene);
         primaryStage.setTitle("Game Menu");
@@ -116,7 +118,7 @@ public class GameMenu extends Application {
             VBox gameRoot = new VBox(30, startLabel,btnHard, btnNormal, btnEasy, btnBack);
             gameRoot.setAlignment(Pos.CENTER);
 
-            Scene gameScene = new Scene(gameRoot, 800, 600);
+            Scene gameScene = new Scene(gameRoot, Width, Height);
 
             primaryStage.setScene(gameScene);
 
@@ -137,7 +139,7 @@ public class GameMenu extends Application {
             VBox optionsRoot = new VBox(optionsLabel, btnBack);
             optionsRoot.setAlignment(Pos.CENTER);
 
-            Scene optionsScene = new Scene(optionsRoot, 800, 600);
+            Scene optionsScene = new Scene(optionsRoot, Width, Height);
 
             primaryStage.setScene(optionsScene);
 
