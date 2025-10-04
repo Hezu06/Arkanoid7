@@ -3,9 +3,12 @@ package com.arkanoid.entity.brick;
 import com.arkanoid.entity.GameObject;
 import com.arkanoid.entity.powerUp.PowerUp.PowerUpType;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+
+import java.util.Objects;
 
 public abstract class Brick extends GameObject {
 
@@ -13,19 +16,21 @@ public abstract class Brick extends GameObject {
     protected int currentDurability;
     protected final int maxDurability;
     protected boolean isBroken = false;
-    protected Color color;
+
+    protected Image textureImage;
 
     // PowerUp related attributes.
     protected PowerUpType powerUpContent = null;
     protected boolean dropsPowerUp = false;
 
-    public Brick(double x, double y, double width, double height, int gridX, int gridY, int maxDurability, Color color) {
+    public Brick(double x, double y, double width, double height, int gridX, int gridY, int maxDurability, String imagePath) {
         super(x, y, width, height);
         this.gridX = gridX;
         this.gridY = gridY;
         this.maxDurability = maxDurability;
         this.currentDurability = maxDurability;
-        this.color = color;
+
+        loadTexture(imagePath);
     }
 
     @Override
@@ -33,26 +38,35 @@ public abstract class Brick extends GameObject {
         /* No update applied for static objects */
     }
 
+    protected void loadTexture(String imagePath) {
+        try {
+            textureImage = new Image(imagePath, width, height, false, true);
+        } catch (Exception e) {
+            System.err.printf("Failed to load image at path: %s. Falling back to color rendering.\n", imagePath);
+            this.textureImage = null;
+        }
+    }
+
     @Override
     public void render(GraphicsContext gc) {
         if (!isBroken) {
-            // Fill color.
-            gc.setFill(color);
-            gc.fillRect(x, y, width, height);
 
-            // Draw border.
+            if (textureImage != null) {
+                gc.drawImage(textureImage, x, y, width, height);
+            } else {
+                gc.setFill(Color.RED);
+            }
+
             gc.setStroke(Color.BLACK);
-            gc.strokeRect(x, y, width, height);
+            gc.strokeRect(this.x, this.y, width, height);
 
-            // Draw durability count for multi-hit bricks for TESTING.
-            if (maxDurability > 1 && currentDurability > 0) {
-                gc.setFill(Color.WHITE);
-                gc.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+            if (maxDurability > 1 && currentDurability > 0 && maxDurability < Integer.MAX_VALUE) {
+                gc.setFill(Color.GREEN);
+                gc.setFont(Font.font("Arial", FontWeight.BOLD, 15));
                 String text = String.valueOf(currentDurability);
 
-                // Text centering.
-                double textWidth = text.length() * 6;
-                gc.fillText(text, x + width / 2 - textWidth / 2, y + height / 2 + 5);
+                double textWidthEstimation = text.length() * 6;
+                gc.fillText(text, this.x + width / 2 - textWidthEstimation / 2, this.y + height / 2 + 5);
             }
         }
     }
@@ -72,6 +86,10 @@ public abstract class Brick extends GameObject {
     }
 
     protected abstract void updateAppearance();
+
+    protected void updateTexture(String imagePath) {
+        loadTexture(imagePath);
+    }
 
     public int getGridX() {
         return gridX;

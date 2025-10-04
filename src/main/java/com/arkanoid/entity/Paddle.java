@@ -1,6 +1,8 @@
 package com.arkanoid.entity;
 
 
+import javafx.scene.canvas.GraphicsContext;
+
 public class Paddle extends MovableObject {
     protected double speed;
 
@@ -13,5 +15,15 @@ public class Paddle extends MovableObject {
     @Override
     public void move() {
 
+    }
+
+    @Override
+    public void render(GraphicsContext gc) {
+
+    }
+
+    @Override
+    public boolean takeHit() {
+        return false;
     }
 }
