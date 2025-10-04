@@ -1,14 +1,14 @@
 package com.arkanoid.entity;
 
 
+import javafx.scene.canvas.GraphicsContext;
+
 import java.awt.*;
 
-public class Paddle {
+public class Paddle extends MovableObject {
     private Image smallPaddleImage ;
     private Image largePaddleImage;
 
-    public double x;
-    public double y;
     public String PaddleType;
     public double speed;
 
@@ -18,9 +18,8 @@ public class Paddle {
     public boolean slowPowerupInEffect;
     public boolean ImmortalPowerupInEffect;
 
-    public Paddle(double x, double y, String PaddleType, double speed) {
-        this.x = x;
-        this.y = y;
+    public Paddle(double x, double y, int width, int height, double dx, double dy,String PaddleType, double speed) {
+        super(x, y, width, height, dx, dy);
         this.PaddleType = PaddleType;
         this.speed = speed;
 
@@ -46,5 +45,20 @@ public class Paddle {
         FirePowerupInEffect = false;
         ImmortalPowerupInEffect = false;
         PaddleType = "small";
+    }
+
+    @Override
+    public void render(GraphicsContext gc) {
+
+    }
+
+    @Override
+    public boolean takeHit() {
+        return false;
+    }
+
+    @Override
+    public void move() {
+
     }
 }
