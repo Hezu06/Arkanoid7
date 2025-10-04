@@ -1,5 +1,7 @@
 package com.arkanoid.entity;
 
+import javafx.scene.canvas.GraphicsContext;
+
 public class Ball extends MovableObject {
     private double speed;
     private double directionX;
@@ -22,5 +24,15 @@ public class Ball extends MovableObject {
 
     public void move() {
 
+    }
+
+    @Override
+    public void render(GraphicsContext gc) {
+
+    }
+
+    @Override
+    public boolean takeHit() {
+        return false;
     }
 }
