@@ -1,6 +1,5 @@
 package com.arkanoid.level;
 
-import com.arkanoid.entity.*;
 import com.arkanoid.entity.brick.*;
 import com.arkanoid.entity.powerUp.PowerUp;
 //import com.arkanoid.powerUp.powerUpType;
@@ -14,8 +13,8 @@ import java.util.Random;
 public class LevelLoader {
     private static final double BRICK_WIDTH = 60;
     private static final double BRICK_HEIGHT = 20;
-    private static final double BRICK_START_X = 50;
-    private static final double BRICK_START_Y = 50;
+    private static final double BRICK_START_X = 15;
+    private static final double BRICK_START_Y = 15;
     private final Random random = new Random();
 
     /**
@@ -30,26 +29,29 @@ public class LevelLoader {
 
         double powerUpChance = DifficultySettings.getPowerUpChance(difficulty);
 
-        try (InputStream inputStream = getClass().getResourceAsStream("/levels/" + fileName);
+        final String resourcePath = "/difficulty/" + fileName;
+
+        try (InputStream inputStream = getClass().getResourceAsStream(resourcePath);
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
             String line;
             int gridY = 0;
 
-             if (inputStream == null) {
-                throw new java.io.FileNotFoundException("Level file not found: /levels/" + fileName);
+            if (inputStream.available() == 0) {
+                System.err.println("DEBUG: Input stream for " + fileName + " is empty (0 bytes available). Check file content.");
+                return new Level(bricks, difficulty);
             }
 
              while ((line = bufferedReader.readLine()) != null) {
                  for (int gridX = 0; gridX < line.length(); gridX++) {
                      char code = line.charAt(gridX);
-                     Brick newBrick = createBrickFromCode(code, gridX, gridY);
+
+                     // Position based on grid coordinates
+                     double posX = BRICK_START_X + gridX * BRICK_WIDTH;
+                     double posY = BRICK_START_Y + gridY * BRICK_HEIGHT;
+
+                     Brick newBrick = createBrickFromCode(code, gridX, gridY, posX, posY);
 
                      if (newBrick != null) {
-                         // Position based on grid coordinates
-                         double posX = BRICK_START_X + gridX * BRICK_WIDTH;
-                         double posY = BRICK_START_Y + gridY * BRICK_HEIGHT;
-                         newBrick.setX(posX);
-                         newBrick.setY(posY);
 
                          // Assign Power-Up drop chance
                          if (!(newBrick instanceof UnbreakableBrick) && random.nextDouble() < powerUpChance) {
@@ -68,12 +70,12 @@ public class LevelLoader {
         return new Level(bricks, difficulty);
     }
 
-    private Brick createBrickFromCode(char code, int gridX, int gridY) {
+    private Brick createBrickFromCode(char code, int gridX, int gridY, double posX, double posY) {
         return switch (code) {
-            case 'N' -> new NormalBrick(0, 0, BRICK_WIDTH, BRICK_HEIGHT, gridX , gridY);
-            case 'S' -> new StrongBrick(0, 0, BRICK_WIDTH, BRICK_HEIGHT, gridX, gridY);
-            case 'X' -> new ExplosiveBrick(0, 0, BRICK_WIDTH, BRICK_HEIGHT, gridX, gridY);
-            case 'U' -> new UnbreakableBrick(0, 0, BRICK_WIDTH, BRICK_HEIGHT, gridX, gridY);
+            case 'N' -> new NormalBrick(posX, posY, BRICK_WIDTH, BRICK_HEIGHT, gridX , gridY);
+            case 'S' -> new StrongBrick(posX, posY, BRICK_WIDTH, BRICK_HEIGHT, gridX, gridY);
+            case 'X' -> new ExplosiveBrick(posX, posY, BRICK_WIDTH, BRICK_HEIGHT, gridX, gridY);
+            case 'U' -> new UnbreakableBrick(posX, posY, BRICK_WIDTH, BRICK_HEIGHT, gridX, gridY);
             case '-' -> null; // Empty space
             default -> {
                 System.err.println("Unknown brick code: " + code);
