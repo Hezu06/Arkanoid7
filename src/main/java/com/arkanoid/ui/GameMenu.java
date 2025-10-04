@@ -35,11 +35,11 @@ public class GameMenu extends Application {
 //            button.setScaleY(1.0);
 //            button.setTextFill(Color.BLACK); // màu chữ gốc
 //        });
-
+//    }
     public void start(Stage primaryStage) {
         //Background
         StackPane root = new StackPane();
-        Image image = new Image("file:A:/Hoc ki 3/OOP/Arkanoid7/Item game/Background/galaxy background.jpg");
+        Image image = new Image("images/Background/background.jpg");
         ImageView background = new ImageView(image);
         background.setFitWidth(700);
         background.setFitHeight(950);
