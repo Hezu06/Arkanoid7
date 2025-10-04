@@ -1,5 +1,6 @@
 package com.arkanoid.entity;
 
+import javafx.geometry.Rectangle2D;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -56,4 +57,8 @@ public abstract class GameObject {
     }
 
     public Rectangle getRect() { return this.rect; }
+
+    protected Rectangle2D getBounds() {
+        return new Rectangle2D(x, y, width, height);
+    }
 }
