@@ -11,6 +11,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import com.arkanoid.entity.Paddle;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class GameMain extends Application {
 
     private GraphicsContext gc;
     private List<Brick> bricks;
+    private Paddle paddle;
 
     @Override
     public void start(Stage primaryStage) {
@@ -36,7 +38,17 @@ public class GameMain extends Application {
 
         // --- 2. Load the Level ---
         bricks = loadLevel();
+        paddle = new Paddle(350, 800, "small", 7);
 
+        scene.setOnKeyPressed(e -> {
+            switch (e.getCode()) {
+                case LEFT -> paddle.moveLeft();
+                case RIGHT -> paddle.moveRight();
+            }
+        });
+        scene.setOnKeyReleased(e -> {
+            paddle.stop();
+        });
         // --- 3. Start the Game Loop ---
         new AnimationTimer() {
             @Override
@@ -77,6 +89,8 @@ public class GameMain extends Application {
         for (Brick brick : bricks) {
             brick.render(gc);
         }
+        paddle.update();
+        paddle.render(gc);
         // If you had a Paddle 'p', you would call p.render(gc) here too
     }
 
