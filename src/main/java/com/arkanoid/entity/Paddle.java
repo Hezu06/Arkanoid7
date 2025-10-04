@@ -31,12 +31,12 @@ public class Paddle {
         slowPowerupInEffect = false;
         ImmortalPowerupInEffect = false;
 
-        public Image getImage() {
-            if (PaddleType.equals("large")) {
-                return largePaddleImage;
-            }
-            return smallPaddleImage;
-        }
+//        public Image getImage() {
+//            if (PaddleType.equals("large")) {
+//                return largePaddleImage;
+//            }
+//            return smallPaddleImage;
+//        }
     }
 
     public void removeAllPowerupEffects() {
@@ -46,6 +46,5 @@ public class Paddle {
         FirePowerupInEffect = false;
         ImmortalPowerupInEffect = false;
         PaddleType = "small";
-    }
     }
 }
