@@ -1,5 +1,6 @@
 package com.arkanoid.game;
 
+import com.arkanoid.entity.Ball;
 import com.arkanoid.entity.brick.Brick;
 import com.arkanoid.level.Level;
 import com.arkanoid.level.LevelLoader;
@@ -17,10 +18,11 @@ import java.util.List;
 public class GameMain extends Application {
 
     private static final int WINDOW_WIDTH = 750;
-    private static final int WINDOW_HEIGHT = 900;
+    private static final int WINDOW_HEIGHT = 800;
 
     private GraphicsContext gc;
     private List<Brick> bricks;
+    private Ball ball;
 
     @Override
     public void start(Stage primaryStage) {
@@ -36,7 +38,7 @@ public class GameMain extends Application {
 
         // --- 2. Load the Level ---
         bricks = loadLevel();
-
+        ball = new Ball(400, 400, 0, -1, 10, 20);
         // --- 3. Start the Game Loop ---
         new AnimationTimer() {
             @Override
@@ -77,6 +79,20 @@ public class GameMain extends Application {
         for (Brick brick : bricks) {
             brick.render(gc);
         }
+        if (ball != null) {
+            ball.render(gc);
+            ball.move();
+
+            for (Brick brick : bricks) {
+                if (ball.checkCollision(brick)) {
+                    ball.bounceOff(brick);
+                    if (brick.takeHit()) {
+                        bricks.remove(brick);
+                    }
+                }
+            }
+        }
+
         // If you had a Paddle 'p', you would call p.render(gc) here too
     }
 
