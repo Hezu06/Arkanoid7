@@ -65,7 +65,7 @@ public class GameMenu extends Application {
         StackPane root = new StackPane();
 
         // Background
-        Image image = new Image("file:A:/Hoc ki 3/OOP/Arkanoid7/Item game/Background/galaxy background.jpg");
+        Image image = new Image("/assets/Background/galaxyBackground.jpg");
         ImageView background = new ImageView(image);
         Transition(background);
 
