@@ -98,7 +98,22 @@ public class Ball extends MovableObject {
     public void move() {
         x += dx * speed;
         y += dy * speed;
+        if (x <= 0) {
+            x = 0;
+            dx = Math.abs(dx); // Đảo hướng sang phải
+        }
 
+        // Va chạm với tường phải
+        if (x + radius * 2 >= WINDOW_WIDTH) {
+            x = WINDOW_WIDTH - radius * 2;
+            dx = -Math.abs(dx); // Đảo hướng sang trái
+        }
+
+        // Va chạm với tường trên
+        if (y <= 0) {
+            y = 0;
+            dy = Math.abs(dy); // Đảo hướng xuống dưới
+        }
     }
 
     public Rectangle2D getBounds() {
