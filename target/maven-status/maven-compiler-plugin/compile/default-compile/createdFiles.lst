@@ -3,6 +3,7 @@ com\arkanoid\level\DifficultySettings$1.class
 com\arkanoid\entity\powerUp\PowerUp$PowerUpType.class
 com\arkanoid\entity\GameObject.class
 com\arkanoid\level\Level$LevelDifficulty.class
+com\arkanoid\game\GameMain$2.class
 com\arkanoid\entity\brick\Brick.class
 com\arkanoid\level\LevelLoader.class
 com\arkanoid\entity\brick\ExplosiveBrick.class
