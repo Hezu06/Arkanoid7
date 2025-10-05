@@ -59,15 +59,6 @@ public abstract class Brick extends GameObject {
 
             gc.setStroke(Color.BLACK);
             gc.strokeRect(this.x, this.y, width, height);
-
-            if (maxDurability > 1 && currentDurability > 0 && maxDurability < Integer.MAX_VALUE) {
-                gc.setFill(Color.GREEN);
-                gc.setFont(Font.font("Arial", FontWeight.BOLD, 15));
-                String text = String.valueOf(currentDurability);
-
-                double textWidthEstimation = text.length() * 6;
-                gc.fillText(text, this.x + width / 2 - textWidthEstimation / 2, this.y + height / 2 + 5);
-            }
         }
     }
 
