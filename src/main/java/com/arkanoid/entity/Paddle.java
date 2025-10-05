@@ -1,55 +1,47 @@
 package com.arkanoid.entity;
 
-
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 
-import java.awt.*;
+import java.util.Objects;
 
 public class Paddle extends MovableObject {
-    private Image smallPaddleImage ;
-    private Image largePaddleImage;
+    private final Image smallPaddleImage;
+    private final Image largePaddleImage;
 
-    public String PaddleType;
-    public double speed;
+    private String paddleType;
+    private final double speed;
+    private boolean movingLeft = false;
+    private boolean movingRight = false;
 
-    public boolean MultiPowerupInEffect;
-    public boolean ExpandPowerupInEffect;
-    public boolean FirePowerupInEffect;
-    public boolean slowPowerupInEffect;
-    public boolean ImmortalPowerupInEffect;
+    // Powerup states
+    private boolean multiPowerupInEffect;
+    private boolean expandPowerupInEffect;
+    private boolean firePowerupInEffect;
+    private boolean slowPowerupInEffect;
+    private boolean immortalPowerupInEffect;
 
-    public Paddle(double x, double y, int width, int height, double dx, double dy,String PaddleType, double speed) {
-        super(x, y, width, height, dx, dy);
-        this.PaddleType = PaddleType;
+    public Paddle(double x, double y, String paddleType, double speed) {
+        super(x, y, paddleType.equals("large") ? 100 : 80, 20, 0, 0);
+        this.paddleType = paddleType;
         this.speed = speed;
 
-        MultiPowerupInEffect = false;
-        ExpandPowerupInEffect = false;
-        MultiPowerupInEffect = false;
-        FirePowerupInEffect = false;
-        slowPowerupInEffect = false;
-        ImmortalPowerupInEffect = false;
+        this.smallPaddleImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/Paddle/defaultPaddle.png")));
+        this.largePaddleImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/Paddle/grassPaddle.png")));
 
-//        public Image getImage() {
-//            if (PaddleType.equals("large")) {
-//                return largePaddleImage;
-//            }
-//            return smallPaddleImage;
-//        }
+        removeAllPowerupEffects();
     }
 
-    public void removeAllPowerupEffects() {
-        MultiPowerupInEffect = false;
-        ExpandPowerupInEffect = false;
-        slowPowerupInEffect = false;
-        FirePowerupInEffect = false;
-        ImmortalPowerupInEffect = false;
-        PaddleType = "small";
+    @Override
+    public void update() {
+        move();
+        rect.setX(x);
+        rect.setY(y);
     }
 
     @Override
     public void render(GraphicsContext gc) {
-
+        gc.drawImage(getImage(), x, y, width, height);
     }
 
     @Override
@@ -59,6 +51,47 @@ public class Paddle extends MovableObject {
 
     @Override
     public void move() {
-
+        if (movingLeft) x -= speed;
+        if (movingRight) x += speed;
+//        x += dx * speed;
+        if (x < 0) x = 0;
+        if (x + width > 750) x = 750 - width;
+        rect.setX(x);
     }
+
+    private Image getImage() {
+        if (paddleType.equals("large")) {
+            return largePaddleImage;
+        }
+        return smallPaddleImage;
+    }
+
+    public void removeAllPowerupEffects() {
+        multiPowerupInEffect = false;
+        expandPowerupInEffect = false;
+        firePowerupInEffect = false;
+        slowPowerupInEffect = false;
+        immortalPowerupInEffect = false;
+    }
+
+    public void moveLeft() {
+        dx = -1;
+    }
+
+    public void moveRight() {
+        dx = 1;
+    }
+
+    public void stop() {
+        dx = 0;
+    }
+
+    public void setMovingLeft(boolean value) {
+        movingLeft = value;
+    }
+
+    public void setMovingRight(boolean value) {
+        movingRight = value;
+    }
+
 }
