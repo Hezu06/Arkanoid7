@@ -106,11 +106,11 @@ public class GameMenu extends Application {
             startLabel.setTextFill(Color.GREEN);
 
             Button btnHard = new Button("Hard");
-            Button btnNormal = new Button("Normal");
-            Button btnEasy = new Button("Easy");
+            Button btnVeryHard = new Button("VeryHard");
+            Button btnAsian = new Button("Asian");
             Button btnBack = new Button("Back");
 
-            for (Button b : new Button[]{btnHard, btnNormal, btnEasy}) {
+            for (Button b : new Button[]{btnHard, btnVeryHard, btnAsian}) {
                 b.setPrefSize(200, 50);
                 b.setFont(Font.font("Arial", 20));
                 b.setOpacity(0.6);
@@ -120,7 +120,7 @@ public class GameMenu extends Application {
             btnBack.setPrefSize(70, 30);
             ButtonEffects.applyHoverEffect(btnBack);
 
-            VBox playBox = new VBox(30, startLabel, btnHard, btnNormal, btnEasy, btnBack);
+            VBox playBox = new VBox(30, startLabel, btnHard, btnVeryHard, btnAsian, btnBack);
             playBox.setAlignment(Pos.CENTER);
 
             setContent(contentLayer, playBox);
