@@ -95,9 +95,9 @@ public class Ball extends MovableObject {
         return y + radius;
     }
 
-    public void move() {
-        x += dx * speed;
-        y += dy * speed;
+    public void move(double deltaTime) {
+        x += dx * speed * deltaTime;
+        y += dy * speed * deltaTime;
         if (x <= 0) {
             x = 0;
             dx = Math.abs(dx); // Đảo hướng sang phải
@@ -114,12 +114,17 @@ public class Ball extends MovableObject {
             y = 0;
             dy = Math.abs(dy); // Đảo hướng xuống dưới
         }
+
+        if (y > WINDOW_HEIGHT) {
+            System.out.println("Ball fell below the screen!");
+            System.exit(0);
+        }
     }
 
     public Rectangle2D getBounds() {
         return new Rectangle2D(
-                x - radius,
-                y - radius,
+                x,
+                y,
                 radius * 2,
                 radius * 2
         );
@@ -134,7 +139,5 @@ public class Ball extends MovableObject {
     }
 
     @Override
-    public boolean takeHit() {
-        return x > WINDOW_HEIGHT && y > WINDOW_HEIGHT;
-    }
+    public boolean takeHit() {return y > WINDOW_HEIGHT;};
 }
