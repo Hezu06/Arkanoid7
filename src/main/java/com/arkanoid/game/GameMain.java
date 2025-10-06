@@ -40,8 +40,8 @@ public class GameMain extends Application {
 
         // --- 2. Load the Level ---
         bricks = loadLevel();
-        ball = new Ball(400, 400, 0, -1, 10, 15);
-        paddle = new Paddle(350, 750, "large", 10);
+        ball = new Ball(400, 400, 0, -1, 600, 15);
+        paddle = new Paddle(350, 760, "large", 600);
 
         scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
@@ -58,10 +58,16 @@ public class GameMain extends Application {
         });
         // --- 3. Start the Game Loop ---
         new AnimationTimer() {
+            private long lastUpdate = 0;
+
             @Override
             public void handle(long now) {
-                // RENDER CYCLE: Calls the render method every frame
-                render();
+                if (lastUpdate > 0) {
+                    double deltaTime = (now - lastUpdate) / 1_000_000_000.0; // đổi ns → giây
+                    update(deltaTime);
+                    render();
+                }
+                lastUpdate = now;
             }
         }.start();
 
@@ -76,7 +82,7 @@ public class GameMain extends Application {
     private List<Brick> loadLevel() {
         LevelLoader loader = new LevelLoader();
         try {
-            Level level = loader.loadLevel("Hard.txt", Level.LevelDifficulty.HARD);
+            Level level = loader.loadLevel("Asian.txt", Level.LevelDifficulty.ASIAN);
             List<Brick> loadedBricks = level.getBricks();
             System.out.println("Final Bricks Loaded into App: " + loadedBricks.size());
             return loadedBricks;
@@ -87,6 +93,28 @@ public class GameMain extends Application {
         }
     }
 
+    private void update(double deltaTime) {
+        ball.move(deltaTime);
+
+        for (int i = 0; i < bricks.size(); i++) {
+            Brick brick = bricks.get(i);
+            if (ball.checkCollision(brick)) {
+                ball.bounceOff(brick);
+                if (brick.takeHit()) {
+                    // fading
+                }
+            }
+            bricks.removeIf(b -> b.isBroken() && !b.isFading() && b.getOpacity() <= 0);
+        }
+
+        paddle.update(deltaTime);
+
+        // Va chạm bóng - thanh
+        if (ball.checkCollision(paddle)) {
+            ball.bounceOff(paddle);
+        }
+    }
+
     private void render() {
         // Clear the screen
         gc.setFill(Color.LIGHTYELLOW);
@@ -94,24 +122,13 @@ public class GameMain extends Application {
 
         // Call the individual object's render method, passing the shared gc
         for (Brick brick : bricks) {
+            brick.update();
             brick.render(gc);
         }
 
         ball.render(gc);
-        ball.move();
-        for (Brick brick : bricks) {
-            if (ball.checkCollision(brick)) {
-                ball.bounceOff(brick);
-                if (brick.takeHit()) {
-                    bricks.remove(brick);
-                }
-            }
-        }
-        paddle.update();
+
         paddle.render(gc);
-        if (ball.checkCollision(paddle)) {
-            ball.bounceOff(paddle);
-        }
         // If you had a Paddle 'p', you would call p.render(gc) here too
     }
 

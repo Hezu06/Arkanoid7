@@ -13,12 +13,11 @@ public abstract class MovableObject extends GameObject {
     }
 
     public void update() {
-
     }
 
     public void render(Graphics g) {
 
     }
 
-    public abstract void move();
+    public abstract void move(double deltaTime);
 }
