@@ -5,10 +5,9 @@ import com.arkanoid.entity.powerUp.PowerUp.PowerUpType;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Brick extends GameObject {
 
@@ -16,6 +15,9 @@ public abstract class Brick extends GameObject {
     protected int currentDurability;
     protected final int maxDurability;
     protected boolean isBroken = false;
+
+    private boolean fading = false;
+    private double opacity = 1.0;
 
     protected Image textureImage;
 
@@ -35,7 +37,14 @@ public abstract class Brick extends GameObject {
 
     @Override
     public void update() {
-        /* No update applied for static objects */
+        if (fading) {
+            double fadeSpeed = 2.5;
+            opacity -= fadeSpeed * 1 / 60.0;
+            if (opacity <= 0) {
+                opacity = 0;
+                fading = false;
+            }
+        }
     }
 
     protected void loadTexture(String imagePath) {
@@ -49,26 +58,31 @@ public abstract class Brick extends GameObject {
 
     @Override
     public void render(GraphicsContext gc) {
-        if (!isBroken) {
+        if (opacity <= 0) return;
 
-            if (textureImage != null) {
-                gc.drawImage(textureImage, x, y, width, height);
-            } else {
-                gc.setFill(Color.RED);
-            }
+        gc.setGlobalAlpha(opacity);
 
-            gc.setStroke(Color.BLACK);
-            gc.strokeRect(this.x, this.y, width, height);
+        if (textureImage != null) {
+            gc.drawImage(textureImage, x, y, width, height);
+        } else {
+            gc.setFill(Color.RED);
+            gc.fillRect(x, y, width, height);
         }
+
+        gc.setStroke(Color.BLACK);
+        gc.strokeRect(this.x, this.y, width, height);
+
+        gc.setGlobalAlpha(1.0); // reset lại
     }
 
     @Override
     public boolean takeHit() {
-        if (!isBroken &&  currentDurability > 0) {
+        if (!isBroken && currentDurability > 0) {
             currentDurability--;
 
             if (currentDurability <= 0) {
                 isBroken = true;
+                fading = true; // bắt đầu fade
                 return true;
             }
             updateAppearance();
@@ -102,9 +116,20 @@ public abstract class Brick extends GameObject {
         this.dropsPowerUp = true;
         this.powerUpContent = type;
     }
+
+    public boolean isFading() {
+        return fading;
+    }
+
+    public void setFading(boolean fading) { this.fading = fading; }
+
+    public double getOpacity() {
+        return opacity;
+    }
+
+    public void setBroken(boolean broken) { this.isBroken = broken; }
+
     public PowerUpType getPowerUpContent() { return powerUpContent; }
 
-    public boolean triggerSpecialAction() {
-        return false;
-    }
+    public List<int[]> triggerSpecialAction() { return new ArrayList<>(); }
 }

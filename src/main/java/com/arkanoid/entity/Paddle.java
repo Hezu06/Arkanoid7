@@ -32,9 +32,8 @@ public class Paddle extends MovableObject {
         removeAllPowerupEffects();
     }
 
-    @Override
-    public void update() {
-        move();
+    public void update(double deltaTime) {
+        move(deltaTime);
         rect.setX(x);
         rect.setY(y);
     }
@@ -50,9 +49,9 @@ public class Paddle extends MovableObject {
     }
 
     @Override
-    public void move() {
-        if (movingLeft) x -= speed;
-        if (movingRight) x += speed;
+    public void move(double deltaTime) {
+        if (movingLeft) x -= speed * deltaTime;
+        if (movingRight) x += speed * deltaTime;
 //        x += dx * speed;
         if (x < 0) x = 0;
         if (x + width > 750) x = 750 - width;
