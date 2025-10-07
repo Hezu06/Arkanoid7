@@ -3,6 +3,7 @@ package com.arkanoid.entity;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.media.AudioClip;
 
 import java.util.Objects;
 
@@ -12,12 +13,15 @@ public class Ball extends MovableObject {
     private final Image image;
     private static final int WINDOW_WIDTH = 750;
     private static final int WINDOW_HEIGHT = 800;
-
+    private final AudioClip hitSound;
     public Ball(double x, double y, double dx, double dy, double speed, double radius) {
         super(x, y, (int) (2 * radius), (int) (2 * radius), dx, dy);
         this.speed = speed;
         this.radius = radius;
         image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/Ball/defaultball.png")));
+        hitSound = new AudioClip(
+                Objects.requireNonNull(getClass().getResource("/sounds/collision_sound.wav")).toExternalForm()
+        );
     }
 
     public void bounceOff(GameObject other) {
@@ -45,6 +49,7 @@ public class Ball extends MovableObject {
 
             // Đặt bóng lên trên paddle một chút
             y = paddle.getY() - radius * 2 - 1;
+            hitSound.play();
             return;
         }
 
@@ -69,6 +74,7 @@ public class Ball extends MovableObject {
                 y = rect.getMinY() - radius * 2 - 1;
             }
         }
+        hitSound.play();
     }
 
 
@@ -101,18 +107,21 @@ public class Ball extends MovableObject {
         if (x <= 0) {
             x = 0;
             dx = Math.abs(dx); // Đảo hướng sang phải
+            hitSound.play();
         }
 
         // Va chạm với tường phải
         if (x + radius * 2 >= WINDOW_WIDTH) {
             x = WINDOW_WIDTH - radius * 2;
             dx = -Math.abs(dx); // Đảo hướng sang trái
+            hitSound.play();
         }
 
         // Va chạm với tường trên
         if (y <= 0) {
             y = 0;
             dy = Math.abs(dy); // Đảo hướng xuống dưới
+            hitSound.play();
         }
 
         if (y > WINDOW_HEIGHT) {
