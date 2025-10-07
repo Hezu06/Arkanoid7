@@ -1,10 +1,10 @@
 package com.arkanoid.entity.brick;
 
-import javafx.scene.paint.Color;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ExplosiveBrick extends Brick {
 
-    private boolean readyToExplode = false;
     private static final String EXPLOSIVE_BRICK_IMAGE = "/assets/Bricks/ExplosiveBrick.png";
 
     public ExplosiveBrick(double x, double y, double width, double height, int gridX, int gridY) {
@@ -13,21 +13,22 @@ public class ExplosiveBrick extends Brick {
 
     @Override
     public boolean takeHit() {
-        boolean broken = super.takeHit();
-        if (broken) {
-            readyToExplode = true;
-        }
-        return broken;
-    }
-
-    public boolean isReadyToExplode() {
-        return readyToExplode;
+        return super.takeHit();
     }
 
     @Override
-    public boolean triggerSpecialAction() {
-        readyToExplode = false;
-        return true;
+    public List<int[]> triggerSpecialAction() {
+        List<int[]> affectedCoords = new ArrayList<>();
+
+        // Iterate through a 3x3 area relative to this brick's center.
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                // Add the grid coordinates of the blast radius.
+                affectedCoords.add(new int[]{this.getGridX() + dx, this.getGridY() + dy});
+            }
+        }
+
+        return affectedCoords;
     }
 
     @Override

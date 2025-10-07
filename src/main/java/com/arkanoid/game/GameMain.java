@@ -2,6 +2,8 @@ package com.arkanoid.game;
 
 import com.arkanoid.entity.Ball;
 import com.arkanoid.entity.brick.Brick;
+import com.arkanoid.entity.brick.ExplosiveBrick;
+import com.arkanoid.entity.brick.UnbreakableBrick;
 import com.arkanoid.level.Level;
 import com.arkanoid.level.LevelLoader;
 import javafx.application.Application;
@@ -14,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import com.arkanoid.entity.Paddle;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GameMain extends Application {
@@ -105,20 +108,51 @@ public class GameMain extends Application {
         }
     }
 
+    private void handleExplosion(List<int[]> affectedCoords, List<Brick> bricksToRemove) {
+
+        for (int[] targetCoords : affectedCoords) {
+            int targetX = targetCoords[0];
+            int targetY = targetCoords[1];
+
+            for (Brick activeBrick : this.bricks) {
+                if (bricksToRemove.contains(activeBrick)) {
+                    continue;
+                }
+                if (activeBrick.getGridX() == targetX && activeBrick.getGridY() == targetY) {
+
+                    if (activeBrick instanceof UnbreakableBrick) {
+                        continue;
+                    }
+                    activeBrick.setBroken(true);
+                    activeBrick.setFading(true);
+                    bricksToRemove.add(activeBrick);
+                    break;
+                }
+            }
+        }
+    }
+
     private void update(double deltaTime) {
         ball.move(deltaTime);
+        List<Brick> bricksToRemove = new ArrayList<>();
 
-        for (int i = 0; i < bricks.size(); i++) {
-            Brick brick = bricks.get(i);
+        for (Brick brick : bricks) {
             if (ball.checkCollision(brick)) {
                 ball.bounceOff(brick);
                 if (brick.takeHit()) {
-                    // fading
+                    if (brick instanceof ExplosiveBrick) {
+                        List<int[]> affectedCoords = brick.triggerSpecialAction();
+                        if (!affectedCoords.isEmpty()) {
+                            handleExplosion(affectedCoords, bricksToRemove);
+                        } else {
+                            bricksToRemove.add(brick);
+                        }
+                    }
                 }
             }
             bricks.removeIf(b -> b.isBroken() && !b.isFading() && b.getOpacity() <= 0);
         }
-
+        this.bricks.removeAll(bricksToRemove);
         paddle.update(deltaTime);
 
         // Va chạm bóng - thanh
@@ -141,7 +175,6 @@ public class GameMain extends Application {
         ball.render(gc);
 
         paddle.render(gc);
-        // If you had a Paddle 'p', you would call p.render(gc) here too
     }
 
     public static void main(String[] args) {
