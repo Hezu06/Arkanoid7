@@ -21,7 +21,7 @@ public class ButtonEffects {
             applyFadeEffect(button, 0.6, 1.0);
             button.setScaleX(1.1);
             button.setScaleY(1.1);
-            button.setTextFill(Color.YELLOW);
+            button.setTextFill(Color.WHITE);
         });
 
         button.setOnMouseExited(e -> {
