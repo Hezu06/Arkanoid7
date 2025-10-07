@@ -25,6 +25,11 @@ public class GameMain extends Application {
     private List<Brick> bricks;
     private Ball ball;
     private Paddle paddle;
+    private Level.LevelDifficulty levelDifficulty;
+
+    public void setLevelDifficulty(Level.LevelDifficulty levelDifficulty) {
+        this.levelDifficulty = levelDifficulty;
+    }
 
     @Override
     public void start(Stage primaryStage) {
@@ -81,8 +86,15 @@ public class GameMain extends Application {
 
     private List<Brick> loadLevel() {
         LevelLoader loader = new LevelLoader();
+        String fileName = "";
+        if (levelDifficulty == Level.LevelDifficulty.HARD) {
+            fileName = "Hard.txt";
+        } else if (levelDifficulty == Level.LevelDifficulty.VERY_HARD) {
+            fileName = "VeryHard.txt";
+        } else fileName = "Asian.txt";
+        System.out.println(fileName);
         try {
-            Level level = loader.loadLevel("Asian.txt", Level.LevelDifficulty.ASIAN);
+            Level level = loader.loadLevel(fileName, levelDifficulty);
             List<Brick> loadedBricks = level.getBricks();
             System.out.println("Final Bricks Loaded into App: " + loadedBricks.size());
             return loadedBricks;
