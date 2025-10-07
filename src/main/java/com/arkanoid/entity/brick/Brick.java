@@ -5,10 +5,9 @@ import com.arkanoid.entity.powerUp.PowerUp.PowerUpType;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Brick extends GameObject {
 
@@ -122,13 +121,15 @@ public abstract class Brick extends GameObject {
         return fading;
     }
 
+    public void setFading(boolean fading) { this.fading = fading; }
+
     public double getOpacity() {
         return opacity;
     }
 
+    public void setBroken(boolean broken) { this.isBroken = broken; }
+
     public PowerUpType getPowerUpContent() { return powerUpContent; }
 
-    public boolean triggerSpecialAction() {
-        return false;
-    }
+    public List<int[]> triggerSpecialAction() { return new ArrayList<>(); }
 }

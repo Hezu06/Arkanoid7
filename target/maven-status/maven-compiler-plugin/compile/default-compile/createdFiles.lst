@@ -15,4 +15,5 @@ com\arkanoid\entity\brick\StrongBrick.class
 com\arkanoid\entity\brick\NormalBrick.class
 com\arkanoid\entity\MovableObject.class
 com\arkanoid\entity\Ball.class
+com\arkanoid\ui\ButtonEffects.class
 com\arkanoid\entity\powerUp\PowerUp.class
