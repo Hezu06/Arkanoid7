@@ -13,8 +13,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import com.arkanoid.entity.Paddle;
-
+import javafx.scene.media.AudioClip;
 import java.util.List;
+import java.util.Objects;
 
 public class GameMain extends Application {
 
@@ -106,6 +107,7 @@ public class GameMain extends Application {
     }
 
     private void update(double deltaTime) {
+
         ball.move(deltaTime);
 
         for (int i = 0; i < bricks.size(); i++) {
@@ -113,7 +115,7 @@ public class GameMain extends Application {
             if (ball.checkCollision(brick)) {
                 ball.bounceOff(brick);
                 if (brick.takeHit()) {
-                    // fading
+                    // fadind
                 }
             }
             bricks.removeIf(b -> b.isBroken() && !b.isFading() && b.getOpacity() <= 0);

@@ -83,16 +83,26 @@ public class GameMenu extends Application {
 
         // ====================== MENU CHÍNH ======================
         Label title = new Label("BRICK BREAKER");
-        title.setFont(Font.font("Arial", FontWeight.BOLD, 50));
-        title.setTextFill(Color.RED);
+        Font titleFont = Font.loadFont(
+                getClass().getResourceAsStream("/fonts/ALIEN5.TTF"),
+                50 // cỡ chữ
+        );
+//        title.setFont(Font.font("Arial", FontWeight.BOLD, 50));
+        title.setFont(titleFont);
+        title.setTextFill(Color.WHITESMOKE);
 
         Button btnPlay = new Button("Play");
         Button btnOptions = new Button("Options");
         Button btnExit = new Button("Exit");
 
+        Font buttonFont = Font.loadFont(
+                getClass().getResourceAsStream("/fonts/ALIEN5.TTF"),
+                30
+        );
+
         for (Button b : new Button[]{btnPlay, btnOptions, btnExit}) {
             b.setPrefSize(200, 50);
-            b.setFont(Font.font("Arial", 20));
+            b.setFont(buttonFont);
             b.setOpacity(0.6);
             ButtonEffects.applyHoverEffect(b);
         }
@@ -104,8 +114,8 @@ public class GameMenu extends Application {
         // ====================== NÚT PLAY ======================
         btnPlay.setOnAction(e -> {
             Label startLabel = new Label("CHOOSE");
-            startLabel.setFont(Font.font("Arial", FontWeight.BOLD, 80));
-            startLabel.setTextFill(Color.GREEN);
+            startLabel.setFont(titleFont);
+            startLabel.setTextFill(Color.WHITESMOKE);
 
             Button btnAsian = new Button("Asian");
             Button btnVeryHard = new Button("Very Hard");
@@ -114,12 +124,14 @@ public class GameMenu extends Application {
 
             for (Button b : new Button[]{btnAsian, btnVeryHard, btnHard}) {
                 b.setPrefSize(200, 50);
-                b.setFont(Font.font("Arial", 20));
+                b.setFont(buttonFont);
                 b.setOpacity(0.6);
                 ButtonEffects.applyHoverEffect(b);
             }
+
+            btnBack.setPrefSize(100, 30);
+            btnBack.setFont(buttonFont);
             btnBack.setOpacity(0.6);
-            btnBack.setPrefSize(70, 30);
             ButtonEffects.applyHoverEffect(btnBack);
 
             VBox playBox = new VBox(30, startLabel, btnAsian, btnVeryHard, btnHard, btnBack);
@@ -160,11 +172,12 @@ public class GameMenu extends Application {
         // ====================== NÚT OPTIONS ======================
         btnOptions.setOnAction(e -> {
             Label optionsLabel = new Label("OPTIONS");
-            optionsLabel.setFont(Font.font("Arial", FontWeight.BOLD, 80));
-            optionsLabel.setTextFill(Color.GREEN);
+            optionsLabel.setFont(titleFont);
+            optionsLabel.setTextFill(Color.WHITESMOKE);
 
             Button btnBack = new Button("Back");
-            btnBack.setPrefSize(70, 30);
+            btnBack.setPrefSize(100, 30);
+            btnBack.setFont(buttonFont);
             btnBack.setOpacity(0.6);
             ButtonEffects.applyHoverEffect(btnBack);
 
