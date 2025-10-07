@@ -1,5 +1,7 @@
 package com.arkanoid.ui;
 
+import com.arkanoid.game.GameMain;
+import com.arkanoid.level.Level;
 import javafx.animation.*;
 import javafx.application.Application;
 import javafx.geometry.Pos;
@@ -18,7 +20,7 @@ import javafx.util.Duration;
 
 public class GameMenu extends Application {
     static final int Width = 750;
-    static final int Height = 950;
+    static final int Height = 800;
     static final int widthBackground = 850;
     static final int heightBackground = 950;
 
@@ -105,12 +107,12 @@ public class GameMenu extends Application {
             startLabel.setFont(Font.font("Arial", FontWeight.BOLD, 80));
             startLabel.setTextFill(Color.GREEN);
 
+            Button btnAsian = new Button("Asian");
+            Button btnVeryHard = new Button("Very Hard");
             Button btnHard = new Button("Hard");
-            Button btnNormal = new Button("Normal");
-            Button btnEasy = new Button("Easy");
             Button btnBack = new Button("Back");
 
-            for (Button b : new Button[]{btnHard, btnNormal, btnEasy}) {
+            for (Button b : new Button[]{btnAsian, btnVeryHard, btnHard}) {
                 b.setPrefSize(200, 50);
                 b.setFont(Font.font("Arial", 20));
                 b.setOpacity(0.6);
@@ -120,12 +122,39 @@ public class GameMenu extends Application {
             btnBack.setPrefSize(70, 30);
             ButtonEffects.applyHoverEffect(btnBack);
 
-            VBox playBox = new VBox(30, startLabel, btnHard, btnNormal, btnEasy, btnBack);
+            VBox playBox = new VBox(30, startLabel, btnAsian, btnVeryHard, btnHard, btnBack);
             playBox.setAlignment(Pos.CENTER);
 
             setContent(contentLayer, playBox);
 
             btnBack.setOnAction(e1 -> setContent(contentLayer, menuBox));
+            btnAsian.setOnAction(e2 -> {
+                GameMain gameMain = new GameMain();
+                gameMain.setLevelDifficulty(Level.LevelDifficulty.ASIAN);
+                try {
+                    gameMain.start(primaryStage); // chuyển sang màn game
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            });
+            btnVeryHard.setOnAction(e3 -> {
+                GameMain gameMain = new GameMain();
+                gameMain.setLevelDifficulty(Level.LevelDifficulty.VERY_HARD);
+                try {
+                    gameMain.start(primaryStage); // chuyển sang màn game
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            });
+            btnHard.setOnAction(e4 -> {
+                GameMain gameMain = new GameMain();
+                gameMain.setLevelDifficulty(Level.LevelDifficulty.HARD);
+                try {
+                    gameMain.start(primaryStage); // chuyển sang màn game
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            });
         });
 
         // ====================== NÚT OPTIONS ======================
