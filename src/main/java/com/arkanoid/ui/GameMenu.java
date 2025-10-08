@@ -67,7 +67,7 @@ public class GameMenu extends Application {
         StackPane root = new StackPane();
 
         // Background
-        Image image = new Image("/assets/Background/galaxyBackground.jpg");
+        Image image = new Image("file:A:/Game java/Arkanoid7/src/main/resources/assets/Background/galaxyBackground.jpg");
         ImageView background = new ImageView(image);
         Transition(background);
 
@@ -91,9 +91,9 @@ public class GameMenu extends Application {
         title.setFont(titleFont);
         title.setTextFill(Color.WHITESMOKE);
 
-        Button btnPlay = new Button("Play");
-        Button btnOptions = new Button("Options");
-        Button btnExit = new Button("Exit");
+        GameButton btnPlay = new GameButton("PLAY");
+        GameButton btnOptions = new GameButton("OPTIONS");
+        GameButton btnExit = new GameButton("EXIT");
 
         Font buttonFont = Font.loadFont(
                 getClass().getResourceAsStream("/fonts/ALIEN5.TTF"),
@@ -101,9 +101,6 @@ public class GameMenu extends Application {
         );
 
         for (Button b : new Button[]{btnPlay, btnOptions, btnExit}) {
-            b.setPrefSize(200, 50);
-            b.setFont(buttonFont);
-            b.setOpacity(0.6);
             ButtonEffects.applyHoverEffect(b);
         }
 
@@ -117,24 +114,16 @@ public class GameMenu extends Application {
             startLabel.setFont(titleFont);
             startLabel.setTextFill(Color.WHITESMOKE);
 
-            Button btnAsian = new Button("Asian");
-            Button btnVeryHard = new Button("Very Hard");
-            Button btnHard = new Button("Hard");
-            Button btnBack = new Button("Back");
+            GameButton btnHard = new GameButton("HARD");
+            GameButton btnVeryHard = new GameButton("VERYHARD");
+            GameButton btnAsian = new GameButton("ASIAN");
+            GameButton btnBack = new GameButton("BACK");
 
-            for (Button b : new Button[]{btnAsian, btnVeryHard, btnHard}) {
-                b.setPrefSize(200, 50);
-                b.setFont(buttonFont);
-                b.setOpacity(0.6);
+            for (Button b : new Button[]{btnHard, btnVeryHard, btnAsian, btnBack}) {
                 ButtonEffects.applyHoverEffect(b);
             }
 
-            btnBack.setPrefSize(100, 30);
-            btnBack.setFont(buttonFont);
-            btnBack.setOpacity(0.6);
-            ButtonEffects.applyHoverEffect(btnBack);
-
-            VBox playBox = new VBox(30, startLabel, btnAsian, btnVeryHard, btnHard, btnBack);
+            VBox playBox = new VBox(30, startLabel, btnHard, btnVeryHard, btnAsian, btnBack);
             playBox.setAlignment(Pos.CENTER);
 
             setContent(contentLayer, playBox);
@@ -175,10 +164,7 @@ public class GameMenu extends Application {
             optionsLabel.setFont(titleFont);
             optionsLabel.setTextFill(Color.WHITESMOKE);
 
-            Button btnBack = new Button("Back");
-            btnBack.setPrefSize(100, 30);
-            btnBack.setFont(buttonFont);
-            btnBack.setOpacity(0.6);
+            GameButton btnBack = new GameButton("BACK");
             ButtonEffects.applyHoverEffect(btnBack);
 
             VBox optionsBox = new VBox(30, optionsLabel, btnBack);
