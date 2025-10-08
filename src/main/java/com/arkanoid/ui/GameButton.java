@@ -14,12 +14,12 @@ public class GameButton extends Button {
 
         setPrefSize(250, 70);
         setFont(Font.font("Verdana", FontWeight.BOLD, 22));
-        setTextFill(Color.WHITE);
+        setTextFill(Color.BLACK);
         setOpacity(0.6); // để đồng bộ với ButtonEffects
 
         // Style cơ bản: nền tím gradient, viền trắng, bo góc
         setStyle(
-                "-fx-background-color: linear-gradient(to bottom, #a74eff, #37006b);" +
+                "-fx-background-color: white;" +
                         "-fx-background-radius: 12;" +
                         "-fx-border-color: white;" +
                         "-fx-border-width: 2;" +

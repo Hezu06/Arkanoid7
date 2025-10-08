@@ -14,7 +14,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -39,7 +38,7 @@ public class GameMenu extends Application {
     // Hàm đổi nội dung với fade mượt
     private void setContent(StackPane contentLayer, VBox newContent) {
         if (!contentLayer.getChildren().isEmpty()) {
-            VBox oldContent = (VBox) contentLayer.getChildren().get(0);
+            VBox oldContent = (VBox) contentLayer.getChildren().getFirst();
 
             FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.2), oldContent);
             fadeOut.setFromValue(1.0);
@@ -102,6 +101,7 @@ public class GameMenu extends Application {
 
         for (Button b : new Button[]{btnPlay, btnOptions, btnExit}) {
             ButtonEffects.applyHoverEffect(b);
+            b.setFont(buttonFont);
         }
 
         VBox menuBox = new VBox(30, title, btnPlay, btnOptions, btnExit);
@@ -115,12 +115,13 @@ public class GameMenu extends Application {
             startLabel.setTextFill(Color.WHITESMOKE);
 
             GameButton btnHard = new GameButton("HARD");
-            GameButton btnVeryHard = new GameButton("VERYHARD");
+            GameButton btnVeryHard = new GameButton("VERY HARD");
             GameButton btnAsian = new GameButton("ASIAN");
             GameButton btnBack = new GameButton("BACK");
 
             for (Button b : new Button[]{btnHard, btnVeryHard, btnAsian, btnBack}) {
                 ButtonEffects.applyHoverEffect(b);
+                b.setFont(buttonFont);
             }
 
             VBox playBox = new VBox(30, startLabel, btnHard, btnVeryHard, btnAsian, btnBack);
@@ -166,6 +167,7 @@ public class GameMenu extends Application {
 
             GameButton btnBack = new GameButton("BACK");
             ButtonEffects.applyHoverEffect(btnBack);
+            btnBack.setFont(buttonFont);
 
             VBox optionsBox = new VBox(30, optionsLabel, btnBack);
             optionsBox.setAlignment(Pos.CENTER);

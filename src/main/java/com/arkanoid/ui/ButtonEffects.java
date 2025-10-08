@@ -1,6 +1,5 @@
 package com.arkanoid.ui;
 
-import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
@@ -21,7 +20,7 @@ public class ButtonEffects {
             applyFadeEffect(button, 0.6, 1.0);
             button.setScaleX(1.1);
             button.setScaleY(1.1);
-            button.setTextFill(Color.WHITESMOKE);
+            button.setTextFill(Color.BLACK);
         });
 
         button.setOnMouseExited(e -> {
