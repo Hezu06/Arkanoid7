@@ -11,6 +11,7 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -36,6 +37,7 @@ public class GameMain extends Application {
     public void setLevelDifficulty(Level.LevelDifficulty levelDifficulty) {
         this.levelDifficulty = levelDifficulty;
     }
+    private static final String BACKGROUND_PATH = "/assets/Background/galaxyBackground.jpg";
 
     @Override
     public void start(Stage primaryStage) {
@@ -52,7 +54,7 @@ public class GameMain extends Application {
         // --- 2. Load the Level ---
         bricks = loadLevel();
         ball = new Ball(400, 400, 0, -1, 600, 15);
-        paddle = new Paddle(350, 760, "large", 600);
+        paddle = new Paddle(350, 760, "small", 600);
 
         scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
@@ -175,9 +177,12 @@ public class GameMain extends Application {
     }
 
     private void render() {
-        // Clear the screen
-        gc.setFill(Color.LIGHTYELLOW);
-        gc.fillRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+        Image backgroundTexture = new Image(
+                Objects.requireNonNull(getClass().getResourceAsStream(BACKGROUND_PATH)),
+                WINDOW_WIDTH, WINDOW_HEIGHT, // Target width and height
+                false, true // preserveRatio=false, smooth=true
+        );
+        gc.drawImage(backgroundTexture, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         // Call the individual object's render method, passing the shared gc
         for (Brick brick : bricks) {

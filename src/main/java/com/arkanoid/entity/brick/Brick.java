@@ -69,9 +69,6 @@ public abstract class Brick extends GameObject {
             gc.fillRect(x, y, width, height);
         }
 
-        gc.setStroke(Color.BLACK);
-        gc.strokeRect(this.x, this.y, width, height);
-
         gc.setGlobalAlpha(1.0); // reset lại
     }
 
