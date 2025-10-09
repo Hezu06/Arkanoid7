@@ -15,9 +15,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import com.arkanoid.entity.Paddle;
+import javafx.scene.media.AudioClip;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class GameMain extends Application {
 

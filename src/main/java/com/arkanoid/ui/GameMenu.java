@@ -14,7 +14,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -39,7 +38,7 @@ public class GameMenu extends Application {
     // Hàm đổi nội dung với fade mượt
     private void setContent(StackPane contentLayer, VBox newContent) {
         if (!contentLayer.getChildren().isEmpty()) {
-            VBox oldContent = (VBox) contentLayer.getChildren().get(0);
+            VBox oldContent = (VBox) contentLayer.getChildren().getFirst();
 
             FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.2), oldContent);
             fadeOut.setFromValue(1.0);
@@ -83,18 +82,26 @@ public class GameMenu extends Application {
 
         // ====================== MENU CHÍNH ======================
         Label title = new Label("BRICK BREAKER");
-        title.setFont(Font.font("Arial", FontWeight.BOLD, 50));
-        title.setTextFill(Color.RED);
+        Font titleFont = Font.loadFont(
+                getClass().getResourceAsStream("/fonts/ALIEN5.TTF"),
+                50 // cỡ chữ
+        );
+//        title.setFont(Font.font("Arial", FontWeight.BOLD, 50));
+        title.setFont(titleFont);
+        title.setTextFill(Color.WHITESMOKE);
 
-        Button btnPlay = new Button("Play");
-        Button btnOptions = new Button("Options");
-        Button btnExit = new Button("Exit");
+        GameButton btnPlay = new GameButton("PLAY");
+        GameButton btnOptions = new GameButton("OPTIONS");
+        GameButton btnExit = new GameButton("EXIT");
+
+        Font buttonFont = Font.loadFont(
+                getClass().getResourceAsStream("/fonts/ALIEN5.TTF"),
+                30
+        );
 
         for (Button b : new Button[]{btnPlay, btnOptions, btnExit}) {
-            b.setPrefSize(200, 50);
-            b.setFont(Font.font("Arial", 20));
-            b.setOpacity(0.6);
             ButtonEffects.applyHoverEffect(b);
+            b.setFont(buttonFont);
         }
 
         VBox menuBox = new VBox(30, title, btnPlay, btnOptions, btnExit);
@@ -104,25 +111,20 @@ public class GameMenu extends Application {
         // ====================== NÚT PLAY ======================
         btnPlay.setOnAction(e -> {
             Label startLabel = new Label("CHOOSE");
-            startLabel.setFont(Font.font("Arial", FontWeight.BOLD, 80));
-            startLabel.setTextFill(Color.GREEN);
+            startLabel.setFont(titleFont);
+            startLabel.setTextFill(Color.WHITESMOKE);
 
-            Button btnAsian = new Button("Asian");
-            Button btnVeryHard = new Button("Very Hard");
-            Button btnHard = new Button("Hard");
-            Button btnBack = new Button("Back");
+            GameButton btnHard = new GameButton("HARD");
+            GameButton btnVeryHard = new GameButton("VERY HARD");
+            GameButton btnAsian = new GameButton("ASIAN");
+            GameButton btnBack = new GameButton("BACK");
 
-            for (Button b : new Button[]{btnAsian, btnVeryHard, btnHard}) {
-                b.setPrefSize(200, 50);
-                b.setFont(Font.font("Arial", 20));
-                b.setOpacity(0.6);
+            for (Button b : new Button[]{btnHard, btnVeryHard, btnAsian, btnBack}) {
                 ButtonEffects.applyHoverEffect(b);
+                b.setFont(buttonFont);
             }
-            btnBack.setOpacity(0.6);
-            btnBack.setPrefSize(70, 30);
-            ButtonEffects.applyHoverEffect(btnBack);
 
-            VBox playBox = new VBox(30, startLabel, btnAsian, btnVeryHard, btnHard, btnBack);
+            VBox playBox = new VBox(30, startLabel, btnHard, btnVeryHard, btnAsian, btnBack);
             playBox.setAlignment(Pos.CENTER);
 
             setContent(contentLayer, playBox);
@@ -160,13 +162,12 @@ public class GameMenu extends Application {
         // ====================== NÚT OPTIONS ======================
         btnOptions.setOnAction(e -> {
             Label optionsLabel = new Label("OPTIONS");
-            optionsLabel.setFont(Font.font("Arial", FontWeight.BOLD, 80));
-            optionsLabel.setTextFill(Color.GREEN);
+            optionsLabel.setFont(titleFont);
+            optionsLabel.setTextFill(Color.WHITESMOKE);
 
-            Button btnBack = new Button("Back");
-            btnBack.setPrefSize(70, 30);
-            btnBack.setOpacity(0.6);
+            GameButton btnBack = new GameButton("BACK");
             ButtonEffects.applyHoverEffect(btnBack);
+            btnBack.setFont(buttonFont);
 
             VBox optionsBox = new VBox(30, optionsLabel, btnBack);
             optionsBox.setAlignment(Pos.CENTER);

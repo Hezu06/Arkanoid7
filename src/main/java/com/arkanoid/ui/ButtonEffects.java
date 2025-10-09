@@ -1,6 +1,5 @@
 package com.arkanoid.ui;
 
-import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
