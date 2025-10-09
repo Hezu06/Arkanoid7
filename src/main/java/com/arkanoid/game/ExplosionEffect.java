@@ -1,101 +1,73 @@
 package com.arkanoid.game;
 
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
 
 public class ExplosionEffect {
-    private double x, y;
-    private final double TARGET_SIZE;    // Final size of the visual effect.
-    private double timeAlive = 0;
+    private static class Particle {
+        double x, y;
+        double vx, vy;
+        double life;
+        double size;
+        Color color;
 
-    private final double DURATION = 2;
-    private final Image SPRITE_SHEET;
+        Particle(double x, double y, double vx, double vy, double life, double size, Color color) {
+            this.x = x;
+            this.y = y;
+            this.vx = vx;
+            this.vy = vy;
+            this.life = life;
+            this.size = size;
+            this.color = color;
+        }
+    }
+
+    private final List<Particle> particles = new ArrayList<>();
+    private final Random rand = new Random();
     private boolean finished = false;
 
-    private final int TOTAL_FRAME = 20;
-    private final int FRAME_PER_ROW = 4;
-    private final int FRAME_PER_COL = 5;
-    private final double FRAME_DURATION = DURATION / TOTAL_FRAME;
-    private final double SHEET_WIDTH;
-    private final double SHEET_HEIGHT;
-    private final double FRAME_WIDTH;
-    private final double FRAME_HEIGHT;
-
-    private double frameTimer = 0;
-    private int currentFrame = 0;
-
-    private static final String EXPLOSION_SHEET_PATH = "assets/Bricks/EffectExplosion/explosionSprite.png";
-
     public ExplosionEffect(double x, double y, double width, double height) {
-        this.TARGET_SIZE = Math.max(width, height) * 2; // Explosion is twice the brick's size.
-        this.x = x + width / 2;
-        this.y = y + height / 2;
+        double cx = x + width / 2;
+        double cy = y + height / 2;
 
-        // Safe check before loading the sprite sheet.
-        Image loadedSheet = null;
-        try {
-            loadedSheet = new Image(EXPLOSION_SHEET_PATH);
-        } catch (Exception e) {
-            System.err.println("Explosion sheet NOT FOUND!");
-        }
-        this.SPRITE_SHEET = loadedSheet;
-
-        if (SPRITE_SHEET != null) {
-            this.SHEET_WIDTH = SPRITE_SHEET.getWidth();
-            this.SHEET_HEIGHT = SPRITE_SHEET.getHeight();
-            // Calculate frame dimensions.
-            this.FRAME_WIDTH = this.SHEET_WIDTH / FRAME_PER_ROW;
-            this.FRAME_HEIGHT = this.SHEET_HEIGHT / FRAME_PER_COL;
-        } else {
-            this.SHEET_WIDTH = 0;
-            this.SHEET_HEIGHT = 0;
-            this.FRAME_WIDTH = 0;
-            this.FRAME_HEIGHT = 0;
+        // spawn particles
+        for (int i = 0; i < 80; i++) {
+            double angle = rand.nextDouble() * 2 * Math.PI;
+            double speed = 120 + rand.nextDouble() * 180;
+            double vx = Math.cos(angle) * speed;
+            double vy = Math.sin(angle) * speed;
+            double life = 0.8 + rand.nextDouble() * 0.6;
+            double size = 3 + rand.nextDouble() * 4;
+            Color color = Color.hsb(30 + rand.nextDouble() * 30, 1, 1);
+            particles.add(new Particle(cx, cy, vx, vy, life, size, color));
         }
     }
 
     public void update(double deltaTime) {
-        timeAlive += deltaTime;
-        frameTimer += deltaTime;
-
-        if (frameTimer >= FRAME_DURATION) {
-            currentFrame++;
-            frameTimer = 0;
+        Iterator<Particle> iter = particles.iterator();
+        while (iter.hasNext()) {
+            Particle p = iter.next();
+            p.x += p.vx * deltaTime;
+            p.y += p.vy * deltaTime;
+            p.vy += 100 * deltaTime; // slight gravity
+            p.life -= deltaTime;
+            if (p.life <= 0) iter.remove();
         }
-
-        if (currentFrame >= TOTAL_FRAME) {
-            finished = true;
-        }
+        finished = particles.isEmpty();
     }
 
-
     public void render(GraphicsContext gc) {
-        if (finished || SPRITE_SHEET == null) { return; }
-
-        if (!SPRITE_SHEET.isError() && SPRITE_SHEET.getWidth() > 0) {
-            double alpha = 1.0 - (timeAlive / DURATION * 0.2);
+        for (Particle p : particles) {
+            double alpha = Math.max(0, p.life);
             gc.setGlobalAlpha(alpha);
-
-            // Calculate source position on the sprite sheet.
-            int col = currentFrame % FRAME_PER_ROW;
-            int row = currentFrame / FRAME_PER_ROW;
-
-            double srcX = col * FRAME_WIDTH;
-            double srcY = row * FRAME_HEIGHT;
-
-            // Draw Img on the canvas.
-            // Parameters: (Image, SrcX, SrcY, SrcW, SrcH, DestX, DestY, DestW, DestH)
-            gc.drawImage(
-                    SPRITE_SHEET,
-                    srcX, srcY,
-                    FRAME_WIDTH, FRAME_HEIGHT,
-                    x - TARGET_SIZE / 2, y - TARGET_SIZE / 2, TARGET_SIZE, TARGET_SIZE
-            );
-
-            gc.setGlobalAlpha(1.0);
-        } else {
-            System.err.println("Cannot render the sprite sheet to the screen.");
+            gc.setFill(p.color);
+            gc.fillOval(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
         }
+        gc.setGlobalAlpha(1.0);
     }
 
     public boolean isFinished() {
