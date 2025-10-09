@@ -1,7 +1,7 @@
 package com.arkanoid.entity.brick;
 
 import com.arkanoid.entity.GameObject;
-import com.arkanoid.entity.powerUp.PowerUp.PowerUpType;
+//import com.arkanoid.entity.powerUp.PowerUp.PowerUpType;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -23,7 +23,7 @@ public abstract class Brick extends GameObject {
     protected Image textureImage;
 
     // PowerUp related attributes.
-    protected PowerUpType powerUpContent = null;
+    //protected PowerUpType powerUpContent = null;
     protected boolean dropsPowerUp = false;
 
     public Brick(double x, double y, double width, double height, int gridX, int gridY, int maxDurability, String imagePath) {
@@ -113,10 +113,10 @@ public abstract class Brick extends GameObject {
         this.currentDurability = currentDurability;
     }
 
-    public void setPowerUpDrop(PowerUpType type) {
-        this.dropsPowerUp = true;
-        this.powerUpContent = type;
-    }
+//    public void setPowerUpDrop(PowerUpType type) {
+//        this.dropsPowerUp = true;
+//        this.powerUpContent = type;
+//    }
 
     public boolean isFading() {
         return fading;
@@ -126,7 +126,7 @@ public abstract class Brick extends GameObject {
         return opacity;
     }
 
-    public PowerUpType getPowerUpContent() { return powerUpContent; }
+    //public PowerUpType getPowerUpContent() { return powerUpContent; }
 
     public boolean triggerSpecialAction() {
         return false;

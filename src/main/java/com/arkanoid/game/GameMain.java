@@ -2,6 +2,8 @@ package com.arkanoid.game;
 
 import com.arkanoid.entity.Ball;
 import com.arkanoid.entity.brick.Brick;
+import com.arkanoid.entity.powerUp.PowerUp;
+import com.arkanoid.entity.powerUp.PowerUpFactory;
 import com.arkanoid.level.Level;
 import com.arkanoid.level.LevelLoader;
 import javafx.application.Application;
@@ -14,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import com.arkanoid.entity.Paddle;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GameMain extends Application {
@@ -25,6 +28,9 @@ public class GameMain extends Application {
     private List<Brick> bricks;
     private Ball ball;
     private Paddle paddle;
+    private List<PowerUp> powerUps = new ArrayList<>();
+    private List<Ball> extraBalls = new ArrayList<>();
+
 
     @Override
     public void start(Stage primaryStage) {
@@ -95,16 +101,28 @@ public class GameMain extends Application {
 
     private void update(double deltaTime) {
         ball.move(deltaTime);
+        for(Ball extra : extraBalls) {
+            extra.move(deltaTime);
+        }
+        paddle.update(deltaTime);
 
         for (int i = 0; i < bricks.size(); i++) {
             Brick brick = bricks.get(i);
             if (ball.checkCollision(brick)) {
                 ball.bounceOff(brick);
                 if (brick.takeHit()) {
-                    // fading
+                    PowerUp newPowerUp = PowerUpFactory.createPowerUp(brick.getX(), brick.getY());
+                    if (newPowerUp != null) {
+                        powerUps.add(newPowerUp);
+                    }
+                }
+                for(Ball extra : extraBalls) {
+                    if (extra.checkCollision(brick)) {
+                        extra.bounceOff(brick);
+                        brick.takeHit();
+                    }
                 }
             }
-            bricks.removeIf(b -> b.isBroken() && !b.isFading() && b.getOpacity() <= 0);
         }
 
         paddle.update(deltaTime);
@@ -113,6 +131,24 @@ public class GameMain extends Application {
         if (ball.checkCollision(paddle)) {
             ball.bounceOff(paddle);
         }
+
+        for (Ball extra : extraBalls) {
+            if (extra.checkCollision(paddle)) {
+                extra.bounceOff(paddle);
+            }
+        }
+
+
+        for(PowerUp powerUp : powerUps) {
+            powerUp.update();
+            if (powerUp.isActive() && powerUp.checkCollision(paddle)) {
+                powerUp.takeHit();
+                powerUp.applyEffect(this);
+            }
+        }
+            // Loại bỏ power-up rơi ra khỏi màn
+        powerUps.removeIf(p -> !p.isActive());
+        bricks.removeIf(brick -> brick.isBroken() && !brick.isFading() && brick.getOpacity() <= 0);
     }
 
     private void render() {
@@ -127,10 +163,27 @@ public class GameMain extends Application {
         }
 
         ball.render(gc);
+        for(Ball extra : extraBalls) {
+            extra.render(gc);
+        }
 
         paddle.render(gc);
-        // If you had a Paddle 'p', you would call p.render(gc) here too
+
+        for (PowerUp p : powerUps) {
+            p.render(gc);
+        }
+
     }
+
+        public Paddle getPaddle() {
+            return paddle;
+        }
+
+        public void spawnExtraBalls() {
+            extraBalls.add(new Ball(400, 400, 0, -1, 100, 15));
+            extraBalls.add(new Ball(400, 400, 1, -2, 100, 15));
+            System.out.println("3 bong");
+        }
 
     public static void main(String[] args) {
         launch(args);
