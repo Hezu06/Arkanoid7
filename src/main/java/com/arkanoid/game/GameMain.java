@@ -31,6 +31,7 @@ public class GameMain extends Application {
     private Ball ball;
     private Paddle paddle;
     private Level.LevelDifficulty levelDifficulty;
+    private List<ExplosionEffect> activeExplosion = new ArrayList<>();
 
     public void setLevelDifficulty(Level.LevelDifficulty levelDifficulty) {
         this.levelDifficulty = levelDifficulty;
@@ -135,8 +136,14 @@ public class GameMain extends Application {
     }
 
     private void update(double deltaTime) {
+        for (ExplosionEffect effect : activeExplosion) {
+            effect.update(deltaTime);
+        }
+        // Remove all explosions that have finished their animation.
+        activeExplosion.removeIf(ExplosionEffect::isFinished);
 
         ball.move(deltaTime);
+
         List<Brick> bricksToRemove = new ArrayList<>();
 
         for (Brick brick : bricks) {
@@ -146,6 +153,9 @@ public class GameMain extends Application {
                     if (brick instanceof ExplosiveBrick) {
                         List<int[]> affectedCoords = brick.triggerSpecialAction();
                         if (!affectedCoords.isEmpty()) {
+                            activeExplosion.add(new ExplosionEffect(
+                                    brick.getX(), brick.getY(), brick.getWidth(), brick.getHeight()
+                            ));
                             handleExplosion(affectedCoords, bricksToRemove);
                         } else {
                             bricksToRemove.add(brick);
@@ -173,6 +183,10 @@ public class GameMain extends Application {
         for (Brick brick : bricks) {
             brick.update();
             brick.render(gc);
+        }
+
+        for (ExplosionEffect effect : activeExplosion) {
+            effect.render(gc);
         }
 
         ball.render(gc);
