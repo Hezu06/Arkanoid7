@@ -6,13 +6,22 @@ import com.arkanoid.entity.brick.ExplosiveBrick;
 import com.arkanoid.entity.brick.UnbreakableBrick;
 import com.arkanoid.level.Level;
 import com.arkanoid.level.LevelLoader;
+import com.arkanoid.ui.ButtonEffects;
+import com.arkanoid.ui.GameButton;
 import javafx.application.Application;
 import javafx.animation.AnimationTimer;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import com.arkanoid.entity.Paddle;
 import javafx.scene.media.AudioClip;
@@ -31,7 +40,10 @@ public class GameMain extends Application {
     private Ball ball;
     private Paddle paddle;
     private Level.LevelDifficulty levelDifficulty;
-    private List<ExplosionEffect> activeExplosion = new ArrayList<>();
+    private final List<ExplosionEffect> activeExplosion = new ArrayList<>();
+    private Pane gamePane;
+    private boolean playAgainShown = false;
+
 
     public void setLevelDifficulty(Level.LevelDifficulty levelDifficulty) {
         this.levelDifficulty = levelDifficulty;
@@ -40,8 +52,11 @@ public class GameMain extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        Pane gamePane = new Pane();
+        gamePane = new Pane();
         Scene scene = new Scene(gamePane, WINDOW_WIDTH, WINDOW_HEIGHT, Color.CYAN);
+        // Background
+
+        // Layer chứa menu thay đổi
 
         // --- 1. Canvas Setup ---
         Canvas canvas = new Canvas(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -176,10 +191,14 @@ public class GameMain extends Application {
 
     private void render() {
         // Clear the screen
-        gc.setFill(Color.LIGHTYELLOW);
-        gc.fillRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+        Image bg = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/Background/galaxyBackground.jpg")));
+        gc.drawImage(bg, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
-        // Call the individual object's render method, passing the shared gc
+        if (ball.isPlayAgain() && !playAgainShown) {
+            showPlayAgainButton();
+            playAgainShown = true;
+        }
+
         for (Brick brick : bricks) {
             brick.update();
             brick.render(gc);
@@ -193,6 +212,42 @@ public class GameMain extends Application {
 
         paddle.render(gc);
     }
+
+    private void resetGame() {
+        // Reset trạng thái
+        System.out.println("Resetting Game");
+        ball.setPlayAgain(false);
+        playAgainShown = false;
+        bricks = loadLevel();
+        ball = new Ball(400, 400, 0, -1, 600, 15);
+        paddle = new Paddle(350, 760, "large", 600);
+
+        // Thêm lại canvas
+        Canvas canvas = new Canvas(WINDOW_WIDTH, WINDOW_HEIGHT);
+        gc = canvas.getGraphicsContext2D();
+        gamePane.getChildren().add(canvas);
+    }
+
+
+    private void showPlayAgainButton() {
+        GameButton playAgainBtn = new GameButton("PLAY AGAIN");
+
+        playAgainBtn.setFont(Font.loadFont(
+                getClass().getResourceAsStream("/fonts/ALIEN5.TTF"), 36
+        ));
+        ButtonEffects.applyHoverEffect(playAgainBtn);
+        VBox box = new VBox(playAgainBtn);
+        box.setAlignment(Pos.CENTER);
+        box.setPrefSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+
+        gamePane.getChildren().add(box);
+
+        playAgainBtn.setOnAction(e -> {
+            gamePane.getChildren().clear(); // Xóa toàn bộ
+            resetGame(); // Khởi tạo lại
+        });
+    }
+
 
     public static void main(String[] args) {
         launch(args);

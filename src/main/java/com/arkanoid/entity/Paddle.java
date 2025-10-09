@@ -22,7 +22,7 @@ public class Paddle extends MovableObject {
     private boolean immortalPowerupInEffect;
 
     public Paddle(double x, double y, String paddleType, double speed) {
-        super(x, y, paddleType.equals("large") ? 500 : 80, 20, 0, 0);
+        super(x, y, paddleType.equals("large") ? 100 : 80, 20, 0, 0);
         this.paddleType = paddleType;
         this.speed = speed;
 

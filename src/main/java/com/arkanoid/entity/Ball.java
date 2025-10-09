@@ -2,8 +2,10 @@ package com.arkanoid.entity;
 
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.media.AudioClip;
+import javafx.scene.text.Font;
 
 import java.util.Objects;
 
@@ -14,6 +16,8 @@ public class Ball extends MovableObject {
     private static final int WINDOW_WIDTH = 750;
     private static final int WINDOW_HEIGHT = 800;
     private final AudioClip hitSound;
+    private boolean playAgain = false;
+
     public Ball(double x, double y, double dx, double dy, double speed, double radius) {
         super(x, y, (int) (2 * radius), (int) (2 * radius), dx, dy);
         this.speed = speed;
@@ -125,8 +129,8 @@ public class Ball extends MovableObject {
         }
 
         if (y > WINDOW_HEIGHT) {
-            System.out.println("Ball fell below the screen!");
-            System.exit(0);
+            //System.out.println("Ball fell below the screen!");
+            playAgain = true;
         }
     }
 
@@ -149,4 +153,12 @@ public class Ball extends MovableObject {
 
     @Override
     public boolean takeHit() {return y > WINDOW_HEIGHT;};
+
+    public boolean isPlayAgain() {
+        return playAgain;
+    }
+
+    public void setPlayAgain(boolean playAgain) {
+        this.playAgain = playAgain;
+    }
 }
