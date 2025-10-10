@@ -1,13 +1,14 @@
 package com.arkanoid.entity.brick;
 
 import com.arkanoid.entity.GameObject;
-import com.arkanoid.entity.powerUp.PowerUp.PowerUpType;
+//import com.arkanoid.entity.powerUp.PowerUp.PowerUpType;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 public abstract class Brick extends GameObject {
 
@@ -22,7 +23,7 @@ public abstract class Brick extends GameObject {
     protected Image textureImage;
 
     // PowerUp related attributes.
-    protected PowerUpType powerUpContent = null;
+    //protected PowerUpType powerUpContent = null;
     protected boolean dropsPowerUp = false;
 
     public Brick(double x, double y, double width, double height, int gridX, int gridY, int maxDurability, String imagePath) {
@@ -69,6 +70,9 @@ public abstract class Brick extends GameObject {
             gc.fillRect(x, y, width, height);
         }
 
+        gc.setStroke(Color.BLACK);
+        gc.strokeRect(this.x, this.y, width, height);
+
         gc.setGlobalAlpha(1.0); // reset lại
     }
 
@@ -109,24 +113,22 @@ public abstract class Brick extends GameObject {
         this.currentDurability = currentDurability;
     }
 
-    public void setPowerUpDrop(PowerUpType type) {
-        this.dropsPowerUp = true;
-        this.powerUpContent = type;
-    }
+//    public void setPowerUpDrop(PowerUpType type) {
+//        this.dropsPowerUp = true;
+//        this.powerUpContent = type;
+//    }
 
     public boolean isFading() {
         return fading;
     }
 
-    public void setFading(boolean fading) { this.fading = fading; }
-
     public double getOpacity() {
         return opacity;
     }
 
-    public void setBroken(boolean broken) { this.isBroken = broken; }
+    //public PowerUpType getPowerUpContent() { return powerUpContent; }
 
-    public PowerUpType getPowerUpContent() { return powerUpContent; }
-
-    public List<int[]> triggerSpecialAction() { return new ArrayList<>(); }
+    public boolean triggerSpecialAction() {
+        return false;
+    }
 }
