@@ -52,14 +52,6 @@ public class LevelLoader {
                      Brick newBrick = createBrickFromCode(code, gridX, gridY, posX, posY);
 
                      if (newBrick != null) {
-
-                         // Assign Power-Up drop chance
-                         if (!(newBrick instanceof UnbreakableBrick) && random.nextDouble() < powerUpChance) {
-                             PowerUp.PowerUpType[] types = PowerUp.PowerUpType.values();
-                             PowerUp.PowerUpType type = types[random.nextInt(types.length)];
-                             newBrick.setPowerUpDrop(type);
-                         }
-
                          bricks.add(newBrick);
                      }
                  }

@@ -13,6 +13,8 @@ public class Paddle extends MovableObject {
     private final double speed;
     private boolean movingLeft = false;
     private boolean movingRight = false;
+    private boolean expanded  = false;
+    private long expandEndTime = 0;
 
     // Powerup states
     private boolean multiPowerupInEffect;
@@ -36,6 +38,12 @@ public class Paddle extends MovableObject {
         move(deltaTime);
         rect.setX(x);
         rect.setY(y);
+
+        if (expanded && System.currentTimeMillis() > expandEndTime) {
+            width /= 1.6;
+            expanded = false;
+            System.out.println("Paddle nho lai roi");
+        }
     }
 
     @Override
@@ -73,6 +81,24 @@ public class Paddle extends MovableObject {
         immortalPowerupInEffect = false;
     }
 
+    public boolean isExpaned() {
+        return expanded;
+    }
+
+    public void setExpaned(boolean expaned) {
+        this.expanded = expaned;
+    }
+
+    public void expandTemporarily() {
+        if(!expanded) {
+            expanded = true;
+            width *= 1.6;
+            expandEndTime = System.currentTimeMillis() + 7000;
+            System.out.println("Paddle to roi");
+        } else {
+            expandEndTime = System.currentTimeMillis() + 5000;
+        }
+    }
     public void moveLeft() {
         dx = -1;
     }
