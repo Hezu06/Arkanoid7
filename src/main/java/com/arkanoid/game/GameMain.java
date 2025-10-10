@@ -201,4 +201,12 @@ public class GameMain extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
+    public Paddle getPaddle() {
+        return paddle;
+    }
+
+    public void spawnExtraBalls() {
+
+    }
 }
