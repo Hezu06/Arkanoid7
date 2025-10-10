@@ -146,7 +146,7 @@ public class GameMain extends Application {
                 powerUp.applyEffect(this);
             }
         }
-            // Loại bỏ power-up rơi ra khỏi màn
+            // Remove power-ups that fall off screen
         powerUps.removeIf(p -> !p.isActive());
         bricks.removeIf(brick -> brick.isBroken() && !brick.isFading() && brick.getOpacity() <= 0);
     }
@@ -180,9 +180,9 @@ public class GameMain extends Application {
         }
 
         public void spawnExtraBalls() {
-            extraBalls.add(new Ball(400, 400, 0, -1, 100, 15));
-            extraBalls.add(new Ball(400, 400, 1, -2, 100, 15));
-            System.out.println("3 bong");
+            extraBalls.add(new Ball(400, 400, 0, -1, 400, 15));
+            extraBalls.add(new Ball(400, 400, 1, -2, 400, 15));
+            System.out.println("2 extra balls spawned");
         }
 
     public static void main(String[] args) {

@@ -5,7 +5,6 @@ import com.arkanoid.game.GameMain;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 import java.awt.*;
