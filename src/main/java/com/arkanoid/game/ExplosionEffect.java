@@ -35,7 +35,7 @@ public class ExplosionEffect {
         double cy = y + height / 2;
 
         // spawn particles
-        for (int i = 0; i < 80; i++) {
+        for (int i = 0; i < 40; i++) {
             double angle = rand.nextDouble() * 2 * Math.PI;
             double speed = 120 + rand.nextDouble() * 180;
             double vx = Math.cos(angle) * speed;
