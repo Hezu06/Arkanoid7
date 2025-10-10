@@ -39,7 +39,7 @@ public class GameMain extends Application {
         this.levelDifficulty = levelDifficulty;
     }
     private static final String BACKGROUND_PATH = "/assets/Background/galaxyBackground.jpg";
-
+// Tat ca la tai Khoa
     @Override
     public void start(Stage primaryStage) {
 
