@@ -1,5 +1,6 @@
 package com.arkanoid.entity;
 
+import com.arkanoid.entity.powerUp.PowerUp;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
