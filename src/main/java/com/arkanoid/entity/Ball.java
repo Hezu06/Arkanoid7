@@ -15,11 +15,19 @@ public class Ball extends MovableObject {
     private static final int WINDOW_WIDTH = 750;
     private static final int WINDOW_HEIGHT = 800;
     private final AudioClip hitSound;
+    private boolean playAgain = false;
+    private static int numberOfBalls = 0;
+
+
+
+    private boolean alive = true;
+
     public Ball(double x, double y, double dx, double dy, double speed, double radius) {
         super(x, y, (int) (2 * radius), (int) (2 * radius), dx, dy);
         this.speed = speed;
         this.radius = radius;
-        image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/Ball/defaultball.png")));
+        numberOfBalls++;
+        image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/Ball/tennisball.png")));
         hitSound = new AudioClip(
                 Objects.requireNonNull(getClass().getResource("/sounds/collision_sound.wav")).toExternalForm()
         );
@@ -126,8 +134,11 @@ public class Ball extends MovableObject {
         }
 
         if (y > WINDOW_HEIGHT) {
-            System.out.println("Ball fell below the screen!");
-            System.exit(0);
+            //System.out.println("Ball fell below the screen!");
+            alive = false;
+            if (numberOfBalls < 1) {
+                playAgain = true;
+            }
         }
     }
 
@@ -146,6 +157,31 @@ public class Ball extends MovableObject {
             System.out.println("Can't render ball");
         }
         gc.drawImage(image, x, y, radius * 2, radius * 2);
+    }
+
+
+    public int getNumberOfBalls() {
+        return numberOfBalls;
+    }
+
+    public void setNumberOfBalls(int numberOfBalls) {
+        Ball.numberOfBalls = numberOfBalls;
+    }
+
+    public boolean isAlive() {
+        return alive;
+    }
+
+    public void setAlive(boolean alive) {
+        this.alive = alive;
+    }
+
+    public boolean isPlayAgain() {
+        return playAgain;
+    }
+
+    public void setPlayAgain(boolean playAgain) {
+        this.playAgain = playAgain;
     }
 
     @Override
