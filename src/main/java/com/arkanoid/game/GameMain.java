@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+
 public class GameMain extends Application {
 
     private static final int WINDOW_WIDTH = 750;
@@ -33,6 +34,7 @@ public class GameMain extends Application {
     private Paddle paddle;
     private Level.LevelDifficulty levelDifficulty;
     private List<ExplosionEffect> activeExplosion = new ArrayList<>();
+    private Image backgroundTexture;
 
     public void setLevelDifficulty(Level.LevelDifficulty levelDifficulty) {
         this.levelDifficulty = levelDifficulty;
@@ -50,6 +52,12 @@ public class GameMain extends Application {
         // Get the single drawing tool (GraphicsContext)
         gc = canvas.getGraphicsContext2D();
         gamePane.getChildren().add(canvas);
+
+        backgroundTexture = new Image(
+                Objects.requireNonNull(getClass().getResourceAsStream(BACKGROUND_PATH)),
+                WINDOW_WIDTH, WINDOW_HEIGHT, // Target width and height
+                false, true // preserveRatio=false, smooth=true
+        );
 
         // --- 2. Load the Level ---
         bricks = loadLevel();
@@ -177,11 +185,6 @@ public class GameMain extends Application {
     }
 
     private void render() {
-        Image backgroundTexture = new Image(
-                Objects.requireNonNull(getClass().getResourceAsStream(BACKGROUND_PATH)),
-                WINDOW_WIDTH, WINDOW_HEIGHT, // Target width and height
-                false, true // preserveRatio=false, smooth=true
-        );
         gc.drawImage(backgroundTexture, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         // Call the individual object's render method, passing the shared gc
