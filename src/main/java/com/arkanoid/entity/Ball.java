@@ -26,6 +26,11 @@ public class Ball extends MovableObject {
         super(x, y, (int) (2 * radius), (int) (2 * radius), dx, dy);
         this.speed = speed;
         this.radius = radius;
+        double length = Math.sqrt(dx * dx + dy * dy);
+        if (length != 0) {
+            this.dx /= length;
+            this.dy /= length;
+        }
         numberOfBalls++;
         image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/Ball/tennisball.png")));
         hitSound = new AudioClip(
@@ -111,8 +116,10 @@ public class Ball extends MovableObject {
     }
 
     public void move(double deltaTime) {
-        x += dx * speed * deltaTime;
-        y += dy * speed * deltaTime;
+        int steps = (int) Math.ceil(speed * deltaTime / radius); // số bước nhỏ
+        double stepTime = deltaTime / steps;
+        x += dx * speed * stepTime;
+        y += dy * speed * stepTime;
         if (x <= 0) {
             x = 0;
             dx = Math.abs(dx); // Đảo hướng sang phải
