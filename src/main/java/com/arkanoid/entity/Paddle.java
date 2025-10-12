@@ -24,14 +24,14 @@ public class Paddle extends MovableObject {
     private boolean immortalPowerupInEffect;
 
     public Paddle(double x, double y, String paddleType, double speed) {
-        super(x, y, paddleType.equals("large") ? 500 : 80, 20, 0, 0);
+        super(x, y, paddleType.equals("large") ? 120 : 80, 20, 0, 0);
         this.paddleType = paddleType;
         this.speed = speed;
 
         this.smallPaddleImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/Paddle/defaultPaddle.png")));
         this.largePaddleImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/Paddle/grassPaddle.png")));
 
-        removeAllPowerupEffects();
+        removeAllPowerUpEffects();
     }
 
     public void update(double deltaTime) {
@@ -73,7 +73,7 @@ public class Paddle extends MovableObject {
         return smallPaddleImage;
     }
 
-    public void removeAllPowerupEffects() {
+    public void removeAllPowerUpEffects() {
         multiPowerupInEffect = false;
         expandPowerupInEffect = false;
         firePowerupInEffect = false;
