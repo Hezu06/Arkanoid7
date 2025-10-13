@@ -29,39 +29,6 @@ public class Point extends Lives{
             System.out.println("Không thể lưu điểm: " + e.getMessage());
         }
     }
-    public void play() {
-        Scanner sc = new Scanner(System.in);
-        Random rand = new Random();
-        boolean playing = true;
-        System.out.println("Điểm hiện tại: " + point);
-
-        while (playing) {
-            int target = rand.nextInt(10) + 1; // số từ 1-10
-            System.out.print("Đoán số (1-10): ");
-            int guess = sc.nextInt();
-
-            if (guess == target) {
-                System.out.println("Chính xác! +10 điểm");
-                point += 10;
-            } else {
-                System.out.println("Sai rồi! Số đúng là: " + target);
-                point -= 5;
-            }
-
-            System.out.println("Điểm hiện tại: " + point);
-            System.out.println("Mạng hiện tại:"+lives);
-
-            System.out.print("Chơi tiếp? (y/n): ");
-            String choice = sc.next();
-            if (choice.equalsIgnoreCase("n")) {
-                playing = false;
-            }else if(lives<=0){
-                playing=false;
-            }
-        }
-
-        saveScore();
-        System.out.println("Điểm đã lưu lại! Điểm cuối cùng: " + point);
-    }
 }
+
 
