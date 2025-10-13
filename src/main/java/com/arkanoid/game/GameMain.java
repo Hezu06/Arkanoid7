@@ -24,8 +24,8 @@ import java.util.Objects;
 
 public class GameMain extends Application {
 
-    private static final int WINDOW_WIDTH = 750;
-    private static final int WINDOW_HEIGHT = 800;
+    private static final int WINDOW_WIDTH = 760;
+    private static final int WINDOW_HEIGHT = 750;
 
     private GraphicsContext gc;
     private List<Brick> bricks;
@@ -57,8 +57,8 @@ public class GameMain extends Application {
         );
         // --- 2. Load the Level ---
         bricks = loadLevel();
-        ball = new Ball(400, 400, 0, -1, 600, 15);
-        paddle = new Paddle(350, 760, "small", 600);
+        ball = new Ball(400, 400, 0, -1, 350, 15);
+        paddle = new Paddle(300, 660, "small", 600);
 
         scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {

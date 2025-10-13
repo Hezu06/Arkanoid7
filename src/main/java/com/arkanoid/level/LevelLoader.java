@@ -2,6 +2,7 @@ package com.arkanoid.level;
 
 import com.arkanoid.entity.brick.*;
 import com.arkanoid.entity.powerUp.PowerUp;
+import com.arkanoid.ui.Lives;
 //import com.arkanoid.powerUp.powerUpType;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -16,13 +17,12 @@ public class LevelLoader {
     private static final double BRICK_START_X = 15;
     private static final double BRICK_START_Y = 15;
     private final Random random = new Random();
+    private final Lives life;
 
-    /**
-     * Loads a specific level file and generates the corresponding Brick objects.
-     * @param fileName The name of the level file (e.g., "level1.txt").
-     * @param difficulty The difficulty setting to determine power-up chance.
-     * @return A completed Level object.
-     */
+    // ✅ Constructor khởi tạo Lives
+    public LevelLoader() {
+        this.life = new Lives();
+    }
 
     public Level loadLevel(String fileName, Level.LevelDifficulty difficulty) throws Exception {
         List<Brick> bricks = new ArrayList<>();

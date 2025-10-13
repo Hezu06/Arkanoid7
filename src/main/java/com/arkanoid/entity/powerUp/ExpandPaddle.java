@@ -5,6 +5,7 @@ import javafx.scene.paint.Color;
 import com.arkanoid.entity.Paddle;
 
 public class ExpandPaddle extends PowerUp {
+    private final double maxLength = 300;
     public ExpandPaddle(double x, double y) {
         super(x, y, 20, 20);
     }
@@ -19,7 +20,7 @@ public class ExpandPaddle extends PowerUp {
         Paddle paddle = game.getPaddle();
 
         if(!paddle.isExpaned()) {
-            double newWidth = paddle.getWidth() * 1.5;
+            double newWidth = Math.min(paddle.getWidth() * 1.5, maxLength);
             paddle.setWidth((int) newWidth);
             paddle.setExpaned(true);
 
@@ -29,7 +30,7 @@ public class ExpandPaddle extends PowerUp {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                paddle.setWidth((int) (paddle.getWidth() * 1.5));
+                paddle.setWidth((int) (Math.min(paddle.getWidth() * 1.5, maxLength)));
                 paddle.setExpaned(false);
             }).start();
         }
