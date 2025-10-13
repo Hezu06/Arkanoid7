@@ -8,26 +8,29 @@ import java.util.Objects;
 public class Paddle extends MovableObject {
     private final Image smallPaddleImage;
     private final Image largePaddleImage;
-
     private String paddleType;
+
     private final double speed;
     private boolean movingLeft = false;
     private boolean movingRight = false;
-    private boolean expanded  = false;
-    private long expandEndTime = 0;
 
-    // Powerup states
+    private boolean expanded = false;
+    private long expandEndTime = 0;
+    private double originalWidth;
+
+    // Power-up states (optional)
     private boolean multiPowerupInEffect;
-    private boolean expandPowerupInEffect;
     private boolean firePowerupInEffect;
     private boolean slowPowerupInEffect;
     private boolean immortalPowerupInEffect;
 
+    private static final int WINDOW_WIDTH = 750;
+
     public Paddle(double x, double y, String paddleType, double speed) {
         super(x, y, paddleType.equals("large") ? 120 : 100, 20, 0, 0);
-        this.paddleType = paddleType;
         this.speed = speed;
-
+        this.originalWidth = width;
+        this.paddleType = paddleType;
         this.smallPaddleImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/Paddle/defaultPaddle.png")));
         this.largePaddleImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/Paddle/grassPaddle.png")));
 
@@ -36,13 +39,12 @@ public class Paddle extends MovableObject {
 
     public void update(double deltaTime) {
         move(deltaTime);
-        rect.setX(x);
-        rect.setY(y);
 
+        // Hết hiệu ứng mở rộng → trở về kích thước ban đầu
         if (expanded && System.currentTimeMillis() > expandEndTime) {
-            width /= 1.6;
+            width = originalWidth;
             expanded = false;
-            System.out.println("Paddle nho lai roi");
+            System.out.println("Paddle đã thu nhỏ lại.");
         }
     }
 
@@ -60,63 +62,45 @@ public class Paddle extends MovableObject {
     public void move(double deltaTime) {
         if (movingLeft) x -= speed * deltaTime;
         if (movingRight) x += speed * deltaTime;
-//        x += dx * speed;
+
         if (x < 0) x = 0;
-        if (x + width > 750) x = 750 - width;
-        rect.setX(x);
+        if (x + width > WINDOW_WIDTH) x = WINDOW_WIDTH - width;
     }
 
     private Image getImage() {
-        if (paddleType.equals("large")) {
-            return largePaddleImage;
+        if (paddleType.equals("large")) { return largePaddleImage; } return smallPaddleImage;
+    }
+
+    // ---------------------
+    // Power-up control
+    // ---------------------
+    public void expandTemporarily() {
+        if (!expanded) {
+            expanded = true;
+            width = Math.min(originalWidth * 1.6, 300);
+            expandEndTime = System.currentTimeMillis() + 7000;
+            System.out.println("Paddle đã mở rộng.");
+        } else {
+            // Nếu đang mở rộng, gia hạn thêm 5 giây
+            expandEndTime = System.currentTimeMillis() + 5000;
         }
-        return smallPaddleImage;
     }
 
     public void removeAllPowerUpEffects() {
         multiPowerupInEffect = false;
-        expandPowerupInEffect = false;
         firePowerupInEffect = false;
         slowPowerupInEffect = false;
         immortalPowerupInEffect = false;
+        expanded = false;
+        width = originalWidth;
     }
 
-    public boolean isExpaned() {
-        return expanded;
-    }
+    // ---------------------
+    // Movement controls
+    // ---------------------
+    public void setMovingLeft(boolean value) { movingLeft = value; }
+    public void setMovingRight(boolean value) { movingRight = value; }
 
-    public void setExpaned(boolean expaned) {
-        this.expanded = expaned;
-    }
-
-    public void expandTemporarily() {
-        if(!expanded) {
-            expanded = true;
-            width *= 1.6;
-            expandEndTime = System.currentTimeMillis() + 7000;
-            System.out.println("Paddle to roi");
-        } else {
-            expandEndTime = System.currentTimeMillis() + 5000;
-        }
-    }
-    public void moveLeft() {
-        dx = -1;
-    }
-
-    public void moveRight() {
-        dx = 1;
-    }
-
-    public void stop() {
-        dx = 0;
-    }
-
-    public void setMovingLeft(boolean value) {
-        movingLeft = value;
-    }
-
-    public void setMovingRight(boolean value) {
-        movingRight = value;
-    }
-
+    public boolean isExpanded() { return expanded; }
+    public void setExpanded(boolean expanded) { this.expanded = expanded; }
 }
