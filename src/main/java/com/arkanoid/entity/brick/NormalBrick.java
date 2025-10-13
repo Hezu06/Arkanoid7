@@ -14,4 +14,9 @@ public class NormalBrick extends Brick {
     protected void updateAppearance() {
         /* Normal bricks so NO CHANGE */
     }
+
+    @Override
+    protected Color getGlowColor() {
+        return Color.HOTPINK.darker();
+    }
 }
