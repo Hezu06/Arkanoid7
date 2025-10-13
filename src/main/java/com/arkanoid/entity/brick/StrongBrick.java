@@ -23,4 +23,9 @@ package com.arkanoid.entity.brick;
              this.updateTexture(STRONG_BRICK_IMAGE_BROKEN);     // Light: 1
          }
      }
+
+     @Override
+     protected Color getGlowColor() {
+         return Color.STEELBLUE.darker();
+     }
  }
