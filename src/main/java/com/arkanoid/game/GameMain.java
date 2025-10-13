@@ -32,6 +32,7 @@ public class GameMain extends Application {
 
     private static final int WINDOW_WIDTH = 750;
     private static final int WINDOW_HEIGHT = 800;
+    private static final int BALL_SPEED = 600;
 
     private GraphicsContext gc;
     private List<Brick> bricks;
@@ -66,8 +67,8 @@ public class GameMain extends Application {
         );
         // --- 2. Load the Level ---
         bricks = loadLevel();
-        listBalls.add(new Ball(400, 400, 0, -1, 400, 15));
-        paddle = new Paddle(350, 760, "large", 600);
+        listBalls.add(new Ball(400, 400, 0, -1, BALL_SPEED, 15));
+        paddle = new Paddle(350, 775, "large", 600);
 
         scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
@@ -174,11 +175,12 @@ public class GameMain extends Application {
                 if (ball.checkCollision(brick)) {
                     ball.bounceOff(brick);
                     if (brick.takeHit()) {
-                        PowerUp newPowerUp = PowerUpFactory.createPowerUp(brick.getX(), brick.getY());
-                        if (newPowerUp != null) {
-                            powerUps.add(newPowerUp);
+                        if (!(brick instanceof UnbreakableBrick)) {
+                            PowerUp newPowerUp = PowerUpFactory.createPowerUp(brick.getX(), brick.getY());
+                            if (newPowerUp != null) {
+                                powerUps.add(newPowerUp);
+                            }
                         }
-
                         if (brick instanceof ExplosiveBrick) {
                             List<int[]> affectedCoords = brick.triggerSpecialAction();
                             if (!affectedCoords.isEmpty()) {
@@ -254,7 +256,7 @@ public class GameMain extends Application {
         }
         playAgainShown = false;
         bricks = loadLevel();
-        listBalls.add(new Ball(400, 400, 0, -1, 600, 15));
+        listBalls.add(new Ball(400, 400, 0, -1, BALL_SPEED, 15));
         paddle = new Paddle(350, 760, "large", 600);
 
         // Thêm lại canvas
@@ -291,9 +293,9 @@ public class GameMain extends Application {
     }
 
     public void spawnExtraBalls() {
-        listBalls.add(new Ball(listBalls.getFirst().getX(), listBalls.getFirst().getY(), 2, -1, 400, 15));
-        System.out.println(listBalls.getFirst().getNumberOfBalls());
-        listBalls.add(new Ball(listBalls.getFirst().getX(), listBalls.getFirst().getY(), 1, -1, 400, 15));
-        System.out.println(listBalls.getFirst().getNumberOfBalls());
+        listBalls.add(new Ball(listBalls.getFirst().getX(), listBalls.getFirst().getY(),
+                1, -1, BALL_SPEED, 15));
+        listBalls.add(new Ball(listBalls.getFirst().getX(), listBalls.getFirst().getY(),
+                1, -1, BALL_SPEED, 15));
     }
 }
