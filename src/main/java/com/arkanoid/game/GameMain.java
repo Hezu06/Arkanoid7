@@ -58,7 +58,7 @@ public class GameMain extends Application {
         // --- 2. Load the Level ---
         bricks = loadLevel();
         ball = new Ball(400, 400, 0, -1, 350, 15);
-        paddle = new Paddle(300, 660, "small", 600);
+        paddle = new Paddle(300, 700, "small", 600);
 
         scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
