@@ -1,9 +1,7 @@
 package com.arkanoid.game;
 
 import com.arkanoid.entity.Ball;
-import com.arkanoid.entity.brick.Brick;
-import com.arkanoid.entity.brick.ExplosiveBrick;
-import com.arkanoid.entity.brick.UnbreakableBrick;
+import com.arkanoid.entity.brick.*;
 import com.arkanoid.level.Level;
 import com.arkanoid.level.LevelLoader;
 import javafx.application.Application;
@@ -16,7 +14,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import com.arkanoid.entity.Paddle;
-import javafx.scene.media.AudioClip;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,28 +31,28 @@ public class GameMain extends Application {
     private Level.LevelDifficulty levelDifficulty;
     private List<ExplosionEffect> activeExplosion = new ArrayList<>();
     private Image backgroundTexture;
+    private AnimationTimer gameLoop; // 🔹 thêm biến này
 
     public void setLevelDifficulty(Level.LevelDifficulty levelDifficulty) {
         this.levelDifficulty = levelDifficulty;
     }
+
     private static final String BACKGROUND_PATH = "/assets/Background/galaxyBackground.jpg";
-// Tat ca la tai Khoa
+
     @Override
     public void start(Stage primaryStage) {
-
         Pane gamePane = new Pane();
         Scene scene = new Scene(gamePane, WINDOW_WIDTH, WINDOW_HEIGHT, Color.CYAN);
 
-        // --- 1. Canvas Setup ---
         Canvas canvas = new Canvas(WINDOW_WIDTH, WINDOW_HEIGHT);
-        // Get the single drawing tool (GraphicsContext)
         gc = canvas.getGraphicsContext2D();
         gamePane.getChildren().add(canvas);
+
         backgroundTexture = new Image(
                 Objects.requireNonNull(getClass().getResourceAsStream(BACKGROUND_PATH)),
                 WINDOW_WIDTH, WINDOW_HEIGHT, false, true
         );
-        // --- 2. Load the Level ---
+
         bricks = loadLevel();
         ball = new Ball(400, 400, 0, -1, 350, 15);
         paddle = new Paddle(300, 700, "small", 600);
@@ -73,43 +70,42 @@ public class GameMain extends Application {
                 case RIGHT -> paddle.setMovingRight(false);
             }
         });
-        // --- 3. Start the Game Loop ---
-        new AnimationTimer() {
+
+        // 🔹 AnimationTimer bây giờ là biến toàn cục
+        gameLoop = new AnimationTimer() {
             private long lastUpdate = 0;
 
             @Override
             public void handle(long now) {
                 if (lastUpdate > 0) {
-                    double deltaTime = (now - lastUpdate) / 1_000_000_000.0; // đổi ns → giây
+                    double deltaTime = (now - lastUpdate) / 1_000_000_000.0;
                     update(deltaTime);
                     render();
                 }
                 lastUpdate = now;
             }
-        }.start();
+        };
+        gameLoop.start();
 
-        // --- 4. Stage Setup ---
         primaryStage.setTitle("Arkanoid Renderer");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
-    // ... (loadLevel and main method omitted for brevity, assume they are correct)
-
     private List<Brick> loadLevel() {
         LevelLoader loader = new LevelLoader();
-        String fileName = "";
+        String fileName;
         if (levelDifficulty == Level.LevelDifficulty.HARD) {
             fileName = "Hard.txt";
         } else if (levelDifficulty == Level.LevelDifficulty.VERY_HARD) {
             fileName = "VeryHard.txt";
-        } else fileName = "Asian.txt";
-        System.out.println(fileName);
+        } else {
+            fileName = "Asian.txt";
+        }
+
         try {
             Level level = loader.loadLevel(fileName, levelDifficulty);
-            List<Brick> loadedBricks = level.getBricks();
-            System.out.println("Final Bricks Loaded into App: " + loadedBricks.size());
-            return loadedBricks;
+            return level.getBricks();
         } catch (Exception e) {
             System.err.println("CRITICAL ERROR: Failed to load level.");
             e.printStackTrace();
@@ -118,20 +114,14 @@ public class GameMain extends Application {
     }
 
     private void handleExplosion(List<int[]> affectedCoords, List<Brick> bricksToRemove) {
-
         for (int[] targetCoords : affectedCoords) {
             int targetX = targetCoords[0];
             int targetY = targetCoords[1];
 
             for (Brick activeBrick : this.bricks) {
-                if (bricksToRemove.contains(activeBrick)) {
-                    continue;
-                }
+                if (bricksToRemove.contains(activeBrick)) continue;
                 if (activeBrick.getGridX() == targetX && activeBrick.getGridY() == targetY) {
-
-                    if (activeBrick instanceof UnbreakableBrick) {
-                        continue;
-                    }
+                    if (activeBrick instanceof UnbreakableBrick) continue;
                     activeBrick.setBroken(true);
                     activeBrick.setFading(true);
                     bricksToRemove.add(activeBrick);
@@ -145,19 +135,27 @@ public class GameMain extends Application {
         for (ExplosionEffect effect : activeExplosion) {
             effect.update(deltaTime);
         }
-        // Remove all explosions that have finished their animation.
         activeExplosion.removeIf(ExplosionEffect::isFinished);
 
         ball.move(deltaTime);
 
-        List<Brick> bricksToRemove = new ArrayList<>();
+        // 🔹 Kiểm tra nếu bóng ra khỏi màn hình (rơi xuống đáy)
+        if (ball.getY() > WINDOW_HEIGHT) {
+            System.out.println("Game Over!");
+            gameLoop.stop(); // Dừng game loop trước
+            javafx.application.Platform.runLater(() -> {
+                javafx.application.Platform.exit(); // Thoát game an toàn
+            });
+            return;
+        }
 
+        List<Brick> bricksToRemove = new ArrayList<>();
         for (Brick brick : bricks) {
             if (ball.checkCollision(brick)) {
                 ball.bounceOff(brick);
                 if (brick.takeHit()) {
-                    if (brick instanceof ExplosiveBrick) {
-                        List<int[]> affectedCoords = brick.triggerSpecialAction();
+                    if (brick instanceof ExplosiveBrick explosive) {
+                        List<int[]> affectedCoords = explosive.triggerSpecialAction();
                         if (!affectedCoords.isEmpty()) {
                             activeExplosion.add(new ExplosionEffect(
                                     brick.getX(), brick.getY(), brick.getWidth(), brick.getHeight()
@@ -169,21 +167,29 @@ public class GameMain extends Application {
                     }
                 }
             }
-            bricks.removeIf(b -> b.isBroken() && !b.isFading() && b.getOpacity() <= 0);
         }
+
+        bricks.removeIf(b -> b.isBroken() && !b.isFading() && b.getOpacity() <= 0);
         this.bricks.removeAll(bricksToRemove);
         paddle.update(deltaTime);
 
-        // Va chạm bóng - thanh
         if (ball.checkCollision(paddle)) {
             ball.bounceOff(paddle);
         }
     }
 
+
+    // 🔹 Hàm hiển thị thông báo hoặc thoát game
+    private void showGameOverScreen() {
+        gc.setFill(Color.BLACK);
+        gc.fillRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+        gc.setFill(Color.RED);
+        gc.fillText("GAME OVER", WINDOW_WIDTH / 2.0 - 50, WINDOW_HEIGHT / 2.0);
+    }
+
     private void render() {
         gc.drawImage(backgroundTexture, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
-        // Call the individual object's render method, passing the shared gc
         for (Brick brick : bricks) {
             brick.update();
             brick.render(gc);
@@ -194,7 +200,6 @@ public class GameMain extends Application {
         }
 
         ball.render(gc);
-
         paddle.render(gc);
     }
 
@@ -206,7 +211,5 @@ public class GameMain extends Application {
         return paddle;
     }
 
-    public void spawnExtraBalls() {
-
-    }
+    public void spawnExtraBalls() { }
 }
