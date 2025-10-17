@@ -1,6 +1,7 @@
 package com.arkanoid.game;
 
 import com.arkanoid.entity.Ball;
+import com.arkanoid.ui.Lives;
 import com.arkanoid.entity.brick.*;
 import com.arkanoid.level.Level;
 import com.arkanoid.level.LevelLoader;
@@ -32,10 +33,16 @@ public class GameMain extends Application {
     private List<ExplosionEffect> activeExplosion = new ArrayList<>();
     private Image backgroundTexture;
     private AnimationTimer gameLoop; // 🔹 thêm biến này
+    private Lives Heart;
 
     public void setLevelDifficulty(Level.LevelDifficulty levelDifficulty) {
         this.levelDifficulty = levelDifficulty;
     }
+
+    public void initLives() {
+        Heart = new Lives();
+    }
+
 
     private static final String BACKGROUND_PATH = "/assets/Background/galaxyBackground.jpg";
 
@@ -52,6 +59,8 @@ public class GameMain extends Application {
                 Objects.requireNonNull(getClass().getResourceAsStream(BACKGROUND_PATH)),
                 WINDOW_WIDTH, WINDOW_HEIGHT, false, true
         );
+
+        initLives();
 
         bricks = loadLevel();
         ball = new Ball(400, 400, 0, -1, 350, 15);
@@ -141,13 +150,20 @@ public class GameMain extends Application {
 
         // 🔹 Kiểm tra nếu bóng ra khỏi màn hình (rơi xuống đáy)
         if (ball.getY() > WINDOW_HEIGHT) {
-            System.out.println("Game Over!");
-            gameLoop.stop(); // Dừng game loop trước
-            javafx.application.Platform.runLater(() -> {
-                javafx.application.Platform.exit(); // Thoát game an toàn
-            });
+            Heart.loseLives();
+
+            if (Heart.getLives() > 0) {
+                System.out.println("Mất 1 mạng! Còn lại: " + Heart.getLives());
+                ball = new Ball(400, 400, 0, -1, 350, 15);
+                paddle = new Paddle(300, 700, "small", 600);
+            } else {
+                System.out.println("Game Over!");
+                gameLoop.stop();
+                javafx.application.Platform.runLater(this::showGameOverScreen);
+            }
             return;
         }
+
 
         List<Brick> bricksToRemove = new ArrayList<>();
         for (Brick brick : bricks) {

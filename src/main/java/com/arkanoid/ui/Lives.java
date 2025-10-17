@@ -1,7 +1,7 @@
 package com.arkanoid.ui;
 
 public class Lives {
-     protected int lives;
+     public int lives;
 
     // Constructor (phải có dấu ngoặc tròn sau tên class)
     public Lives() {
