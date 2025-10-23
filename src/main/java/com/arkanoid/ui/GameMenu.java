@@ -1,7 +1,5 @@
 package com.arkanoid.ui;
 
-import com.arkanoid.game.GameMain;
-import com.arkanoid.level.Level;
 import javafx.animation.*;
 import javafx.application.Application;
 import javafx.geometry.Pos;
@@ -20,11 +18,11 @@ import javafx.util.Duration;
 
 public class GameMenu extends Application {
     static final int Width = 750;
-    static final int Height = 800;
+    static final int Height = 950;
     static final int widthBackground = 850;
     static final int heightBackground = 950;
-
-    // Animation cho background
+    public static String pathBackground = "file:A:/Game java/Arkanoid7/src/main/resources/assets/Background/galaxyBackground.jpg";
+    // Animation background
     public static void Transition(ImageView background) {
         background.setFitWidth(widthBackground);
         background.setFitHeight(heightBackground);
@@ -36,38 +34,13 @@ public class GameMenu extends Application {
         tt.play();
     }
 
-    // Hàm đổi nội dung với fade mượt
-    private void setContent(StackPane contentLayer, VBox newContent) {
-        if (!contentLayer.getChildren().isEmpty()) {
-            VBox oldContent = (VBox) contentLayer.getChildren().get(0);
-
-            FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.2), oldContent);
-            fadeOut.setFromValue(1.0);
-            fadeOut.setToValue(0.0);
-
-            fadeOut.setOnFinished(e -> {
-                contentLayer.getChildren().setAll(newContent);
-
-                FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.2), newContent);
-                newContent.setOpacity(0.0);
-                fadeIn.setFromValue(0.0);
-                fadeIn.setToValue(1.0);
-                fadeIn.play();
-            });
-
-            fadeOut.play();
-        } else {
-            contentLayer.getChildren().setAll(newContent);
-        }
-    }
-
     @Override
     public void start(Stage primaryStage) {
         // Root
         StackPane root = new StackPane();
 
         // Background
-        Image image = new Image("file:A:/Game java/Arkanoid7/src/main/resources/assets/Background/galaxyBackground.jpg");
+        Image image = new Image(pathBackground);
         ImageView background = new ImageView(image);
         Transition(background);
 
@@ -83,22 +56,12 @@ public class GameMenu extends Application {
 
         // ====================== MENU CHÍNH ======================
         Label title = new Label("BRICK BREAKER");
-        Font titleFont = Font.loadFont(
-                getClass().getResourceAsStream("/fonts/ALIEN5.TTF"),
-                50 // cỡ chữ
-        );
-//        title.setFont(Font.font("Arial", FontWeight.BOLD, 50));
-        title.setFont(titleFont);
-        title.setTextFill(Color.WHITESMOKE);
+        title.setFont(Font.font("Arial", FontWeight.BOLD, 50));
+        title.setTextFill(Color.RED);
 
         GameButton btnPlay = new GameButton("PLAY");
         GameButton btnOptions = new GameButton("OPTIONS");
         GameButton btnExit = new GameButton("EXIT");
-
-        Font buttonFont = Font.loadFont(
-                getClass().getResourceAsStream("/fonts/ALIEN5.TTF"),
-                30
-        );
 
         for (Button b : new Button[]{btnPlay, btnOptions, btnExit}) {
             ButtonEffects.applyHoverEffect(b);
@@ -106,13 +69,13 @@ public class GameMenu extends Application {
 
         VBox menuBox = new VBox(30, title, btnPlay, btnOptions, btnExit);
         menuBox.setAlignment(Pos.CENTER);
-        setContent(contentLayer, menuBox);
+        fadeSmooth.smoothContent(contentLayer, menuBox);
 
         // ====================== NÚT PLAY ======================
         btnPlay.setOnAction(e -> {
             Label startLabel = new Label("CHOOSE");
-            startLabel.setFont(titleFont);
-            startLabel.setTextFill(Color.WHITESMOKE);
+            startLabel.setFont(Font.font("Arial", FontWeight.BOLD, 80));
+            startLabel.setTextFill(Color.GREEN);
 
             GameButton btnHard = new GameButton("HARD");
             GameButton btnVeryHard = new GameButton("VERYHARD");
@@ -126,57 +89,18 @@ public class GameMenu extends Application {
             VBox playBox = new VBox(30, startLabel, btnHard, btnVeryHard, btnAsian, btnBack);
             playBox.setAlignment(Pos.CENTER);
 
-            setContent(contentLayer, playBox);
+            fadeSmooth.smoothContent(contentLayer, playBox);
 
-            btnBack.setOnAction(e1 -> setContent(contentLayer, menuBox));
-            btnAsian.setOnAction(e2 -> {
-                GameMain gameMain = new GameMain();
-                gameMain.setLevelDifficulty(Level.LevelDifficulty.ASIAN);
-                try {
-                    gameMain.start(primaryStage); // chuyển sang màn game
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            });
-            btnVeryHard.setOnAction(e3 -> {
-                GameMain gameMain = new GameMain();
-                gameMain.setLevelDifficulty(Level.LevelDifficulty.VERY_HARD);
-                try {
-                    gameMain.start(primaryStage); // chuyển sang màn game
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            });
-            btnHard.setOnAction(e4 -> {
-                GameMain gameMain = new GameMain();
-                gameMain.setLevelDifficulty(Level.LevelDifficulty.HARD);
-                try {
-                    gameMain.start(primaryStage); // chuyển sang màn game
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            });
+            btnBack.setOnAction(e1 -> fadeSmooth.smoothContent(contentLayer, menuBox));
         });
 
         // ====================== NÚT OPTIONS ======================
-        btnOptions.setOnAction(e -> {
-            Label optionsLabel = new Label("OPTIONS");
-            optionsLabel.setFont(titleFont);
-            optionsLabel.setTextFill(Color.WHITESMOKE);
-
-            GameButton btnBack = new GameButton("BACK");
-            ButtonEffects.applyHoverEffect(btnBack);
-
-            VBox optionsBox = new VBox(30, optionsLabel, btnBack);
-            optionsBox.setAlignment(Pos.CENTER);
-
-            setContent(contentLayer, optionsBox);
-
-            btnBack.setOnAction(e2 -> setContent(contentLayer, menuBox));
+        btnOptions.setOnAction(e2 -> {
+            optionsScreen.show(contentLayer, menuBox, background);
         });
 
         // ====================== NÚT EXIT ======================
-        btnExit.setOnAction(e -> primaryStage.close());
+        btnExit.setOnAction(e3 -> primaryStage.close());
     }
 
     public static void main(String[] args) {

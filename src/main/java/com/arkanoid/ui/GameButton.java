@@ -8,18 +8,17 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 public class GameButton extends Button {
-
     public GameButton(String text) {
         super(text);
 
         setPrefSize(250, 70);
         setFont(Font.font("Verdana", FontWeight.BOLD, 22));
-        setTextFill(Color.WHITE);
-        setOpacity(0.6); // để đồng bộ với ButtonEffects
+        setTextFill(Color.BLACK);
+        setOpacity(0.6);
 
-        // Style cơ bản: nền tím gradient, viền trắng, bo góc
+        // Style mặc định
         setStyle(
-                "-fx-background-color: linear-gradient(to bottom, #a74eff, #37006b);" +
+                "-fx-background-color: white;" +
                         "-fx-background-radius: 12;" +
                         "-fx-border-color: white;" +
                         "-fx-border-width: 2;" +
@@ -27,24 +26,31 @@ public class GameButton extends Button {
                         "-fx-cursor: hand;"
         );
 
-        // Bóng nền của nút (đổ ra ngoài)
-        DropShadow shadow = new DropShadow();
-        shadow.setRadius(10);
-        shadow.setColor(Color.rgb(255, 255, 255, 0.4));
-        setEffect(shadow);
-
-        // Hiệu ứng ánh sáng phát quanh chữ
+        // Hiệu ứng ánh sáng tím
         DropShadow textGlow = new DropShadow();
         textGlow.setOffsetX(0);
         textGlow.setOffsetY(0);
         textGlow.setRadius(20);
-        textGlow.setColor(Color.rgb(180, 100, 255, 0.9)); // tím sáng
-
-        // Hiệu ứng Glow tăng cường ánh sáng chữ
+        textGlow.setColor(Color.rgb(180, 100, 255, 0.9));
         Glow glow = new Glow(0.4);
-
-        // Kết hợp hiệu ứng Glow + DropShadow cho chữ
         textGlow.setInput(glow);
         setEffect(textGlow);
+    }
+
+    public static void setBackground(Button btn, String pathBackgroundButton) {
+        btn.setStyle(
+                "-fx-background-image: url('file:" + pathBackgroundButton + "');" +
+                        "-fx-background-size: 100% 100%;" +          // Ảnh phủ kín toàn bộ
+                        "-fx-background-repeat: no-repeat;" +
+                        "-fx-background-position: center center;" +
+                        "-fx-background-radius: 12;" +               // Giữ bo góc
+                        "-fx-border-radius: 12;" +
+                        "-fx-background-color: transparent;" +
+                        "-fx-border-color: transparent;" +
+                        "-fx-focus-color: transparent;" +
+                        "-fx-faint-focus-color: transparent;" +
+                        "-fx-padding: 0;" +
+                        "-fx-cursor: hand;"                           // Giữ hiệu ứng chuột
+        );
     }
 }
