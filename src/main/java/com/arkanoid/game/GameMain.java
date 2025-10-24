@@ -38,8 +38,8 @@ public class GameMain extends Application {
     private List<Brick> bricks;
     private Paddle paddle;
     private Level.LevelDifficulty levelDifficulty;
-    private List<ExplosionEffect> activeExplosion = new ArrayList<>();
-    private List<Ball> listBalls = new ArrayList<>();
+    private final List<ExplosionEffect> activeExplosion = new ArrayList<>();
+    private final List<Ball> listBalls = new ArrayList<>();
     private List<PowerUp> powerUps = new ArrayList<>();
     private Image backgroundTexture;
     private boolean playAgainShown = false;
@@ -50,7 +50,7 @@ public class GameMain extends Application {
         this.levelDifficulty = levelDifficulty;
     }
     private static final String BACKGROUND_PATH = "/assets/Background/galaxyBackground.jpg";
-// Tat ca la tai Khoa
+
     @Override
     public void start(Stage primaryStage) {
 
@@ -262,7 +262,7 @@ public class GameMain extends Application {
         bricks = loadLevel();
         listBalls.add(new Ball(400, 400, 0, -1, BALL_SPEED, 15));
         paddle = new Paddle(350, 760, "large", 600);
-
+        powerUps = new ArrayList<>();
         // Thêm lại canvas
         Canvas canvas = new Canvas(WINDOW_WIDTH, WINDOW_HEIGHT);
         gc = canvas.getGraphicsContext2D();
