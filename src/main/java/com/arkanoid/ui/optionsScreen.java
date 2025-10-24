@@ -43,26 +43,24 @@ public class optionsScreen {
                 ButtonEffects.applyHoverEffect(b);
             }
 
-            //GameButton.setBackground(btnBackground1, "file:A:/Game java/Arkanoid7/src/main/resources/assets/Background/blackBackground.jpg");
-
             VBox backgroundsBox = new VBox(30, btnBackground1, btnBackground2, btnBackground3, btnBackground4, btnBack1);
             backgroundsBox.setAlignment(Pos.CENTER);
             fadeSmooth.smoothContent(contentLayer, backgroundsBox);
 
             btnBackground1.setOnAction(eB1 -> {
-                background.setImage(new Image("file:A:/Game java/Arkanoid7/src/main/resources/assets/Background/galaxyBackground.jpg"));
+                background.setImage(new Image("assets/Background/galaxyBackground.jpg"));
             });
 
             btnBackground2.setOnAction(eB2 -> {
-                background.setImage(new Image("file:A:/Game java/Arkanoid7/src/main/resources/assets/Background/blackBackground.jpg"));
+                background.setImage(new Image("assets/Background/blackBackground.jpg"));
             });
 
             btnBackground3.setOnAction(eB3 -> {
-                background.setImage(new Image("file:A:/Game java/Arkanoid7/src/main/resources/assets/Background/whiteBackground.jpg"));
+                background.setImage(new Image("assets/Background/whiteBackground.png"));
             });
 
             btnBackground4.setOnAction(eB4 -> {
-                background.setImage(new Image("file:A:/Game java/Arkanoid7/src/main/resources/assets/Background/blackBackground.jpg"));
+                background.setImage(new Image("assets/Background/blackBackground.jpg"));
             });
 
             btnBack1.setOnAction(e1 -> fadeSmooth.smoothContent(contentLayer, optionsBox));
