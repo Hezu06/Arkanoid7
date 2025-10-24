@@ -14,7 +14,7 @@ public class GameButton extends Button {
         setPrefSize(250, 70);
         setFont(Font.font("Verdana", FontWeight.BOLD, 22));
         setTextFill(Color.BLACK);
-        setOpacity(0.6);
+        setOpacity(0.6); // để đồng bộ với ButtonEffects
 
         // Style mặc định
         setStyle(

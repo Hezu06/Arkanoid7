@@ -1,5 +1,6 @@
 package com.arkanoid.entity;
 
+import com.arkanoid.entity.powerUp.PowerUp;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -14,11 +15,24 @@ public class Ball extends MovableObject {
     private static final int WINDOW_WIDTH = 750;
     private static final int WINDOW_HEIGHT = 800;
     private final AudioClip hitSound;
+    private boolean playAgain = false;
+    private static int numberOfBalls = 0;
+
+
+
+    private boolean alive = true;
+
     public Ball(double x, double y, double dx, double dy, double speed, double radius) {
         super(x, y, (int) (2 * radius), (int) (2 * radius), dx, dy);
         this.speed = speed;
         this.radius = radius;
-        image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/Ball/defaultball.png")));
+        double length = Math.sqrt(dx * dx + dy * dy);
+        if (length != 0) {
+            this.dx /= length;
+            this.dy /= length;
+        }
+        numberOfBalls++;
+        image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/Ball/tennisball.png")));
         hitSound = new AudioClip(
                 Objects.requireNonNull(getClass().getResource("/sounds/collision_sound.wav")).toExternalForm()
         );
@@ -27,55 +41,57 @@ public class Ball extends MovableObject {
     public void bounceOff(GameObject other) {
         Rectangle2D rect = other.getBounds();
 
-        double ballCenterX = getCenterX();
-        double ballCenterY = getCenterY();
+        double cx = getCenterX();
+        double cy = getCenterY();
 
-        double closestX = Math.max(rect.getMinX(), Math.min(ballCenterX, rect.getMaxX()));
-        double closestY = Math.max(rect.getMinY(), Math.min(ballCenterY, rect.getMaxY()));
+        double closestX = Math.max(rect.getMinX(), Math.min(cx, rect.getMaxX()));
+        double closestY = Math.max(rect.getMinY(), Math.min(cy, rect.getMaxY()));
 
-        double diffX = ballCenterX - closestX;
-        double diffY = ballCenterY - closestY;
+        double nx = cx - closestX;
+        double ny = cy - closestY;
 
-        // --- Va chạm với Paddle ---
+        double distSq = nx * nx + ny * ny;
+        if (distSq == 0) return; // tránh chia 0 khi tâm nằm trong vật thể
+
+        double dist = Math.sqrt(distSq);
+        nx /= dist;
+        ny /= dist;
+
+        // --- Paddle ---
         if (other instanceof Paddle paddle) {
-            double hitPos = (ballCenterX - paddle.getX()) / paddle.getWidth();
-            hitPos = Math.max(0.0, Math.min(hitPos, 1.0)); // giới hạn trong [0,1]
-
-            // Góc lệch ±60°
-            double angle = Math.toRadians(120 * (hitPos - 0.5));
-
+            double hitPos = (cx - paddle.getX()) / paddle.getWidth();
+            hitPos = Math.max(0, Math.min(1, hitPos));
+            double angle = Math.toRadians(150 * (hitPos - 0.5)); // ±75°
             dx = Math.sin(angle);
             dy = -Math.cos(angle);
-
-            // Đặt bóng lên trên paddle một chút
             y = paddle.getY() - radius * 2 - 1;
             hitSound.play();
             return;
         }
 
-        // --- Va chạm với Brick hoặc tường ---
-        double absX = Math.abs(diffX);
-        double absY = Math.abs(diffY);
+        // --- Phản xạ vật lý chung (Brick / Wall) ---
+        // Vector phản xạ: r = d - 2(d·n)n
+        double dot = dx * nx + dy * ny;
+        dx -= 2 * dot * nx;
+        dy -= 2 * dot * ny;
 
-        // So sánh khoảng cách trục để xác định hướng va chính
-        if (absX > absY) {
-            dx = -dx; // Va bên trái/phải
-            // Dịch bóng ra khỏi gạch để tránh "lọt vào"
-            if (diffX > 0) {
-                x = rect.getMaxX() + 1;
-            } else {
-                x = rect.getMinX() - radius * 2 - 1;
-            }
-        } else {
-            dy = -dy; // Va trên/dưới
-            if (diffY > 0) {
-                y = rect.getMaxY() + 1;
-            } else {
-                y = rect.getMinY() - radius * 2 - 1;
-            }
+        // Đảm bảo bóng ra khỏi vật thể
+        double penetration = radius - dist;
+        if (penetration > 0) {
+            x += nx * penetration;
+            y += ny * penetration;
         }
+
+        // Chuẩn hóa hướng để tránh lỗi trôi
+        double len = Math.sqrt(dx * dx + dy * dy);
+        if (len != 0) {
+            dx /= len;
+            dy /= len;
+        }
+
         hitSound.play();
     }
+
 
 
     public boolean checkCollision(GameObject other) {
@@ -102,33 +118,42 @@ public class Ball extends MovableObject {
     }
 
     public void move(double deltaTime) {
-        x += dx * speed * deltaTime;
-        y += dy * speed * deltaTime;
-        if (x <= 0) {
-            x = 0;
-            dx = Math.abs(dx); // Đảo hướng sang phải
-            hitSound.play();
-        }
+        int steps = (int) Math.ceil(speed * deltaTime / radius);
+        double stepTime = deltaTime / steps;
 
-        // Va chạm với tường phải
-        if (x + radius * 2 >= WINDOW_WIDTH) {
-            x = WINDOW_WIDTH - radius * 2;
-            dx = -Math.abs(dx); // Đảo hướng sang trái
-            hitSound.play();
-        }
+        for (int i = 0; i < steps; i++) {
+            x += dx * speed * stepTime;
+            y += dy * speed * stepTime;
 
-        // Va chạm với tường trên
-        if (y <= 0) {
-            y = 0;
-            dy = Math.abs(dy); // Đảo hướng xuống dưới
-            hitSound.play();
-        }
+            // kiểm tra va chạm tường trong từng bước nhỏ
+            if (x <= 0) {
+                x = 0;
+                dx = Math.abs(dx);
+                hitSound.play();
+            }
 
-        if (y > WINDOW_HEIGHT) {
-            System.out.println("Ball fell below the screen!");
-            System.exit(0);
+            if (x + radius * 2 >= WINDOW_WIDTH) {
+                x = WINDOW_WIDTH - radius * 2;
+                dx = -Math.abs(dx);
+                hitSound.play();
+            }
+
+            if (y <= 0) {
+                y = 0;
+                dy = Math.abs(dy);
+                hitSound.play();
+            }
+
+            if (y > WINDOW_HEIGHT) {
+                alive = false;
+                if (numberOfBalls < 1) {
+                    playAgain = true;
+                }
+                return; // bóng đã rơi, dừng lại
+            }
         }
     }
+
 
     public Rectangle2D getBounds() {
         return new Rectangle2D(
@@ -145,6 +170,31 @@ public class Ball extends MovableObject {
             System.out.println("Can't render ball");
         }
         gc.drawImage(image, x, y, radius * 2, radius * 2);
+    }
+
+
+    public int getNumberOfBalls() {
+        return numberOfBalls;
+    }
+
+    public void setNumberOfBalls(int numberOfBalls) {
+        Ball.numberOfBalls = numberOfBalls;
+    }
+
+    public boolean isAlive() {
+        return alive;
+    }
+
+    public void setAlive(boolean alive) {
+        this.alive = alive;
+    }
+
+    public boolean isPlayAgain() {
+        return playAgain;
+    }
+
+    public void setPlayAgain(boolean playAgain) {
+        this.playAgain = playAgain;
     }
 
     @Override

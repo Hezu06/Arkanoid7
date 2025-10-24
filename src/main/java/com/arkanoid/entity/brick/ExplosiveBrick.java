@@ -2,6 +2,7 @@ package com.arkanoid.entity.brick;
 
 import java.util.ArrayList;
 import java.util.List;
+import javafx.scene.paint.Color;
 
 public class ExplosiveBrick extends Brick {
 
@@ -34,5 +35,10 @@ public class ExplosiveBrick extends Brick {
     @Override
     public void updateAppearance() {
         /* No change since it breaks immediately after 1 hit */
+    }
+
+    @Override
+    protected Color getGlowColor() {
+        return Color.RED.darker();
     }
 }

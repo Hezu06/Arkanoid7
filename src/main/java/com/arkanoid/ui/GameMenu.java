@@ -12,7 +12,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -41,6 +40,7 @@ public class GameMenu extends Application {
 
         // Background
         Image image = new Image(pathBackground);
+        Image image = new Image("/assets/Background/galaxyBackground.jpg");
         ImageView background = new ImageView(image);
         Transition(background);
 
@@ -65,6 +65,7 @@ public class GameMenu extends Application {
 
         for (Button b : new Button[]{btnPlay, btnOptions, btnExit}) {
             ButtonEffects.applyHoverEffect(b);
+            b.setFont(buttonFont);
         }
 
         VBox menuBox = new VBox(30, title, btnPlay, btnOptions, btnExit);
@@ -78,12 +79,13 @@ public class GameMenu extends Application {
             startLabel.setTextFill(Color.GREEN);
 
             GameButton btnHard = new GameButton("HARD");
-            GameButton btnVeryHard = new GameButton("VERYHARD");
+            GameButton btnVeryHard = new GameButton("VERY HARD");
             GameButton btnAsian = new GameButton("ASIAN");
             GameButton btnBack = new GameButton("BACK");
 
             for (Button b : new Button[]{btnHard, btnVeryHard, btnAsian, btnBack}) {
                 ButtonEffects.applyHoverEffect(b);
+                b.setFont(buttonFont);
             }
 
             VBox playBox = new VBox(30, startLabel, btnHard, btnVeryHard, btnAsian, btnBack);

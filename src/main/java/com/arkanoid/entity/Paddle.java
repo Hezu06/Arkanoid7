@@ -8,34 +8,44 @@ import java.util.Objects;
 public class Paddle extends MovableObject {
     private final Image smallPaddleImage;
     private final Image largePaddleImage;
-
     private String paddleType;
+
     private final double speed;
     private boolean movingLeft = false;
     private boolean movingRight = false;
 
-    // Powerup states
+    private boolean expanded = false;
+    private long expandEndTime = 0;
+    private double originalWidth;
+
+    // Power-up states (optional)
     private boolean multiPowerupInEffect;
-    private boolean expandPowerupInEffect;
     private boolean firePowerupInEffect;
     private boolean slowPowerupInEffect;
     private boolean immortalPowerupInEffect;
 
-    public Paddle(double x, double y, String paddleType, double speed) {
-        super(x, y, paddleType.equals("large") ? 100 : 80, 20, 0, 0);
-        this.paddleType = paddleType;
-        this.speed = speed;
+    private static final int WINDOW_WIDTH = 750;
 
+    public Paddle(double x, double y, String paddleType, double speed) {
+        super(x, y, paddleType.equals("large") ? 120 : 100, 20, 0, 0);
+        this.speed = speed;
+        this.originalWidth = width;
+        this.paddleType = paddleType;
         this.smallPaddleImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/Paddle/defaultPaddle.png")));
         this.largePaddleImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/Paddle/grassPaddle.png")));
 
-        removeAllPowerupEffects();
+        removeAllPowerUpEffects();
     }
 
     public void update(double deltaTime) {
         move(deltaTime);
-        rect.setX(x);
-        rect.setY(y);
+
+        // Hết hiệu ứng mở rộng → trở về kích thước ban đầu
+        if (expanded && System.currentTimeMillis() > expandEndTime) {
+            width = originalWidth;
+            expanded = false;
+            System.out.println("Paddle đã thu nhỏ lại.");
+        }
     }
 
     @Override
@@ -52,45 +62,45 @@ public class Paddle extends MovableObject {
     public void move(double deltaTime) {
         if (movingLeft) x -= speed * deltaTime;
         if (movingRight) x += speed * deltaTime;
-//        x += dx * speed;
+
         if (x < 0) x = 0;
-        if (x + width > 750) x = 750 - width;
-        rect.setX(x);
+        if (x + width > WINDOW_WIDTH) x = WINDOW_WIDTH - width;
     }
 
     private Image getImage() {
-        if (paddleType.equals("large")) {
-            return largePaddleImage;
-        }
-        return smallPaddleImage;
+        if (paddleType.equals("large")) { return largePaddleImage; } return smallPaddleImage;
     }
 
-    public void removeAllPowerupEffects() {
+    // ---------------------
+    // Power-up control
+    // ---------------------
+    public void expandTemporarily() {
+        if (!expanded) {
+            expanded = true;
+            width = Math.min(originalWidth * 1.6, 300);
+            expandEndTime = System.currentTimeMillis() + 7000;
+            System.out.println("Paddle đã mở rộng.");
+        } else {
+            // Nếu đang mở rộng, gia hạn thêm 5 giây
+            expandEndTime = System.currentTimeMillis() + 5000;
+        }
+    }
+
+    public void removeAllPowerUpEffects() {
         multiPowerupInEffect = false;
-        expandPowerupInEffect = false;
         firePowerupInEffect = false;
         slowPowerupInEffect = false;
         immortalPowerupInEffect = false;
+        expanded = false;
+        width = originalWidth;
     }
 
-    public void moveLeft() {
-        dx = -1;
-    }
+    // ---------------------
+    // Movement controls
+    // ---------------------
+    public void setMovingLeft(boolean value) { movingLeft = value; }
+    public void setMovingRight(boolean value) { movingRight = value; }
 
-    public void moveRight() {
-        dx = 1;
-    }
-
-    public void stop() {
-        dx = 0;
-    }
-
-    public void setMovingLeft(boolean value) {
-        movingLeft = value;
-    }
-
-    public void setMovingRight(boolean value) {
-        movingRight = value;
-    }
-
+    public boolean isExpanded() { return expanded; }
+    public void setExpanded(boolean expanded) { this.expanded = expanded; }
 }

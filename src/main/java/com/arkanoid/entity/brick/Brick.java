@@ -1,7 +1,6 @@
 package com.arkanoid.entity.brick;
 
 import com.arkanoid.entity.GameObject;
-import com.arkanoid.entity.powerUp.PowerUp.PowerUpType;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -21,9 +20,11 @@ public abstract class Brick extends GameObject {
 
     protected Image textureImage;
 
-    // PowerUp related attributes.
-    protected PowerUpType powerUpContent = null;
-    protected boolean dropsPowerUp = false;
+    // --- Global Pulsing Timer ---
+    protected static double pulseTimer = 0;
+    private static final double PULSE_SPEED = 5.0; // How fast the glow pulses
+    private static final double MAX_GLOW_ALPHA = 0.9; // Max opacity for the glow
+    private static final double MIN_GLOW_ALPHA = 0.3; // Min opacity for the glow
 
     public Brick(double x, double y, double width, double height, int gridX, int gridY, int maxDurability, String imagePath) {
         super(x, y, width, height);
@@ -69,10 +70,43 @@ public abstract class Brick extends GameObject {
             gc.fillRect(x, y, width, height);
         }
 
-        gc.setStroke(Color.BLACK);
+        gc.setGlobalAlpha(1.0); // reset lại
+        renderGlow(gc);
+    }
+
+    protected abstract Color getGlowColor();
+
+    protected void renderGlow(GraphicsContext gc) {
+        if (isBroken) return;
+
+        // --- 1. Calculate the Pulsing Alpha ---
+        double wave = Math.sin(pulseTimer * PULSE_SPEED) * 0.5 + 0.5; // Wave is 0.0 to 1.0
+        double currentGlowAlpha = MIN_GLOW_ALPHA + wave * (MAX_GLOW_ALPHA - MIN_GLOW_ALPHA);
+
+        // --- 2. Get Specific Brick Color ---
+        Color glowColor = getGlowColor();
+
+        gc.save();
+
+        // --- Layer 1: Outer soft glow (Wide and Faint) ---
+        gc.setGlobalAlpha(currentGlowAlpha * 0.3); // Faintest
+        gc.setStroke(glowColor);
+        gc.setLineWidth(8.0); // Widest stroke
         gc.strokeRect(this.x, this.y, width, height);
 
-        gc.setGlobalAlpha(1.0); // reset lại
+        // --- Layer 2: Medium glow (Medium Brightness) ---
+        gc.setGlobalAlpha(currentGlowAlpha * 0.6);
+        gc.setStroke(glowColor.brighter());
+        gc.setLineWidth(5.0);
+        gc.strokeRect(this.x, this.y, width, height);
+
+        // --- Layer 3: Inner core glow (Narrow and Brightest) ---
+        gc.setGlobalAlpha(currentGlowAlpha * 1.0);
+        gc.setStroke(Color.WHEAT.darker()); // Use white for the core glow for intensity
+        gc.setLineWidth(2.0);
+        gc.strokeRect(this.x, this.y, width, height);
+
+        gc.restore();
     }
 
     @Override
@@ -108,15 +142,6 @@ public abstract class Brick extends GameObject {
         return isBroken;
     }
 
-    public void setCurrentDurability(int currentDurability) {
-        this.currentDurability = currentDurability;
-    }
-
-    public void setPowerUpDrop(PowerUpType type) {
-        this.dropsPowerUp = true;
-        this.powerUpContent = type;
-    }
-
     public boolean isFading() {
         return fading;
     }
@@ -129,7 +154,7 @@ public abstract class Brick extends GameObject {
 
     public void setBroken(boolean broken) { this.isBroken = broken; }
 
-    public PowerUpType getPowerUpContent() { return powerUpContent; }
-
-    public List<int[]> triggerSpecialAction() { return new ArrayList<>(); }
+    public List<int[]> triggerSpecialAction() {
+        return new ArrayList<>();
+    }
 }

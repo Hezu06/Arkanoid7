@@ -1,5 +1,7 @@
 package com.arkanoid.entity.brick;
 
+import javafx.scene.paint.Color;
+
 public class UnbreakableBrick extends Brick {
     private static final String UNBREAKABLE_BRICK_IMAGE = "/assets/Bricks/UnbreakableBrick.png";
 
@@ -11,8 +13,14 @@ public class UnbreakableBrick extends Brick {
     public boolean takeHit() {
         return false; // Never break
     }
+
     @Override
     protected void updateAppearance() {
         /* No change due to unbreakability */
+    }
+
+    @Override
+    protected Color getGlowColor() {
+        return Color.DARKGOLDENROD.darker();
     }
 }
