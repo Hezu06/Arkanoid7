@@ -43,6 +43,7 @@ public class GameMain extends Application {
     private List<PowerUp> powerUps = new ArrayList<>();
     private Image backgroundTexture;
     private boolean playAgainShown = false;
+    private boolean paused = false;
     private Pane gamePane;
 
     public void setLevelDifficulty(Level.LevelDifficulty levelDifficulty) {
@@ -86,9 +87,9 @@ public class GameMain extends Application {
         // --- 3. Start the Game Loop ---
         new AnimationTimer() {
             private long lastUpdate = 0;
-
             @Override
             public void handle(long now) {
+                if (paused) return;
                 if (lastUpdate > 0) {
                     double deltaTime = (now - lastUpdate) / 1_000_000_000.0; // đổi ns → giây
                     update(deltaTime);
@@ -244,6 +245,9 @@ public class GameMain extends Application {
         }
 
         paddle.render(gc);
+        for (PowerUp powerUp : powerUps) {
+            powerUp.render(gc);
+        }
     }
 
     private void resetGame() {
@@ -266,6 +270,7 @@ public class GameMain extends Application {
     }
 
     private void showPlayAgainButton() {
+        paused = true;
         GameButton playAgainBtn = new GameButton("PLAY AGAIN");
 
         playAgainBtn.setFont(Font.loadFont(
@@ -280,6 +285,7 @@ public class GameMain extends Application {
 
         playAgainBtn.setOnAction(e -> {
             gamePane.getChildren().clear(); // Xóa toàn bộ
+            paused = false;
             resetGame(); // Khởi tạo lại
         });
     }
@@ -294,7 +300,7 @@ public class GameMain extends Application {
 
     public void spawnExtraBalls() {
         listBalls.add(new Ball(listBalls.getFirst().getX(), listBalls.getFirst().getY(),
-                1, -1, BALL_SPEED, 15));
+                3, -1, BALL_SPEED, 15));
         listBalls.add(new Ball(listBalls.getFirst().getX(), listBalls.getFirst().getY(),
                 1, -1, BALL_SPEED, 15));
     }

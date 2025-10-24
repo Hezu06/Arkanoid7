@@ -1,8 +1,11 @@
 package com.arkanoid.entity.powerUp;
+import javafx.scene.image.Image;
+
+import java.util.Objects;
 import java.util.Random;
 
 public class PowerUpFactory {
-    public static final Random random = new Random();
+    public static final Random random = new Random();;
 
     public static PowerUp createPowerUp(double x, double y) {
         int roll = random.nextInt(4);

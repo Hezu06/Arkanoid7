@@ -5,14 +5,14 @@ import com.arkanoid.game.GameMain;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-import java.awt.*;
+import java.util.Objects;
 
 public abstract class PowerUp extends GameObject {
     private double fallSpeed = 3.0;
     private boolean active = true;
+    private final Image image = new Image(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("powerUpItem/blue.png")));;
 
     public PowerUp(double x, double y, int width, int height) {
         super(x, y, width, height);
@@ -21,10 +21,14 @@ public abstract class PowerUp extends GameObject {
     @Override
     public void render(GraphicsContext gc) {
         if (!active) return;
-        gc.setFill(getColor());
-        gc.fillOval(x, y, width, height);
-        gc.setStroke(Color.WHITE);
-        gc.strokeOval(x, y, width, height);
+        if (image != null) {
+            gc.drawImage(image, x, y, 32, 32);
+        } else {
+            gc.setFill(getColor());
+            gc.fillOval(x, y, width, height);
+            gc.setStroke(Color.WHITE);
+            gc.strokeOval(x, y, width, height);
+        }
     }
 
     @Override
@@ -58,7 +62,12 @@ public abstract class PowerUp extends GameObject {
     }
 
     public boolean checkCollision(GameObject other) {
-        return true;
+        if (!active) return false;
+
+        Rectangle2D powerUpRect = new Rectangle2D(x, y, width, height);
+        Rectangle2D otherRect = new Rectangle2D(other.getX(), other.getY(), other.getWidth(), other.getHeight());
+
+        return powerUpRect.intersects(otherRect);
     }
 
     // Hành động khi được paddle hứng
