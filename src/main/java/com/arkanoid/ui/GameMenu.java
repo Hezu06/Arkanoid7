@@ -1,5 +1,7 @@
 package com.arkanoid.ui;
 
+import com.arkanoid.game.GameMain;
+import com.arkanoid.level.Level;
 import javafx.animation.*;
 import javafx.application.Application;
 import javafx.geometry.Pos;
@@ -17,10 +19,10 @@ import javafx.util.Duration;
 
 public class GameMenu extends Application {
     static final int Width = 750;
-    static final int Height = 950;
+    static final int Height = 800;
     static final int widthBackground = 850;
     static final int heightBackground = 950;
-    public static String pathBackground = "file:A:/Game java/Arkanoid7/src/main/resources/assets/Background/galaxyBackground.jpg";
+    public static String pathBackground = "assets/Background/galaxyBackground.jpg";
     // Animation background
     public static void Transition(ImageView background) {
         background.setFitWidth(widthBackground);
@@ -40,7 +42,6 @@ public class GameMenu extends Application {
 
         // Background
         Image image = new Image(pathBackground);
-        Image image = new Image("/assets/Background/galaxyBackground.jpg");
         ImageView background = new ImageView(image);
         Transition(background);
 
@@ -56,13 +57,21 @@ public class GameMenu extends Application {
 
         // ====================== MENU CHÍNH ======================
         Label title = new Label("BRICK BREAKER");
-        title.setFont(Font.font("Arial", FontWeight.BOLD, 50));
-        title.setTextFill(Color.RED);
+        Font titleFont = Font.loadFont(
+                getClass().getResourceAsStream("/fonts/ALIEN5.TTF"),
+                50 // cỡ chữ
+        );
+        title.setFont(titleFont);
+        title.setTextFill(Color.WHITESMOKE);
 
         GameButton btnPlay = new GameButton("PLAY");
         GameButton btnOptions = new GameButton("OPTIONS");
         GameButton btnExit = new GameButton("EXIT");
 
+        Font buttonFont = Font.loadFont(
+                getClass().getResourceAsStream("/fonts/ALIEN5.TTF"),
+                30
+        );
         for (Button b : new Button[]{btnPlay, btnOptions, btnExit}) {
             ButtonEffects.applyHoverEffect(b);
             b.setFont(buttonFont);
@@ -75,8 +84,8 @@ public class GameMenu extends Application {
         // ====================== NÚT PLAY ======================
         btnPlay.setOnAction(e -> {
             Label startLabel = new Label("CHOOSE");
-            startLabel.setFont(Font.font("Arial", FontWeight.BOLD, 80));
-            startLabel.setTextFill(Color.GREEN);
+            startLabel.setFont(titleFont);
+            startLabel.setTextFill(Color.WHITESMOKE);
 
             GameButton btnHard = new GameButton("HARD");
             GameButton btnVeryHard = new GameButton("VERY HARD");
@@ -94,6 +103,33 @@ public class GameMenu extends Application {
             fadeSmooth.smoothContent(contentLayer, playBox);
 
             btnBack.setOnAction(e1 -> fadeSmooth.smoothContent(contentLayer, menuBox));
+            btnAsian.setOnAction(e2 -> {
+                GameMain gameMain = new GameMain();
+                gameMain.setLevelDifficulty(Level.LevelDifficulty.ASIAN);
+                try {
+                    gameMain.start(primaryStage); // chuyển sang màn game
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            });
+            btnVeryHard.setOnAction(e3 -> {
+                GameMain gameMain = new GameMain();
+                gameMain.setLevelDifficulty(Level.LevelDifficulty.VERY_HARD);
+                try {
+                    gameMain.start(primaryStage); // chuyển sang màn game
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            });
+            btnHard.setOnAction(e4 -> {
+                GameMain gameMain = new GameMain();
+                gameMain.setLevelDifficulty(Level.LevelDifficulty.HARD);
+                try {
+                    gameMain.start(primaryStage); // chuyển sang màn game
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            });
         });
 
         // ====================== NÚT OPTIONS ======================
