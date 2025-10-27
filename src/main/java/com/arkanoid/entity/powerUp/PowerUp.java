@@ -12,7 +12,12 @@ import java.util.Objects;
 public abstract class PowerUp extends GameObject {
     private double fallSpeed = 3.0;
     private boolean active = true;
-    private final Image image = new Image(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("powerUpItem/blue.png")));;
+
+    public void setImage(Image image) {
+        this.image = image;
+    }
+
+    private Image image;
 
     public PowerUp(double x, double y, int width, int height) {
         super(x, y, width, height);
