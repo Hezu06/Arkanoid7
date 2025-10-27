@@ -1,6 +1,7 @@
 package com.arkanoid.ui;
 
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -8,7 +9,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 public class optionsScreen {
-    public static void show(StackPane contentLayer, VBox menuBox, ImageView background, ImageView ballImage) {
+    public static void show(StackPane contentLayer, VBox menuBox, ImageView background,
+                            ImageView ballImage, ImageView paddleImage) {
 //        String pathBall = "";
 //        String pathPaddle = "";
         GameButton btnSetBackground = new GameButton("BACKGROUND");
@@ -25,8 +27,13 @@ public class optionsScreen {
         GameButton btnBasketball = new GameButton("Basketball");
         GameButton btnVolleyball = new GameButton("Volleyball");
 
+        GameButton btnDefaultPaddle = new GameButton("Default Paddle");
+        GameButton btnGrassPaddle = new GameButton("Grass Paddle");
+        GameButton btnSandPaddle = new GameButton("Sand Paddle");
+
         GameButton btnBackOfBackground = new GameButton("BACK");
         GameButton btnBackOfBall = new GameButton("BACK");
+        GameButton btnBackOfPaddle = new GameButton("BACK");
 
         for (Button b : new Button[]{btnSetBackground, btnSetBall, btnSetPaddle, btnBack}) {
             ButtonEffects.applyHoverEffect(b);
@@ -93,6 +100,39 @@ public class optionsScreen {
             });
 
             btnBackOfBall.setOnAction(e1 -> {
+                fadeSmooth.smoothContent(contentLayer, optionsBox);
+            });
+        });
+
+        btnSetPaddle.setOnAction(e -> {
+           for (Button b : new Button[]{btnDefaultPaddle, btnGrassPaddle, btnSandPaddle, btnBackOfPaddle}) {
+               ButtonEffects.applyHoverEffect(b);
+           }
+
+            ImageView previewPaddle = new ImageView(paddleImage.getImage());
+            previewPaddle.setFitWidth(120);
+            previewPaddle.setFitHeight(20);
+
+            VBox ballsBox = new VBox(30, previewPaddle, btnDefaultPaddle, btnGrassPaddle, btnSandPaddle, btnBackOfPaddle);
+            ballsBox.setAlignment(Pos.CENTER);
+            fadeSmooth.smoothContent(contentLayer, ballsBox);
+
+            btnDefaultPaddle.setOnAction(e1 -> {
+                paddleImage.setImage(new Image("assets/Paddle/defaultPaddle.png"));
+                previewPaddle.setImage(new Image("assets/Paddle/defaultPaddle.png"));
+            });
+
+            btnGrassPaddle.setOnAction(e1 -> {
+                paddleImage.setImage(new Image("assets/Paddle/grassPaddle.png"));
+                previewPaddle.setImage(new Image("assets/Paddle/grassPaddle.png"));
+            });
+
+            btnSandPaddle.setOnAction(e1 -> {
+                paddleImage.setImage(new Image("assets/Paddle/sandPaddle.png"));
+                previewPaddle.setImage(new Image("assets/Paddle/sandPaddle.png"));
+            });
+
+            btnBackOfPaddle.setOnAction(e1 -> {
                 fadeSmooth.smoothContent(contentLayer, optionsBox);
             });
         });
