@@ -180,18 +180,20 @@ public class GameMain extends Application {
                             if (newPowerUp != null) {
                                 powerUps.add(newPowerUp);
                             }
+
+                            activeExplosion.add(new ExplosionEffect(
+                                    brick.getX(), brick.getY(),
+                                    brick.getWidth(), brick.getHeight(),
+                                    brick
+                            ));
                         }
                         if (brick instanceof ExplosiveBrick) {
                             List<int[]> affectedCoords = brick.triggerSpecialAction();
                             if (!affectedCoords.isEmpty()) {
-                                activeExplosion.add(new ExplosionEffect(
-                                        brick.getX(), brick.getY(), brick.getWidth(), brick.getHeight()
-                                ));
                                 handleExplosion(affectedCoords, bricksToRemove);
-                            } else {
-                                bricksToRemove.add(brick);
                             }
                         }
+                        bricksToRemove.add(brick);
                     }
                 }
             }
