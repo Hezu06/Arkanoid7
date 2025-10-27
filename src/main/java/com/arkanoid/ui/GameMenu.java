@@ -17,6 +17,8 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.util.Objects;
+
 public class GameMenu extends Application {
     static final int Width = 750;
     static final int Height = 800;
@@ -44,6 +46,11 @@ public class GameMenu extends Application {
         Image image = new Image(pathBackground);
         ImageView background = new ImageView(image);
         Transition(background);
+
+        Image ball = new Image(Objects.requireNonNull(getClass().
+                getResourceAsStream("/assets/Ball/defaultBall.png")));
+        ImageView ballImage = new ImageView(ball);
+
 
         // Layer chứa menu thay đổi
         StackPane contentLayer = new StackPane();
@@ -106,6 +113,7 @@ public class GameMenu extends Application {
             btnAsian.setOnAction(e2 -> {
                 GameMain gameMain = new GameMain();
                 gameMain.setLevelDifficulty(Level.LevelDifficulty.ASIAN);
+                gameMain.setBallTexture(ballImage);
                 try {
                     gameMain.start(primaryStage); // chuyển sang màn game
                 } catch (Exception ex) {
@@ -114,6 +122,7 @@ public class GameMenu extends Application {
             });
             btnVeryHard.setOnAction(e3 -> {
                 GameMain gameMain = new GameMain();
+                gameMain.setBallTexture(ballImage);
                 gameMain.setLevelDifficulty(Level.LevelDifficulty.VERY_HARD);
                 try {
                     gameMain.start(primaryStage); // chuyển sang màn game
@@ -123,6 +132,7 @@ public class GameMenu extends Application {
             });
             btnHard.setOnAction(e4 -> {
                 GameMain gameMain = new GameMain();
+                gameMain.setBallTexture(ballImage);
                 gameMain.setLevelDifficulty(Level.LevelDifficulty.HARD);
                 try {
                     gameMain.start(primaryStage); // chuyển sang màn game
@@ -134,7 +144,7 @@ public class GameMenu extends Application {
 
         // ====================== NÚT OPTIONS ======================
         btnOptions.setOnAction(e2 -> {
-            optionsScreen.show(contentLayer, menuBox, background);
+            optionsScreen.show(contentLayer, menuBox, background, ballImage);
         });
 
         // ====================== NÚT EXIT ======================
