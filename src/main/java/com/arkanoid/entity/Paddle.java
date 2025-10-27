@@ -44,7 +44,7 @@ public class Paddle extends MovableObject {
         if (expanded && System.currentTimeMillis() > expandEndTime) {
             width = originalWidth;
             expanded = false;
-            System.out.println("Paddle đã thu nhỏ lại.");
+            System.out.println("Paddle shrank!");
         }
     }
 
@@ -79,7 +79,7 @@ public class Paddle extends MovableObject {
             expanded = true;
             width = Math.min(originalWidth * 1.6, 300);
             expandEndTime = System.currentTimeMillis() + 7000;
-            System.out.println("Paddle đã mở rộng.");
+            System.out.println("Paddle expanded!");
         } else {
             // Nếu đang mở rộng, gia hạn thêm 5 giây
             expandEndTime = System.currentTimeMillis() + 5000;
