@@ -45,8 +45,14 @@ public class GameMain extends Application {
     private Image backgroundTexture;
 
     private ImageView ballTexture;
+    private ImageView paddleTexture;
+
     public void setBallTexture(ImageView ballTexture) {
         this.ballTexture = ballTexture;
+    }
+
+    public void setPaddleTexture(ImageView paddleTexture) {
+        this.paddleTexture = paddleTexture;
     }
     private boolean playAgainShown = false;
     private boolean paused = false;
@@ -76,7 +82,7 @@ public class GameMain extends Application {
         // --- 2. Load the Level ---
         bricks = loadLevel();
         listBalls.add(new Ball(400, 400, 0, -1, BALL_SPEED, 15, ballTexture.getImage()));
-        paddle = new Paddle(350, 775, "large", 600);
+        paddle = new Paddle(350, 775, "large", 600, paddleTexture.getImage());
 
         scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
@@ -270,7 +276,7 @@ public class GameMain extends Application {
         playAgainShown = false;
         bricks = loadLevel();
         listBalls.add(new Ball(400, 400, 0, -1, BALL_SPEED, 15, ballTexture.getImage()));
-        paddle = new Paddle(350, 760, "large", 600);
+        paddle = new Paddle(350, 760, "large", 600, paddleTexture.getImage());
         powerUps = new ArrayList<>();
         // Thêm lại canvas
         Canvas canvas = new Canvas(WINDOW_WIDTH, WINDOW_HEIGHT);

@@ -26,13 +26,13 @@ public class Paddle extends MovableObject {
 
     private static final int WINDOW_WIDTH = 750;
 
-    public Paddle(double x, double y, String paddleType, double speed) {
+    public Paddle(double x, double y, String paddleType, double speed, Image image) {
         super(x, y, paddleType.equals("large") ? 120 : 100, 20, 0, 0);
         this.speed = speed;
         this.originalWidth = width;
         this.paddleType = paddleType;
-        this.smallPaddleImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/Paddle/defaultPaddle.png")));
-        this.largePaddleImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/Paddle/grassPaddle.png")));
+        this.smallPaddleImage = image;
+        this.largePaddleImage = image;
 
         removeAllPowerUpEffects();
     }
