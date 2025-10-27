@@ -22,7 +22,7 @@ public class Ball extends MovableObject {
 
     private boolean alive = true;
 
-    public Ball(double x, double y, double dx, double dy, double speed, double radius) {
+    public Ball(double x, double y, double dx, double dy, double speed, double radius, Image image) {
         super(x, y, (int) (2 * radius), (int) (2 * radius), dx, dy);
         this.speed = speed;
         this.radius = radius;
@@ -32,7 +32,7 @@ public class Ball extends MovableObject {
             this.dy /= length;
         }
         numberOfBalls++;
-        image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/Ball/tennisball.png")));
+        this.image = image;
         hitSound = new AudioClip(
                 Objects.requireNonNull(getClass().getResource("/sounds/collision_sound.wav")).toExternalForm()
         );

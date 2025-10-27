@@ -17,6 +17,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -42,6 +43,11 @@ public class GameMain extends Application {
     private final List<Ball> listBalls = new ArrayList<>();
     private List<PowerUp> powerUps = new ArrayList<>();
     private Image backgroundTexture;
+
+    private ImageView ballTexture;
+    public void setBallTexture(ImageView ballTexture) {
+        this.ballTexture = ballTexture;
+    }
     private boolean playAgainShown = false;
     private boolean paused = false;
     private Pane gamePane;
@@ -61,6 +67,7 @@ public class GameMain extends Application {
         Canvas canvas = new Canvas(WINDOW_WIDTH, WINDOW_HEIGHT);
         // Get the single drawing tool (GraphicsContext)
         gc = canvas.getGraphicsContext2D();
+
         gamePane.getChildren().add(canvas);
         backgroundTexture = new Image(
                 Objects.requireNonNull(getClass().getResourceAsStream(BACKGROUND_PATH)),
@@ -68,7 +75,7 @@ public class GameMain extends Application {
         );
         // --- 2. Load the Level ---
         bricks = loadLevel();
-        listBalls.add(new Ball(400, 400, 0, -1, BALL_SPEED, 15));
+        listBalls.add(new Ball(400, 400, 0, -1, BALL_SPEED, 15, ballTexture.getImage()));
         paddle = new Paddle(350, 775, "large", 600);
 
         scene.setOnKeyPressed(e -> {
@@ -262,7 +269,7 @@ public class GameMain extends Application {
         }
         playAgainShown = false;
         bricks = loadLevel();
-        listBalls.add(new Ball(400, 400, 0, -1, BALL_SPEED, 15));
+        listBalls.add(new Ball(400, 400, 0, -1, BALL_SPEED, 15, ballTexture.getImage()));
         paddle = new Paddle(350, 760, "large", 600);
         powerUps = new ArrayList<>();
         // Thêm lại canvas
@@ -302,8 +309,8 @@ public class GameMain extends Application {
 
     public void spawnExtraBalls() {
         listBalls.add(new Ball(listBalls.getFirst().getX(), listBalls.getFirst().getY(),
-                3, -1, BALL_SPEED, 15));
+                3, -1, BALL_SPEED, 15,  ballTexture.getImage()));
         listBalls.add(new Ball(listBalls.getFirst().getX(), listBalls.getFirst().getY(),
-                1, -1, BALL_SPEED, 15));
+                1, -1, BALL_SPEED, 15,  ballTexture.getImage()));
     }
 }
