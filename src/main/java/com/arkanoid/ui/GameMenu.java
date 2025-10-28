@@ -114,6 +114,7 @@ public class GameMenu extends Application {
             btnBack.setOnAction(e1 -> fadeSmooth.smoothContent(contentLayer, menuBox));
             btnAsian.setOnAction(e2 -> {
                 GameMain gameMain = new GameMain();
+                gameMain.setBackgroundTexture(background);
                 gameMain.setBallTexture(ballImage);
                 gameMain.setPaddleTexture(paddleImage);
                 gameMain.setLevelDifficulty(Level.LevelDifficulty.ASIAN);
@@ -125,6 +126,7 @@ public class GameMenu extends Application {
             });
             btnVeryHard.setOnAction(e3 -> {
                 GameMain gameMain = new GameMain();
+                gameMain.setBackgroundTexture(background);
                 gameMain.setBallTexture(ballImage);
                 gameMain.setPaddleTexture(paddleImage);
                 gameMain.setLevelDifficulty(Level.LevelDifficulty.VERY_HARD);
@@ -136,6 +138,7 @@ public class GameMenu extends Application {
             });
             btnHard.setOnAction(e4 -> {
                 GameMain gameMain = new GameMain();
+                gameMain.setBackgroundTexture(background);
                 gameMain.setBallTexture(ballImage);
                 gameMain.setPaddleTexture(paddleImage);
                 gameMain.setLevelDifficulty(Level.LevelDifficulty.HARD);

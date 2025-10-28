@@ -11,13 +11,13 @@ import com.arkanoid.level.Level;
 import com.arkanoid.level.LevelLoader;
 import com.arkanoid.ui.ButtonEffects;
 import com.arkanoid.ui.GameButton;
+import javafx.animation.Transition;
 import javafx.application.Application;
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -28,9 +28,9 @@ import com.arkanoid.entity.Paddle;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import com.arkanoid.level.DifficultySettings;
+import com.arkanoid.ui.GameMenu;
 
 public class GameMain extends Application {
 
@@ -44,7 +44,7 @@ public class GameMain extends Application {
     private final List<ExplosionEffect> activeExplosion = new ArrayList<>();
     private final List<Ball> listBalls = new ArrayList<>();
     private List<PowerUp> powerUps = new ArrayList<>();
-    private Image backgroundTexture;
+    private ImageView backgroundTexture;
 
     private ImageView ballTexture;
     private ImageView paddleTexture;
@@ -55,6 +55,10 @@ public class GameMain extends Application {
 
     public void setPaddleTexture(ImageView paddleTexture) {
         this.paddleTexture = paddleTexture;
+    }
+
+    public void setBackgroundTexture(ImageView backgroundTexture) {
+        this.backgroundTexture = backgroundTexture;
     }
     private boolean playAgainShown = false;
     private boolean paused = false;
@@ -75,12 +79,8 @@ public class GameMain extends Application {
         Canvas canvas = new Canvas(WINDOW_WIDTH, WINDOW_HEIGHT);
         // Get the single drawing tool (GraphicsContext)
         gc = canvas.getGraphicsContext2D();
-
-        gamePane.getChildren().add(canvas);
-        backgroundTexture = new Image(
-                Objects.requireNonNull(getClass().getResourceAsStream(BACKGROUND_PATH)),
-                WINDOW_WIDTH, WINDOW_HEIGHT, false, true
-        );
+        GameMenu.Transition(backgroundTexture);
+        gamePane.getChildren().addAll(backgroundTexture, canvas);
         // --- 2. Load the Level ---
         bricks = loadLevel();
         listBalls.add(new Ball(400, 400, 0, -1, DifficultySettings.getBallSpeed(levelDifficulty), 15, ballTexture.getImage()));
@@ -106,7 +106,7 @@ public class GameMain extends Application {
             public void handle(long now) {
                 if (paused) return;
                 if (lastUpdate > 0) {
-                    double deltaTime = (now - lastUpdate) / 1_000_000_000.0; // đổi ns → giây
+                    double deltaTime = (now - lastUpdate) / 1_000_000_000.0;// đổi ns → giây
                     update(deltaTime);
                     render();
                 }
@@ -235,10 +235,7 @@ public class GameMain extends Application {
     }
 
     private void render() {
-        gc.drawImage(backgroundTexture, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-
-        Image bg = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/Background/galaxyBackground.jpg")));
-        gc.drawImage(bg, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+        gc.clearRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         for (Ball ball : listBalls) {
             if (ball.isPlayAgain() && !playAgainShown) {
