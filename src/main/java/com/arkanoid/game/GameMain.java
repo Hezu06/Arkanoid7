@@ -192,7 +192,7 @@ public class GameMain extends Application {
                     ball.bounceOff(brick);
                     if (brick.takeHit()) {
                         if (!(brick instanceof UnbreakableBrick)) {
-                            PowerUp newPowerUp = PowerUpFactory.createPowerUp(brick.getX(), brick.getY());
+                            PowerUp newPowerUp = PowerUpFactory.createPowerUp(brick.getX(), brick.getY(), levelDifficulty);
                             if (newPowerUp != null) {
                                 powerUps.add(newPowerUp);
                             }
