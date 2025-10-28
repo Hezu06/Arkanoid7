@@ -27,6 +27,7 @@ import javafx.stage.Stage;
 import com.arkanoid.entity.Paddle;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.arkanoid.level.DifficultySettings;
@@ -174,12 +175,17 @@ public class GameMain extends Application {
         // Remove all explosions that have finished their animation.
         activeExplosion.removeIf(ExplosionEffect::isFinished);
 
-        for (Ball ball : listBalls) {
+        Iterator<Ball> iterator = listBalls.iterator();
+        while (iterator.hasNext()) {
+            Ball ball = iterator.next();
             if (!ball.isAlive()) {
                 if (ball.getNumberOfBalls() >= 1) {
                     ball.setNumberOfBalls(ball.getNumberOfBalls() - 1);
                 }
-                if (ball.getNumberOfBalls() >= 1) listBalls.remove(ball);
+                if (ball.getNumberOfBalls() >= 1) {
+                    iterator.remove();
+                    continue;
+                }
             }
             ball.move(deltaTime);
         }
