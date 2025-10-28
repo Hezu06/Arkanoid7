@@ -1,21 +1,35 @@
 package com.arkanoid.entity.powerUp;
-import javafx.scene.image.Image;
-
-import java.util.Objects;
+import com.arkanoid.level.Level;
 import java.util.Random;
 
+import com.arkanoid.level.DifficultySettings;
+
 public class PowerUpFactory {
-    public static final Random random = new Random();;
+    public enum PowerUpType {
+        EXPAND_PADDLE,
+        FIRE_BALL,
+        IMMORTAL,
+        MULTI_BALL,
+        EXTRA_LIVES,
+        EXTRA_COINS
+    }
 
-    public static PowerUp createPowerUp(double x, double y) {
-        int roll = random.nextInt(4);
+    public static final Random random = new Random();
 
-        if(roll < 2) {
-            int type = random.nextInt(2);
+    public static PowerUp createPowerUp(double x, double y, Level.LevelDifficulty levelDifficulty) {
+
+        double roll = random.nextDouble();
+        if (roll < DifficultySettings.getPowerUpChance(levelDifficulty)) {
+            // Update later when all PowerUps are done.
+            PowerUpType[] dropTypes = { PowerUpType.EXPAND_PADDLE, PowerUpType.MULTI_BALL };
+
+            // Randomly select one power-up.
+            PowerUpType type = dropTypes[random.nextInt(dropTypes.length)];
+
             return switch (type) {
-                case 0 -> new ExpandPaddle(x, y);
-                case 1 -> new MultiBall(x, y);
-                default -> null;
+                case EXPAND_PADDLE -> new ExpandPaddle(x, y);
+                case MULTI_BALL -> new MultiBall(x, y);
+                case FIRE_BALL, IMMORTAL, EXTRA_COINS, EXTRA_LIVES -> null;
             };
         }
         return null;
