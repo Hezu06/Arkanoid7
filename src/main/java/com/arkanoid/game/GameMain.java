@@ -286,7 +286,7 @@ public class GameMain extends Application {
         // Thêm lại canvas
         Canvas canvas = new Canvas(WINDOW_WIDTH, WINDOW_HEIGHT);
         gc = canvas.getGraphicsContext2D();
-        gamePane.getChildren().add(canvas);
+        gamePane.getChildren().addAll(backgroundTexture, canvas);
     }
 
     private void showPlayAgainButton() {
