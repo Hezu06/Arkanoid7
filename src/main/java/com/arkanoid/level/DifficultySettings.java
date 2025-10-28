@@ -2,13 +2,13 @@ package com.arkanoid.level;
 
 public class DifficultySettings {
     // Constants for ballSpeed, paddleWidth and powerUpChance
-    private static final double SPEED_HARD = 300;
-    private static final double SPEED_VERY_HARD = 450;
-    private static final double SPEED_ASIAN = 600;
+    private static final double SPEED_HARD = 450;
+    private static final double SPEED_VERY_HARD = 600;
+    private static final double SPEED_ASIAN = 800;
 
-    private static final double WIDTH_HARD = 150.0;
-    private static final double WIDTH_VERY_HARD = 100.0;
-    private static final double WIDTH_ASIAN = 70.0;
+    private static final int WIDTH_HARD = 150;
+    private static final int WIDTH_VERY_HARD = 120;
+    private static final int WIDTH_ASIAN = 100;
 
     private static final double CHANCE_HARD = 0.35;
     private static final double CHANCE_VERY_HARD = 0.2;
@@ -30,7 +30,7 @@ public class DifficultySettings {
         };
     }
 
-    public static double getPaddleWidth(Level.LevelDifficulty difficulty) {
+    public static int getPaddleWidth(Level.LevelDifficulty difficulty) {
         return switch (difficulty) {
             case HARD -> WIDTH_HARD;
             case VERY_HARD -> WIDTH_VERY_HARD;

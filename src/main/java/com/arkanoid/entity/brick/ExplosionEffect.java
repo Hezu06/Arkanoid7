@@ -1,16 +1,11 @@
-package com.arkanoid.game;
+package com.arkanoid.entity.brick;
 
-import com.arkanoid.entity.brick.ExplosiveBrick;
-import com.arkanoid.entity.brick.NormalBrick;
-import com.arkanoid.entity.brick.StrongBrick;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import com.arkanoid.entity.brick.Brick;
-
 
 
 public class ExplosionEffect {
@@ -44,21 +39,6 @@ public class ExplosionEffect {
         double centerX = x + width / 2;
         double centerY = y + height / 2;
 
-        /* Explosive brick: Bigger explosion size and number of particles.
-            Number of particles: 80.
-            Size: 3 + rand(0 - 1) x 4.
-            Life: 0.6 + rand(0 - 1) x 0.8.
-            Speed: 120 + rand(0 - 1) x 180.
-            Color: Orange -> Yellow.
-         */
-        /* Other brick: Smaller explosion size and number of particles.
-            Number of particles: 30.
-            Size: 2 + rand(0 - 1) * 2.
-            Life: 0.2 + rand(0 - 1) x 0.4.
-            Speed: 100 + rand(0 - 1) x 150.
-            Color: Brick Color.
-         */
-
         // ---- About hsb() ----
         // Hue (0.0): Red
         // Saturation (1.0): Full color
@@ -78,12 +58,12 @@ public class ExplosionEffect {
                 Number of particles: 80.
                 Size: 3 + rand(0 - 1) x 4.
                 Life: 0.6 + rand(0 - 1) x 0.8.
-                Speed: 120 + rand(0 - 1) x 180.
+                Speed: 100 + rand(0 - 1) x 120.
                 Color: Orange -> Yellow.
              */
             numsOfParticles = 80;
-            speedConstant1 = 120;
-            speedConstant2 = 180;
+            speedConstant1 = 100;
+            speedConstant2 = 120;
             lifeConstant1 = 0.6;
             lifeConstant2 = 0.8;
 
@@ -91,15 +71,15 @@ public class ExplosionEffect {
             sizeConstant1 = 3;
             sizeConstant2 = 3;
 
-            // From Orange to Yellow (Hue 30 to 60)
-            color = Color.hsb(30 + 30 * rand.nextDouble(), 0.9, 0.9);
+            // From Orange to Yellow (Hue 40 to 60)
+            color = Color.hsb(40 + 20 * rand.nextDouble(), 1, 1);
         }
         else {
             /* Other bricks (SMALL)
-                Number of particles: 50. (Adjusted from 30 to 50 for a visible effect)
-                Size: 2 + rand(0 - 1) * 3. (Adjusted constant 2 to 3 for better range)
-                Life: 0.4 + rand(0 - 1) x 0.6. (Adjusted constants)
-                Speed: 80 + rand(0 - 1) x 120. (Adjusted constants)
+                Number of particles: 40;
+                Size: 2 + rand(0 - 1) x 3.
+                Life: 0.3 + rand(0 - 1) x 0.5.
+                Speed: 80 + rand(0 - 1) x 120.
                 Color: Brick Color based on type.
              */
             numsOfParticles = 40;
@@ -114,7 +94,7 @@ public class ExplosionEffect {
 
             // ---- Set Color for specific Brick ----
             if (brick instanceof NormalBrick) {
-                color = Color.hsb(300 + 30 * rand.nextDouble(), 0.9, 0.9);
+                color = Color.hsb(300 + 30 * rand.nextDouble(), 1, 1);
                 // Pink/Magenta (Hue 300 to 330)
             }
             else  {

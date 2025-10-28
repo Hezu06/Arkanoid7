@@ -2,6 +2,7 @@ package com.arkanoid.game;
 
 import com.arkanoid.entity.Ball;
 import com.arkanoid.entity.brick.Brick;
+import com.arkanoid.entity.brick.ExplosionEffect;
 import com.arkanoid.entity.brick.ExplosiveBrick;
 import com.arkanoid.entity.brick.UnbreakableBrick;
 import com.arkanoid.entity.powerUp.PowerUp;
@@ -29,11 +30,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.arkanoid.level.DifficultySettings;
+
 public class GameMain extends Application {
 
     private static final int WINDOW_WIDTH = 750;
     private static final int WINDOW_HEIGHT = 800;
-    private static final int BALL_SPEED = 600;
 
     private GraphicsContext gc;
     private List<Brick> bricks;
@@ -81,8 +83,8 @@ public class GameMain extends Application {
         );
         // --- 2. Load the Level ---
         bricks = loadLevel();
-        listBalls.add(new Ball(400, 400, 0, -1, BALL_SPEED, 15, ballTexture.getImage()));
-        paddle = new Paddle(350, 775, "large", 600, paddleTexture.getImage());
+        listBalls.add(new Ball(400, 400, 0, -1, DifficultySettings.getBallSpeed(levelDifficulty), 15, ballTexture.getImage()));
+        paddle = new Paddle(350, 775, DifficultySettings.getPaddleWidth(levelDifficulty), 600, paddleTexture.getImage());
 
         scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
@@ -275,8 +277,8 @@ public class GameMain extends Application {
         }
         playAgainShown = false;
         bricks = loadLevel();
-        listBalls.add(new Ball(400, 400, 0, -1, BALL_SPEED, 15, ballTexture.getImage()));
-        paddle = new Paddle(350, 760, "large", 600, paddleTexture.getImage());
+        listBalls.add(new Ball(400, 400, 0, -1, DifficultySettings.getBallSpeed(levelDifficulty), 15, ballTexture.getImage()));
+        paddle = new Paddle(350, 760, DifficultySettings.getPaddleWidth(levelDifficulty), 600, paddleTexture.getImage());
         powerUps = new ArrayList<>();
         // Thêm lại canvas
         Canvas canvas = new Canvas(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -315,8 +317,8 @@ public class GameMain extends Application {
 
     public void spawnExtraBalls() {
         listBalls.add(new Ball(listBalls.getFirst().getX(), listBalls.getFirst().getY(),
-                3, -1, BALL_SPEED, 15,  ballTexture.getImage()));
+                3, -1, DifficultySettings.getBallSpeed(levelDifficulty), 15,  ballTexture.getImage()));
         listBalls.add(new Ball(listBalls.getFirst().getX(), listBalls.getFirst().getY(),
-                1, -1, BALL_SPEED, 15,  ballTexture.getImage()));
+                1, -1, DifficultySettings.getBallSpeed(levelDifficulty), 15,  ballTexture.getImage()));
     }
 }

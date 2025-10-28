@@ -26,8 +26,8 @@ public class Paddle extends MovableObject {
 
     private static final int WINDOW_WIDTH = 750;
 
-    public Paddle(double x, double y, String paddleType, double speed, Image image) {
-        super(x, y, paddleType.equals("large") ? 120 : 100, 20, 0, 0);
+    public Paddle(double x, double y, int width, double speed, Image image) {
+        super(x, y, width, 20, 0, 0);
         this.speed = speed;
         this.originalWidth = width;
         this.paddleType = paddleType;
@@ -68,7 +68,7 @@ public class Paddle extends MovableObject {
     }
 
     private Image getImage() {
-        if (paddleType.equals("large")) { return largePaddleImage; } return smallPaddleImage;
+        return largePaddleImage;
     }
 
     // ---------------------
