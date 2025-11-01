@@ -37,6 +37,9 @@ public class GameMain extends Application {
     private static final int WINDOW_WIDTH = 750;
     private static final int WINDOW_HEIGHT = 800;
 
+    private static final double PADDLE_START_Y = 775;
+    private static final double BALL_RADIUS = 15;
+
     private GraphicsContext gc;
     private List<Brick> bricks;
     private Paddle paddle;
@@ -83,8 +86,20 @@ public class GameMain extends Application {
         gamePane.getChildren().addAll(backgroundTexture, canvas);
         // --- 2. Load the Level ---
         bricks = loadLevel();
-        listBalls.add(new Ball(400, 400, 0, -1, DifficultySettings.getBallSpeed(levelDifficulty), 15, ballTexture.getImage()));
-        paddle = new Paddle(350, 775, DifficultySettings.getPaddleWidth(levelDifficulty), 600, paddleTexture.getImage());
+
+        int paddleWidth = DifficultySettings.getPaddleWidth(levelDifficulty);
+        // Tự động căn giữa paddle
+        double paddleX = (double) (WINDOW_WIDTH - paddleWidth) / 2;
+        paddle = new Paddle(paddleX, PADDLE_START_Y, paddleWidth, 600, paddleTexture.getImage());
+
+        // 2. Tạo Bóng (dựa trên vị trí paddle)
+        // Căn giữa bóng theo chiều X của paddle
+        double ballX = paddle.getX() + (paddle.getWidth() / 2) - BALL_RADIUS;
+        // Đặt bóng ngay trên mặt paddle
+        double ballY = paddle.getY() - (BALL_RADIUS * 2) - 1;
+
+        listBalls.add(new Ball(ballX, ballY, 0, -1, // Hướng đi lên
+                DifficultySettings.getBallSpeed(levelDifficulty), BALL_RADIUS, ballTexture.getImage()));
 
         scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
@@ -171,25 +186,34 @@ public class GameMain extends Application {
         for (ExplosionEffect effect : activeExplosion) {
             effect.update(deltaTime);
         }
+
+        for (Brick brick : bricks) {
+            brick.update();
+        }
+        paddle.update(deltaTime);
         // Remove all explosions that have finished their animation.
         activeExplosion.removeIf(ExplosionEffect::isFinished);
 
         for (Ball ball : listBalls) {
-            if (!ball.isAlive()) {
-                if (ball.getNumberOfBalls() >= 1) {
-                    ball.setNumberOfBalls(ball.getNumberOfBalls() - 1);
-                }
-                if (ball.getNumberOfBalls() >= 1) listBalls.remove(ball);
-            }
             ball.move(deltaTime);
+        }
+
+        for (PowerUp powerUp : powerUps) {
+            powerUp.update();
         }
 
         List<Brick> bricksToRemove = new ArrayList<>();
 
         for (Brick brick : bricks) {
+            // Chỉ kiểm tra va chạm nếu gạch chưa bị vỡ
+            if (brick.isBroken()) {
+                continue;
+            }
+
             for (Ball ball : listBalls) {
                 if (ball.checkCollision(brick)) {
                     ball.bounceOff(brick);
+
                     if (brick.takeHit()) {
                         if (!(brick instanceof UnbreakableBrick)) {
                             PowerUp newPowerUp = PowerUpFactory.createPowerUp(brick.getX(), brick.getY());
@@ -213,10 +237,10 @@ public class GameMain extends Application {
                     }
                 }
             }
-            bricks.removeIf(b -> b.isBroken() && !b.isFading() && b.getOpacity() <= 0);
         }
+
         this.bricks.removeAll(bricksToRemove);
-        paddle.update(deltaTime);
+
 
         // Va chạm bóng - thanh
         for (Ball ball : listBalls) {
@@ -226,27 +250,37 @@ public class GameMain extends Application {
         }
 
         for(PowerUp powerUp : powerUps) {
-            powerUp.update();
             if (powerUp.isActive() && powerUp.checkCollision(paddle)) {
                 powerUp.takeHit();
                 powerUp.applyEffect(this);
             }
+        }
+
+        this.bricks.removeAll(bricksToRemove);
+
+        // Xóa các gạch đã hoàn thành hiệu ứng mờ dần (sửa lỗi CME Vị trí 2)
+        this.bricks.removeIf(b -> b.isBroken() && b.getOpacity() <= 0);
+
+        // Xóa các bóng đã chết (sửa lỗi CME Vị trí 1 và lỗi logic)
+        this.listBalls.removeIf(ball -> !ball.isAlive());
+
+        // Xóa các power-up đã được "ăn" hoặc bay ra khỏi màn hình
+        this.powerUps.removeIf(p -> !p.isActive() || p.getY() > WINDOW_HEIGHT);
+
+        // Xóa các hiệu ứng nổ đã kết thúc
+        activeExplosion.removeIf(ExplosionEffect::isFinished);
+
+        if (listBalls.isEmpty() && Ball.getNumberOfBalls() <= 0 && !playAgainShown) {
+            showPlayAgainButton(); // Hàm này sẽ set paused = true
+            playAgainShown = true; // Đặt cờ này ở đây
         }
     }
 
     private void render() {
         gc.clearRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
-        for (Ball ball : listBalls) {
-            if (ball.isPlayAgain() && !playAgainShown) {
-                showPlayAgainButton();
-                playAgainShown = true;
-            }
-        }
-
         // Call the individual object's render method, passing the shared gc
         for (Brick brick : bricks) {
-            brick.update();
             brick.render(gc);
         }
 
@@ -259,6 +293,7 @@ public class GameMain extends Application {
         }
 
         paddle.render(gc);
+
         for (PowerUp powerUp : powerUps) {
             powerUp.render(gc);
         }
@@ -267,20 +302,31 @@ public class GameMain extends Application {
     private void resetGame() {
         // Reset trạng thái
         System.out.println("Resetting Game");
-        for (Ball ball : listBalls) {
-            ball.setPlayAgain(false);
-            listBalls.remove(ball);
-            break;
-        }
+
+        listBalls.clear();
+        powerUps.clear();
+
+        Ball.setNumberOfBalls(0);
+
         playAgainShown = false;
+
         bricks = loadLevel();
-        listBalls.add(new Ball(400, 400, 0, -1, DifficultySettings.getBallSpeed(levelDifficulty), 15, ballTexture.getImage()));
-        paddle = new Paddle(350, 760, DifficultySettings.getPaddleWidth(levelDifficulty), 600, paddleTexture.getImage());
-        powerUps = new ArrayList<>();
+
+        int paddleWidth = DifficultySettings.getPaddleWidth(levelDifficulty);
+        double paddleX = (double) (WINDOW_WIDTH - paddleWidth) / 2; // Căn giữa
+        paddle = new Paddle(paddleX, PADDLE_START_Y, paddleWidth, 600, paddleTexture.getImage());
+
+        // 2. Tạo Bóng (dựa trên vị trí paddle)
+        double ballX = paddle.getX() + (paddle.getWidth() / 2) - BALL_RADIUS;
+        double ballY = paddle.getY() - (BALL_RADIUS * 2) - 1; // Ngay trên paddle
+
+        listBalls.add(new Ball(ballX, ballY, 0, -1,
+                DifficultySettings.getBallSpeed(levelDifficulty), BALL_RADIUS, ballTexture.getImage()));
+        gamePane.getChildren().clear();
         // Thêm lại canvas
         Canvas canvas = new Canvas(WINDOW_WIDTH, WINDOW_HEIGHT);
         gc = canvas.getGraphicsContext2D();
-        gamePane.getChildren().add(canvas);
+        gamePane.getChildren().addAll(backgroundTexture, canvas);
     }
 
     private void showPlayAgainButton() {
