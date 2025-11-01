@@ -27,6 +27,7 @@ import javafx.stage.Stage;
 import com.arkanoid.entity.Paddle;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.arkanoid.level.DifficultySettings;
@@ -216,7 +217,7 @@ public class GameMain extends Application {
 
                     if (brick.takeHit()) {
                         if (!(brick instanceof UnbreakableBrick)) {
-                            PowerUp newPowerUp = PowerUpFactory.createPowerUp(brick.getX(), brick.getY());
+                            PowerUp newPowerUp = PowerUpFactory.createPowerUp(brick.getX(), brick.getY(), levelDifficulty);
                             if (newPowerUp != null) {
                                 powerUps.add(newPowerUp);
                             }
