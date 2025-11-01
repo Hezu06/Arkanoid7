@@ -18,10 +18,10 @@ public class optionsScreen {
         GameButton btnSetPaddle = new GameButton("PADDLE");
         GameButton btnBack = new GameButton("BACK");
 
-        GameButton btnBackground1 = new GameButton("Background1");
-        GameButton btnBackground2 = new GameButton("Background2");
-        GameButton btnBackground3 = new GameButton("Background3");
-        GameButton btnBackground4 = new GameButton("Background4");
+        GameButton btnBackground1 = new GameButton("GALAXY");
+        GameButton btnBackground2 = new GameButton("BLACK");
+        GameButton btnBackground3 = new GameButton("BEACH");
+        GameButton btnBackground4 = new GameButton("GRASS");
 
         GameButton btnDefaultBall = new GameButton("Default Ball");
         GameButton btnBasketball = new GameButton("Basketball");
@@ -61,11 +61,11 @@ public class optionsScreen {
             });
 
             btnBackground3.setOnAction(eB3 -> {
-                background.setImage(new Image("assets/Background/whiteBackground.png"));
+                background.setImage(new Image("assets/Background/beachBackground.jpg"));
             });
 
             btnBackground4.setOnAction(eB4 -> {
-                background.setImage(new Image("assets/Background/blackBackground.jpg"));
+                background.setImage(new Image("assets/Background/grassBackground.png"));
             });
 
             btnBackOfBackground.setOnAction(e1 -> fadeSmooth.smoothContent(contentLayer, optionsBox));
