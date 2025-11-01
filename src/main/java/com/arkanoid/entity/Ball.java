@@ -15,9 +15,7 @@ public class Ball extends MovableObject {
     private static final int WINDOW_WIDTH = 750;
     private static final int WINDOW_HEIGHT = 800;
     private final AudioClip hitSound;
-    private boolean playAgain = false;
     private static int numberOfBalls = 0;
-
 
 
     private boolean alive = true;
@@ -39,50 +37,83 @@ public class Ball extends MovableObject {
     }
 
     public void bounceOff(GameObject other) {
-        Rectangle2D rect = other.getBounds();
-
         double cx = getCenterX();
         double cy = getCenterY();
 
-        double closestX = Math.max(rect.getMinX(), Math.min(cx, rect.getMaxX()));
-        double closestY = Math.max(rect.getMinY(), Math.min(cy, rect.getMaxY()));
-
-        double nx = cx - closestX;
-        double ny = cy - closestY;
-
-        double distSq = nx * nx + ny * ny;
-        if (distSq == 0) return; // tránh chia 0 khi tâm nằm trong vật thể
-
-        double dist = Math.sqrt(distSq);
-        nx /= dist;
-        ny /= dist;
-
-        // --- Paddle ---
+        // --- Paddle Logic (Logic cho Paddle) ---
         if (other instanceof Paddle paddle) {
-            double hitPos = (cx - paddle.getX()) / paddle.getWidth();
-            hitPos = Math.max(0, Math.min(1, hitPos));
-            double angle = Math.toRadians(150 * (hitPos - 0.5)); // ±75°
-            dx = Math.sin(angle);
-            dy = -Math.cos(angle);
-            y = paddle.getY() - radius * 2 - 1;
-            hitSound.play();
-            return;
+            Rectangle2D rect = paddle.getBounds();
+
+            // Chỉ kích hoạt logic paddle đặc biệt nếu bóng đập vào MẶT TRÊN của paddle
+            // và đang đi XUỐNG (dy > 0).
+            // (cy < rect.getMinY() dùng để kiểm tra bóng ở phía trên paddle)
+            if (cy < rect.getMinY() && dy > 0) {
+                double hitPos = (cx - paddle.getX()) / paddle.getWidth();
+                hitPos = Math.max(0, Math.min(1, hitPos)); // Giới hạn từ 0 đến 1
+                // Góc nảy từ ±75 độ (150 * (hitPos - 0.5))
+                double angle = Math.toRadians(150 * (hitPos - 0.5));
+                dx = Math.sin(angle);
+                dy = -Math.cos(angle); // Luôn nảy lên
+                y = paddle.getY() - radius * 2 - 0.1; // Đẩy bóng ra khỏi paddle một chút
+                hitSound.play();
+                return; // Kết thúc sớm vì logic paddle là đặc biệt
+            }
+            // Nếu bóng đập vào CẠNH của paddle, nó sẽ rơi vào logic chung (Brick/Wall)
         }
 
-        // --- Phản xạ vật lý chung (Brick / Wall) ---
-        // Vector phản xạ: r = d - 2(d·n)n
-        double dot = dx * nx + dy * ny;
-        dx -= 2 * dot * nx;
-        dy -= 2 * dot * ny;
+        // --- Logic chung (Brick / Wall) ---
+        // Sử dụng logic "Minimum Penetration" (Độ xuyên thấu tối thiểu)
+        // để quyết định nảy theo chiều ngang hay chiều dọc.
 
-        // Đảm bảo bóng ra khỏi vật thể
-        double penetration = radius - dist;
-        if (penetration > 0) {
-            x += nx * penetration;
-            y += ny * penetration;
+        Rectangle2D rect = other.getBounds();
+
+        // 1. Tìm tâm của gạch/tường
+        double rx = rect.getMinX() + rect.getWidth() / 2;
+        double ry = rect.getMinY() + rect.getHeight() / 2;
+
+        // 2. Tìm tổng "nửa-chiều-rộng" và "nửa-chiều-cao"
+        double sumHalfWidths = radius + rect.getWidth() / 2;
+        double sumHalfHeights = radius + rect.getHeight() / 2;
+
+        // 3. Tìm khoảng cách giữa các tâm
+        double diffX = cx - rx;
+        double diffY = cy - ry;
+
+        // 4. Tính toán độ xuyên thấu (overlap) trên cả hai trục
+        // Chúng ta quan tâm đến giá trị tuyệt đối của diffX/diffY
+        double overlapX = sumHalfWidths - Math.abs(diffX);
+        double overlapY = sumHalfHeights - Math.abs(diffY);
+
+        // Đảm bảo rằng có va chạm (overlap > 0 trên cả hai trục)
+        // Mặc dù checkCollision đã làm điều này, kiểm tra lại ở đây cũng không sao
+        if (overlapX > 0 && overlapY > 0) {
+
+            // 5. So sánh độ xuyên thấu: Trục nào có độ xuyên thấu ÍT HƠN
+            // chính là trục xảy ra va chạm.
+            if (overlapX < overlapY) {
+                // Va chạm theo chiều ngang (Trái/Phải)
+                dx = -dx; // Lật hướng di chuyển ngang
+
+                // Đẩy bóng ra khỏi vật thể để tránh bị kẹt
+                if (diffX > 0) { // Bóng ở bên phải gạch
+                    x = rect.getMaxX();
+                } else { // Bóng ở bên trái gạch
+                    x = rect.getMinX() - radius * 2;
+                }
+            } else {
+                // Va chạm theo chiều dọc (Trên/Dưới)
+                dy = -dy; // Lật hướng di chuyển dọc
+
+                // Đẩy bóng ra khỏi vật thể để tránh bị kẹt
+                if (diffY > 0) { // Bóng ở bên dưới gạch
+                    y = rect.getMaxY();
+                } else { // Bóng ở bên trên gạch
+                    y = rect.getMinY() - radius * 2;
+                }
+            }
         }
 
-        // Chuẩn hóa hướng để tránh lỗi trôi
+        // Chuẩn hóa vector vận tốc (giữ lại từ code gốc của bạn, điều này tốt)
         double len = Math.sqrt(dx * dx + dy * dy);
         if (len != 0) {
             dx /= len;
@@ -93,21 +124,31 @@ public class Ball extends MovableObject {
     }
 
 
-
+    /**
+     * Kiểm tra va chạm (Không thay đổi).
+     * Logic này đã chính xác để PHÁT HIỆN va chạm giữa hình tròn và hình chữ nhật.
+     */
     public boolean checkCollision(GameObject other) {
         Rectangle2D rect = other.getBounds();
 
         double cx = getCenterX();
         double cy = getCenterY();
 
+        // Tìm điểm gần nhất trên hình chữ nhật so với tâm quả bóng
         double closestX = Math.max(rect.getMinX(), Math.min(cx, rect.getMaxX()));
         double closestY = Math.max(rect.getMinY(), Math.min(cy, rect.getMaxY()));
 
+        // Tính khoảng cách bình phương từ tâm bóng đến điểm gần nhất
         double dxBall = cx - closestX;
         double dyBall = cy - closestY;
 
-        return (dxBall * dxBall + dyBall * dyBall) <= (radius * radius);
+        double distanceSq = (dxBall * dxBall + dyBall * dyBall);
+
+        // Nếu khoảng cách bình phương nhỏ hơn bán kính bình phương, thì có va chạm
+        return distanceSq <= (radius * radius);
     }
+
+    // ... (Phần còn lại của class giữ nguyên) ...
 
     public double getCenterX() {
         return x + radius;
@@ -118,7 +159,10 @@ public class Ball extends MovableObject {
     }
 
     public void move(double deltaTime) {
-        int steps = (int) Math.ceil(speed * deltaTime / radius);
+        // Tăng số bước để cải thiện độ chính xác va chạm (chia nhỏ bước đi)
+        // Điều này giúp ngăn bóng "lọt" qua các vật thể mỏng ở tốc độ cao
+        int steps = (int) Math.ceil(speed * deltaTime / (radius * 0.5)); // Tăng số bước
+        if (steps == 0) steps = 1;
         double stepTime = deltaTime / steps;
 
         for (int i = 0; i < steps; i++) {
@@ -146,9 +190,7 @@ public class Ball extends MovableObject {
 
             if (y > WINDOW_HEIGHT) {
                 alive = false;
-                if (numberOfBalls < 1) {
-                    playAgain = true;
-                }
+                numberOfBalls--;
                 return; // bóng đã rơi, dừng lại
             }
         }
@@ -173,11 +215,11 @@ public class Ball extends MovableObject {
     }
 
 
-    public int getNumberOfBalls() {
+    public static int getNumberOfBalls() {
         return numberOfBalls;
     }
 
-    public void setNumberOfBalls(int numberOfBalls) {
+    public static void setNumberOfBalls(int numberOfBalls) {
         Ball.numberOfBalls = numberOfBalls;
     }
 
@@ -185,18 +227,9 @@ public class Ball extends MovableObject {
         return alive;
     }
 
-    public void setAlive(boolean alive) {
-        this.alive = alive;
-    }
-
-    public boolean isPlayAgain() {
-        return playAgain;
-    }
-
-    public void setPlayAgain(boolean playAgain) {
-        this.playAgain = playAgain;
-    }
-
     @Override
-    public boolean takeHit() {return y > WINDOW_HEIGHT;};
+    public boolean takeHit() {
+        return y > WINDOW_HEIGHT;
+    }
+
 }
