@@ -10,7 +10,7 @@ public class ExtraLives extends PowerUp {
     public ExtraLives(double x, double y) {
         super(x, y, 32, 32);
         super.setImage(new Image(Objects.requireNonNull(getClass().getClassLoader().
-                getResourceAsStream("powerUpItem/green.png"))));
+                getResourceAsStream("assets/Heart/heart_alive.png"))));
     }
 
     @Override

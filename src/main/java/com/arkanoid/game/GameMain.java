@@ -253,6 +253,12 @@ public class GameMain extends Application {
         List<Brick> bricksToRemove = new ArrayList<>();
 
         for (Brick brick : bricks) {
+
+            // Chỉ kiểm tra va chạm nếu gạch chưa bị vỡ
+            if (brick.isBroken()) {
+                continue;
+            }
+
             for (Ball ball : listBalls) {
                 if (ball.checkCollision(brick)) {
                     ball.bounceOff(brick);
@@ -316,6 +322,25 @@ public class GameMain extends Application {
                 powerUp.applyEffect(this);
             }
         }
+
+        this.bricks.removeAll(bricksToRemove);
+
+        // Xóa các gạch đã hoàn thành hiệu ứng mờ dần (sửa lỗi CME Vị trí 2)
+        this.bricks.removeIf(b -> b.isBroken() && b.getOpacity() <= 0);
+
+        // Xóa các bóng đã chết (sửa lỗi CME Vị trí 1 và lỗi logic)
+//        this.listBalls.removeIf(ball -> !ball.isAlive());
+
+        // Xóa các power-up đã được "ăn" hoặc bay ra khỏi màn hình
+        this.powerUps.removeIf(p -> !p.isActive() || p.getY() > WINDOW_HEIGHT);
+
+        // Xóa các hiệu ứng nổ đã kết thúc
+        activeExplosion.removeIf(ExplosionEffect::isFinished);
+
+        if (listBalls.isEmpty() && Ball.getNumberOfBalls() <= 0 && !playAgainShown) {
+            showPlayAgainButton(); // Hàm này sẽ set paused = true
+            playAgainShown = true; // Đặt cờ này ở đây
+        }
     }
 
     private void render() {
@@ -325,12 +350,6 @@ public class GameMain extends Application {
         gameStateManager.render(gc, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         // --- Rendering entities ---
-        for (Ball ball : listBalls) {
-            if (ball.isPlayAgain() && !playAgainShown) {
-                showPlayAgainButton();
-                playAgainShown = true;
-            }
-        }
 
         for (Brick brick : bricks) {
             brick.update();
@@ -359,6 +378,10 @@ public class GameMain extends Application {
         if (gameStateManager.isGameOver()) {
             gameStateManager = new GameStateManager();
         }
+
+        Ball.setNumberOfBalls(0);
+
+        playAgainShown = false;
 
         bricks = loadLevel();
         listBalls.clear();
