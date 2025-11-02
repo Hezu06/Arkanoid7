@@ -246,6 +246,21 @@ public class GameMain extends Application {
         }
     }
 
+    private boolean isLevelComplete() {
+        if (bricks == null || bricks.isEmpty()) {
+            return true;
+        }
+
+        // Check if all remaining bricks are Unbreakable Bricks.
+        for (Brick brick : bricks) {
+            if (!(brick instanceof UnbreakableBrick)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private void update(double deltaTime) {
         for (ExplosionEffect effect : activeExplosion) {
             effect.update(deltaTime);
@@ -350,6 +365,14 @@ public class GameMain extends Application {
         }
         this.bricks.removeAll(bricksToRemove);
 
+        // --- Level Completion Check (Win) ---
+        if (isLevelComplete() && !playAgainShown) {
+            System.out.println("Level Complete!");
+            showPlayAgainButton();
+            playAgainShown = true;
+            return; // Stop processing and rendering once game is paused.
+        }
+
         // Ball - Paddle Collision.
         for (Ball ball : listBalls) {
             if (ball.checkCollision(paddle)) {
@@ -372,9 +395,6 @@ public class GameMain extends Application {
         // Xóa các gạch đã hoàn thành hiệu ứng mờ dần (sửa lỗi CME Vị trí 2)
         this.bricks.removeIf(b -> b.isBroken() && b.getOpacity() <= 0);
 
-        // Xóa các bóng đã chết (sửa lỗi CME Vị trí 1 và lỗi logic)
-//        this.listBalls.removeIf(ball -> !ball.isAlive());
-
         // Xóa các power-up đã được "ăn" hoặc bay ra khỏi màn hình
         this.powerUps.removeIf(p -> !p.isActive() || p.getY() > WINDOW_HEIGHT);
 
@@ -396,7 +416,6 @@ public class GameMain extends Application {
         // --- Rendering entities ---
 
         for (Brick brick : bricks) {
-            brick.update();
             brick.render(gc);
         }
 
@@ -418,10 +437,8 @@ public class GameMain extends Application {
         System.out.println("Resetting Game");
         playAgainShown = false;
 
-        // Reset Game State if this is a true restart (GAME OVER).
-        if (gameStateManager.isGameOver()) {
-            gameStateManager = new GameStateManager();
-        }
+        // Reset Game State if Game Over/ Level Complete.
+        gameStateManager = new GameStateManager();
 
         Ball.setNumberOfBalls(0);
 
