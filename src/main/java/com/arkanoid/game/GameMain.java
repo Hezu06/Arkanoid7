@@ -224,9 +224,9 @@ public class GameMain extends Application {
         // Remove all explosions that have finished their animation.
         activeExplosion.removeIf(ExplosionEffect::isFinished);
 
-//        for (Ball ball : listBalls) {
-//            ball.move(deltaTime);
-//        }
+        for (Ball ball : listBalls) {
+            ball.move(deltaTime);
+        }
 
         for (PowerUp powerUp : powerUps) {
             powerUp.update();
@@ -275,18 +275,52 @@ public class GameMain extends Application {
             }
 
             for (Ball ball : listBalls) {
-                if (ball.checkCollision(brick)) {
-                    ball.bounceOff(brick);
-                    if (brick.takeHit()) {
+                if (ball.isFireBall()) {
+                    if (ball.checkCollision(brick)) {
+                        if (brick instanceof UnbreakableBrick) {
+                            ball.bounceOff(brick);
+                            break;
+                        } else {
+                            if (brick.takeHit()) {
+                                // Adding points for breaking a brick.
+                                if (brick instanceof StrongBrick) {
+                                    gameStateManager.addScoreForStrongBrick();
+                                } else {
+                                    gameStateManager.addScoreForNormalBrick();
+                                }
 
-                        // Exclude Unbreakable Brick from getting properties.
-                        if (!(brick instanceof UnbreakableBrick)) {
+                                // Making bricks dropping power-ups.
+                                PowerUp newPowerUp = PowerUpFactory.createPowerUp(brick.getX(), brick.getY(), levelDifficulty);
+                                if (newPowerUp != null) {
+                                    powerUps.add(newPowerUp);
+                                }
 
+                                // Particle explosion effect for bricks.
+                                activeExplosion.add(new ExplosionEffect(
+                                        brick.getX(), brick.getY(),
+                                        brick.getWidth(), brick.getHeight(),
+                                        brick
+                                ));
+
+                                if (brick instanceof ExplosiveBrick) {
+                                    List<int[]> affectedCoords = brick.triggerSpecialAction();
+                                    if (!affectedCoords.isEmpty()) {
+                                        handleExplosion(affectedCoords, bricksToRemove);
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                } else {
+                    if (ball.checkCollision(brick)) {
+                        ball.bounceOff(brick);
+
+                        if (brick.takeHit()) {
                             // Adding points for breaking a brick.
                             if (brick instanceof StrongBrick) {
                                 gameStateManager.addScoreForStrongBrick();
-                            }
-                            else {
+                            } else {
                                 gameStateManager.addScoreForNormalBrick();
                             }
 
@@ -302,15 +336,14 @@ public class GameMain extends Application {
                                     brick.getWidth(), brick.getHeight(),
                                     brick
                             ));
-                        }
 
-                        // Destroying surrounding bricks if Explosive Brick is hit.
-                        if (brick instanceof ExplosiveBrick) {
-                            List<int[]> affectedCoords = brick.triggerSpecialAction();
-                            if (!affectedCoords.isEmpty()) {
-                                handleExplosion(affectedCoords, bricksToRemove);
+                            if (brick instanceof ExplosiveBrick) {
+                                List<int[]> affectedCoords = brick.triggerSpecialAction();
+                                if (!affectedCoords.isEmpty()) {
+                                    handleExplosion(affectedCoords, bricksToRemove);
+                                }
                             }
-                            bricksToRemove.add(brick);
+
                         }
                     }
                 }
@@ -364,7 +397,6 @@ public class GameMain extends Application {
         // --- Rendering entities ---
 
         for (Brick brick : bricks) {
-            brick.update();
             brick.render(gc);
         }
 
