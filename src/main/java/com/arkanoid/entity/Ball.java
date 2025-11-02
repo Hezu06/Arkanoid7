@@ -1,6 +1,7 @@
 package com.arkanoid.entity;
 
 import com.arkanoid.entity.powerUp.PowerUp;
+import com.arkanoid.game.GameMain;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -11,12 +12,15 @@ import java.util.Objects;
 public class Ball extends MovableObject {
     private final double speed;
     private final double radius;
-    private final Image image;
+    private static Image image;
     private static final int WINDOW_WIDTH = 750;
     private static final int WINDOW_HEIGHT = 800;
     private final AudioClip hitSound;
     private static int numberOfBalls = 0;
 
+    private boolean isFireBall = false;
+    private double fireBallTimer = 0.0;
+    private static final double FIREBALL_DURATION = 5.0;
 
     private boolean alive = true;
 
@@ -30,10 +34,14 @@ public class Ball extends MovableObject {
             this.dy /= length;
         }
         numberOfBalls++;
-        this.image = image;
+        Ball.image = image;
         hitSound = new AudioClip(
                 Objects.requireNonNull(getClass().getResource("/sounds/collision_sound.wav")).toExternalForm()
         );
+    }
+
+    public static void setImage(Image image) {
+        Ball.image = image;
     }
 
     public void bounceOff(GameObject other) {
@@ -159,6 +167,14 @@ public class Ball extends MovableObject {
     }
 
     public void move(double deltaTime) {
+        if (isFireBall) {
+            fireBallTimer -= deltaTime;
+            if (fireBallTimer <= 0) {
+                isFireBall = false; // Hết thời gian
+                Ball.setImage(GameMain.ballTexture.getImage());
+            }
+        }
+
         // Tăng số bước để cải thiện độ chính xác va chạm (chia nhỏ bước đi)
         // Điều này giúp ngăn bóng "lọt" qua các vật thể mỏng ở tốc độ cao
         int steps = (int) Math.ceil(speed * deltaTime / (radius * 0.5)); // Tăng số bước
@@ -232,4 +248,12 @@ public class Ball extends MovableObject {
         return y > WINDOW_HEIGHT;
     }
 
+    public void activateFireBall() {
+        this.isFireBall = true;
+        this.fireBallTimer = FIREBALL_DURATION;
+    }
+
+    public boolean isFireBall() {
+        return isFireBall;
+    }
 }

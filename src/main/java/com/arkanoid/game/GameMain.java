@@ -42,9 +42,9 @@ public class GameMain extends Application {
     private final List<Ball> listBalls = new ArrayList<>();
     private List<PowerUp> powerUps = new ArrayList<>();
 
+    public static ImageView ballTexture;
     // --- Texture field ---
     private ImageView backgroundTexture;
-    private ImageView ballTexture;
     private ImageView paddleTexture;
 
     // --- Game State Manager ---
@@ -58,7 +58,7 @@ public class GameMain extends Application {
 
     // --- Setter field ---
     public void setBallTexture(ImageView ballTexture) {
-        this.ballTexture = ballTexture;
+        GameMain.ballTexture = ballTexture;
     }
 
     public void setPaddleTexture(ImageView paddleTexture) {
@@ -310,8 +310,8 @@ public class GameMain extends Application {
                             if (!affectedCoords.isEmpty()) {
                                 handleExplosion(affectedCoords, bricksToRemove);
                             }
+                            bricksToRemove.add(brick);
                         }
-                        bricksToRemove.add(brick);
                     }
                 }
             }
@@ -460,5 +460,9 @@ public class GameMain extends Application {
                 1, -1,
                 DifficultySettings.getBallSpeed(levelDifficulty), 15,
                 ballTexture.getImage()));
+    }
+
+    public List<Ball> getListBalls() {
+        return listBalls;
     }
 }

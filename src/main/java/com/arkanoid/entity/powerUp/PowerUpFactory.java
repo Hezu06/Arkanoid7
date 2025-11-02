@@ -25,7 +25,8 @@ public class PowerUpFactory {
                     PowerUpType.EXPAND_PADDLE,
                     PowerUpType.MULTI_BALL,
                     PowerUpType.EXTRA_LIVES,
-                    PowerUpType.EXTRA_COINS
+                    PowerUpType.EXTRA_COINS,
+                    PowerUpType.FIRE_BALL
             };
 
             // Randomly select one power-up.
@@ -36,7 +37,8 @@ public class PowerUpFactory {
                 case MULTI_BALL -> new MultiBall(x, y);
                 case EXTRA_LIVES -> new ExtraLives(x, y);
                 case EXTRA_COINS ->  new ExtraCoins(x, y);
-                case FIRE_BALL, IMMORTAL -> null;
+                case FIRE_BALL -> new FireBall(x, y);
+                case IMMORTAL -> null;
             };
         }
         return null;
