@@ -1,17 +1,13 @@
 package com.arkanoid.game;
 
 import com.arkanoid.entity.Ball;
-import com.arkanoid.entity.brick.Brick;
-import com.arkanoid.entity.brick.ExplosionEffect;
-import com.arkanoid.entity.brick.ExplosiveBrick;
-import com.arkanoid.entity.brick.UnbreakableBrick;
+import com.arkanoid.entity.brick.*;
 import com.arkanoid.entity.powerUp.PowerUp;
 import com.arkanoid.entity.powerUp.PowerUpFactory;
 import com.arkanoid.level.Level;
 import com.arkanoid.level.LevelLoader;
 import com.arkanoid.ui.ButtonEffects;
 import com.arkanoid.ui.GameButton;
-import javafx.animation.Transition;
 import javafx.application.Application;
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Pos;
@@ -45,11 +41,22 @@ public class GameMain extends Application {
     private final List<ExplosionEffect> activeExplosion = new ArrayList<>();
     private final List<Ball> listBalls = new ArrayList<>();
     private List<PowerUp> powerUps = new ArrayList<>();
-    private ImageView backgroundTexture;
 
+    // --- Texture field ---
+    private ImageView backgroundTexture;
     private ImageView ballTexture;
     private ImageView paddleTexture;
 
+    // --- Game State Manager ---
+    private GameStateManager gameStateManager;
+    private boolean playAgainShown = false;
+    private boolean paused = false;
+    private Pane gamePane;
+
+    // --- Launch State ---
+    private boolean isBallReadyToLaunch = true;
+
+    // --- Setter field ---
     public void setBallTexture(ImageView ballTexture) {
         this.ballTexture = ballTexture;
     }
@@ -61,14 +68,10 @@ public class GameMain extends Application {
     public void setBackgroundTexture(ImageView backgroundTexture) {
         this.backgroundTexture = backgroundTexture;
     }
-    private boolean playAgainShown = false;
-    private boolean paused = false;
-    private Pane gamePane;
 
     public void setLevelDifficulty(Level.LevelDifficulty levelDifficulty) {
         this.levelDifficulty = levelDifficulty;
     }
-    private static final String BACKGROUND_PATH = "/assets/Background/galaxyBackground.jpg";
 
     @Override
     public void start(Stage primaryStage) {
@@ -78,12 +81,14 @@ public class GameMain extends Application {
 
         // --- 1. Canvas Setup ---
         Canvas canvas = new Canvas(WINDOW_WIDTH, WINDOW_HEIGHT);
-        // Get the single drawing tool (GraphicsContext)
         gc = canvas.getGraphicsContext2D();
         GameMenu.Transition(backgroundTexture);
         gamePane.getChildren().addAll(backgroundTexture, canvas);
-        // --- 2. Load the Level ---
+
+        // --- 2. Initialize Game State and Level ---
+        gameStateManager = new  GameStateManager();
         bricks = loadLevel();
+
         listBalls.add(new Ball(400, 400, 0, -1, DifficultySettings.getBallSpeed(levelDifficulty), 15, ballTexture.getImage()));
         paddle = new Paddle(350, 775, DifficultySettings.getPaddleWidth(levelDifficulty), 600, paddleTexture.getImage());
 
@@ -91,6 +96,13 @@ public class GameMain extends Application {
             switch (e.getCode()) {
                 case LEFT -> paddle.setMovingLeft(true);
                 case RIGHT -> paddle.setMovingRight(true);
+
+                // Launch the ball on SPACE/UP
+                case SPACE, UP -> {
+                    if (isBallReadyToLaunch && !listBalls.isEmpty()) {
+                        isBallReadyToLaunch = false;
+                    }
+                }
             }
         });
 
@@ -107,7 +119,8 @@ public class GameMain extends Application {
             public void handle(long now) {
                 if (paused) return;
                 if (lastUpdate > 0) {
-                    double deltaTime = (now - lastUpdate) / 1_000_000_000.0;// đổi ns → giây
+                    double deltaTime = (now - lastUpdate) / 1_000_000_000.0;
+                    // Convert nanosecond to second.
                     update(deltaTime);
                     render();
                 }
@@ -121,11 +134,10 @@ public class GameMain extends Application {
         primaryStage.show();
     }
 
-    // ... (loadLevel and main method omitted for brevity, assume they are correct)
 
     private List<Brick> loadLevel() {
         LevelLoader loader = new LevelLoader();
-        String fileName = "";
+        String fileName;
         if (levelDifficulty == Level.LevelDifficulty.HARD) {
             fileName = "Hard.txt";
         } else if (levelDifficulty == Level.LevelDifficulty.VERY_HARD) {
@@ -139,11 +151,38 @@ public class GameMain extends Application {
             return loadedBricks;
         } catch (Exception e) {
             System.err.println("CRITICAL ERROR: Failed to load level.");
-            e.printStackTrace();
             return List.of();
         }
     }
 
+    /**
+     * Resets ball and paddle to initial position after losing a life.
+     * Sets the state to wait for user launch input.
+     */
+    private void resetBallAndPaddle() {
+        powerUps.clear();
+        listBalls.clear();
+
+        // Set the state to wait for user's input.
+        this.isBallReadyToLaunch = true;
+
+        paddle = new Paddle(350, 775, DifficultySettings.getPaddleWidth(levelDifficulty), 600, paddleTexture.getImage());
+        paddle.setMovingLeft(false);
+        paddle.setMovingRight(false);
+        // Initialise a new ball.
+        listBalls.add(new Ball(
+                400, 400, 0, -1,
+                DifficultySettings.getBallSpeed(levelDifficulty), 15,
+                ballTexture.getImage()));
+
+        System.out.println("Life Lost. Resetting Ball and Paddle. Lives remaining: " + gameStateManager.getLives());
+    }
+
+    /**
+     * Explosion Handler.
+     * @param affectedCoords Coords that are affected by the Explosive Brick
+     * @param bricksToRemove The bricks affected are added to the list.
+     */
     private void handleExplosion(List<int[]> affectedCoords, List<Brick> bricksToRemove) {
 
         for (int[] targetCoords : affectedCoords) {
@@ -159,6 +198,9 @@ public class GameMain extends Application {
                     if (activeBrick instanceof UnbreakableBrick) {
                         continue;
                     }
+
+                    gameStateManager.addScoreForNormalBrick();
+
                     activeBrick.setBroken(true);
                     activeBrick.setFading(true);
                     bricksToRemove.add(activeBrick);
@@ -179,15 +221,33 @@ public class GameMain extends Application {
         while (iterator.hasNext()) {
             Ball ball = iterator.next();
             if (!ball.isAlive()) {
-                if (ball.getNumberOfBalls() >= 1) {
-                    ball.setNumberOfBalls(ball.getNumberOfBalls() - 1);
+                iterator.remove();
+
+                // --- Life Management ---
+                if (listBalls.isEmpty()) {
+                    gameStateManager.decreaseLives();   // Life lost.
+                    if (!gameStateManager.isGameOver()) {
+                        resetBallAndPaddle();
+                    }
+                    else {
+                        // Game Over, show Play Again.
+                        if (!playAgainShown) {
+                            showPlayAgainButton();
+                            playAgainShown = true;
+                        }
+                    }
                 }
-                if (ball.getNumberOfBalls() >= 1) {
-                    iterator.remove();
-                    continue;
-                }
+                continue;
             }
-            ball.move(deltaTime);
+            // If ball is ready to launch, place it at the paddle center.
+            if (isBallReadyToLaunch) {
+                ball.setX(paddle.getX() + (paddle.getWidth() / 2) - (ball.getWidth() / 2));
+                ball.setY(paddle.getY() - ball.getHeight());
+                // Subtract 1 pixel to prevent ball - paddle collision.
+            }
+            else {
+                ball.move(deltaTime);
+            }
         }
 
         List<Brick> bricksToRemove = new ArrayList<>();
@@ -197,18 +257,33 @@ public class GameMain extends Application {
                 if (ball.checkCollision(brick)) {
                     ball.bounceOff(brick);
                     if (brick.takeHit()) {
+
+                        // Exclude Unbreakable Brick from getting properties.
                         if (!(brick instanceof UnbreakableBrick)) {
+
+                            // Adding points for breaking a brick.
+                            if (brick instanceof StrongBrick) {
+                                gameStateManager.addScoreForStrongBrick();
+                            }
+                            else {
+                                gameStateManager.addScoreForNormalBrick();
+                            }
+
+                            // Making bricks dropping power-ups.
                             PowerUp newPowerUp = PowerUpFactory.createPowerUp(brick.getX(), brick.getY(), levelDifficulty);
                             if (newPowerUp != null) {
                                 powerUps.add(newPowerUp);
                             }
 
+                            // Particle explosion effect for bricks.
                             activeExplosion.add(new ExplosionEffect(
                                     brick.getX(), brick.getY(),
                                     brick.getWidth(), brick.getHeight(),
                                     brick
                             ));
                         }
+
+                        // Destroying surrounding bricks if Explosive Brick is hit.
                         if (brick instanceof ExplosiveBrick) {
                             List<int[]> affectedCoords = brick.triggerSpecialAction();
                             if (!affectedCoords.isEmpty()) {
@@ -224,13 +299,16 @@ public class GameMain extends Application {
         this.bricks.removeAll(bricksToRemove);
         paddle.update(deltaTime);
 
-        // Va chạm bóng - thanh
+        // Ball - Paddle Collision.
         for (Ball ball : listBalls) {
             if (ball.checkCollision(paddle)) {
-                ball.bounceOff(paddle);
+                if (!isBallReadyToLaunch) {
+                    ball.bounceOff(paddle);
+                }
             }
         }
 
+        // Power-up Interaction.
         for(PowerUp powerUp : powerUps) {
             powerUp.update();
             if (powerUp.isActive() && powerUp.checkCollision(paddle)) {
@@ -243,6 +321,10 @@ public class GameMain extends Application {
     private void render() {
         gc.clearRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
+        // --- Lives and Scores UI ---
+        gameStateManager.render(gc, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+        // --- Rendering entities ---
         for (Ball ball : listBalls) {
             if (ball.isPlayAgain() && !playAgainShown) {
                 showPlayAgainButton();
@@ -250,7 +332,6 @@ public class GameMain extends Application {
             }
         }
 
-        // Call the individual object's render method, passing the shared gc
         for (Brick brick : bricks) {
             brick.update();
             brick.render(gc);
@@ -271,27 +352,42 @@ public class GameMain extends Application {
     }
 
     private void resetGame() {
-        // Reset trạng thái
         System.out.println("Resetting Game");
-        for (Ball ball : listBalls) {
-            ball.setPlayAgain(false);
-            listBalls.remove(ball);
-            break;
-        }
         playAgainShown = false;
+
+        // Reset Game State if this is a true restart (GAME OVER).
+        if (gameStateManager.isGameOver()) {
+            gameStateManager = new GameStateManager();
+        }
+
         bricks = loadLevel();
-        listBalls.add(new Ball(400, 400, 0, -1, DifficultySettings.getBallSpeed(levelDifficulty), 15, ballTexture.getImage()));
-        paddle = new Paddle(350, 760, DifficultySettings.getPaddleWidth(levelDifficulty), 600, paddleTexture.getImage());
+        listBalls.clear();
+
+        // Set the state for launching a new ball.
+        isBallReadyToLaunch = true;
+        listBalls.add(new Ball(400, 400, 0, -1,
+                DifficultySettings.getBallSpeed(levelDifficulty), 15,
+                ballTexture.getImage()));
+        paddle = new Paddle(350, 775,
+                DifficultySettings.getPaddleWidth(levelDifficulty), 600,
+                paddleTexture.getImage());
         powerUps = new ArrayList<>();
-        // Thêm lại canvas
+
+        // Re-add the canvas.
         Canvas canvas = new Canvas(WINDOW_WIDTH, WINDOW_HEIGHT);
         gc = canvas.getGraphicsContext2D();
-        gamePane.getChildren().add(canvas);
+
+        // BUG-FIX: Background blank after press PLAY AGAIN btn.
+        gamePane.getChildren().clear();
+        GameMenu.Transition(backgroundTexture);
+        gamePane.getChildren().addAll(backgroundTexture, canvas);
     }
 
     private void showPlayAgainButton() {
         paused = true;
-        GameButton playAgainBtn = new GameButton("PLAY AGAIN");
+
+        String gameOverMessage = "PLAY AGAIN";
+        GameButton playAgainBtn = new GameButton(gameOverMessage);
 
         playAgainBtn.setFont(Font.loadFont(
                 getClass().getResourceAsStream("/fonts/ALIEN5.TTF"), 36
@@ -304,14 +400,14 @@ public class GameMain extends Application {
         gamePane.getChildren().add(box);
 
         playAgainBtn.setOnAction(e -> {
-            gamePane.getChildren().clear(); // Xóa toàn bộ
+            gamePane.getChildren().clear(); // Delete everything.
             paused = false;
-            resetGame(); // Khởi tạo lại
+            resetGame(); // Re-initialize.
         });
     }
 
-    public static void main(String[] args) {
-        launch(args);
+    public GameStateManager getGameStateManager() {
+        return gameStateManager;
     }
 
     public Paddle getPaddle() {
@@ -319,9 +415,15 @@ public class GameMain extends Application {
     }
 
     public void spawnExtraBalls() {
-        listBalls.add(new Ball(listBalls.getFirst().getX(), listBalls.getFirst().getY(),
-                3, -1, DifficultySettings.getBallSpeed(levelDifficulty), 15,  ballTexture.getImage()));
-        listBalls.add(new Ball(listBalls.getFirst().getX(), listBalls.getFirst().getY(),
-                1, -1, DifficultySettings.getBallSpeed(levelDifficulty), 15,  ballTexture.getImage()));
+        listBalls.add(new Ball(
+                listBalls.getFirst().getX(), listBalls.getFirst().getY(),
+                3, -1,
+                DifficultySettings.getBallSpeed(levelDifficulty), 15,
+                ballTexture.getImage()));
+        listBalls.add(new Ball(
+                listBalls.getFirst().getX(), listBalls.getFirst().getY(),
+                1, -1,
+                DifficultySettings.getBallSpeed(levelDifficulty), 15,
+                ballTexture.getImage()));
     }
 }

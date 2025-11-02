@@ -1,14 +1,13 @@
 package com.arkanoid.ui;
 
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
-public class optionsScreen {
+public class OptionsScreen {
     public static void show(StackPane contentLayer, VBox menuBox, ImageView background,
                             ImageView ballImage, ImageView paddleImage) {
 //        String pathBall = "";
@@ -41,7 +40,7 @@ public class optionsScreen {
 
         VBox optionsBox = new VBox(30, btnSetBackground, btnSetBall, btnSetPaddle, btnBack);
         optionsBox.setAlignment(Pos.CENTER);
-        fadeSmooth.smoothContent(contentLayer, optionsBox);
+        FadeSmooth.smoothContent(contentLayer, optionsBox);
 
         btnSetBackground.setOnAction(e -> {
             for (Button b : new Button[]{btnBackground1, btnBackground2, btnBackground3, btnBackground4, btnBackOfBackground}) {
@@ -50,7 +49,7 @@ public class optionsScreen {
 
             VBox backgroundsBox = new VBox(30, btnBackground1, btnBackground2, btnBackground3, btnBackground4, btnBackOfBackground);
             backgroundsBox.setAlignment(Pos.CENTER);
-            fadeSmooth.smoothContent(contentLayer, backgroundsBox);
+            FadeSmooth.smoothContent(contentLayer, backgroundsBox);
 
             btnBackground1.setOnAction(eB1 -> {
                 background.setImage(new Image("assets/Background/galaxyBackground.jpg"));
@@ -68,7 +67,7 @@ public class optionsScreen {
                 background.setImage(new Image("assets/Background/blackBackground.jpg"));
             });
 
-            btnBackOfBackground.setOnAction(e1 -> fadeSmooth.smoothContent(contentLayer, optionsBox));
+            btnBackOfBackground.setOnAction(e1 -> FadeSmooth.smoothContent(contentLayer, optionsBox));
         });
 
         btnSetBall.setOnAction(e -> {
@@ -82,7 +81,7 @@ public class optionsScreen {
 
             VBox ballsBox = new VBox(30, previewBall,btnDefaultBall, btnBasketball, btnVolleyball, btnBackOfBall);
             ballsBox.setAlignment(Pos.CENTER);
-            fadeSmooth.smoothContent(contentLayer, ballsBox);
+            FadeSmooth.smoothContent(contentLayer, ballsBox);
 
             btnDefaultBall.setOnAction(e1 -> {
                 ballImage.setImage(new Image("assets/Ball/defaultBall.png"));
@@ -100,7 +99,7 @@ public class optionsScreen {
             });
 
             btnBackOfBall.setOnAction(e1 -> {
-                fadeSmooth.smoothContent(contentLayer, optionsBox);
+                FadeSmooth.smoothContent(contentLayer, optionsBox);
             });
         });
 
@@ -115,7 +114,7 @@ public class optionsScreen {
 
             VBox ballsBox = new VBox(30, previewPaddle, btnDefaultPaddle, btnGrassPaddle, btnSandPaddle, btnBackOfPaddle);
             ballsBox.setAlignment(Pos.CENTER);
-            fadeSmooth.smoothContent(contentLayer, ballsBox);
+            FadeSmooth.smoothContent(contentLayer, ballsBox);
 
             btnDefaultPaddle.setOnAction(e1 -> {
                 paddleImage.setImage(new Image("assets/Paddle/defaultPaddle.png"));
@@ -133,11 +132,11 @@ public class optionsScreen {
             });
 
             btnBackOfPaddle.setOnAction(e1 -> {
-                fadeSmooth.smoothContent(contentLayer, optionsBox);
+                FadeSmooth.smoothContent(contentLayer, optionsBox);
             });
         });
 
         // Back button
-        btnBack.setOnAction(e2 -> fadeSmooth.smoothContent(contentLayer, menuBox));
+        btnBack.setOnAction(e2 -> FadeSmooth.smoothContent(contentLayer, menuBox));
     }
 }
