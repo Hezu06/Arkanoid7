@@ -275,9 +275,9 @@ public class GameMain extends Application {
         // Remove all explosions that have finished their animation.
         activeExplosion.removeIf(ExplosionEffect::isFinished);
 
-        for (Ball ball : listBalls) {
-            ball.move(deltaTime);
-        }
+//        for (Ball ball : listBalls) {
+//            ball.move(deltaTime);
+//        }
 
         for (PowerUp powerUp : powerUps) {
             powerUp.update();
@@ -508,7 +508,7 @@ public class GameMain extends Application {
 
     private void showPlayAgain() {
         paused = true;
-        ScoreScreen scoreScreen = new ScoreScreen(primaryStage, 10, this);
+        ScoreScreen scoreScreen = new ScoreScreen(primaryStage, gameStateManager.getScore(), this);
 
         scoreScreen.show();
 //        'String gameOverMessage = "PLAY AGAIN";
