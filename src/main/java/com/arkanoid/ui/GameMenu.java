@@ -20,15 +20,15 @@ import javafx.util.Duration;
 import java.util.Objects;
 
 public class GameMenu extends Application {
-    static final int Width = 750;
-    static final int Height = 800;
-    static final int widthBackground = 850;
-    static final int heightBackground = 950;
+    static final int WIDTH = 750;
+    static final int HEIGHT = 800;
+    static final int WIDTH_BACKGROUND = 850;
+    static final int HEIGHT_BACKGROUND = 950;
     public static String pathBackground = "assets/Background/galaxyBackground.jpg";
     // Animation background
     public static void Transition(ImageView background) {
-        background.setFitWidth(widthBackground);
-        background.setFitHeight(heightBackground);
+        background.setFitWidth(WIDTH_BACKGROUND);
+        background.setFitHeight(HEIGHT_BACKGROUND);
         TranslateTransition tt = new TranslateTransition(Duration.seconds(4), background);
         tt.setFromX(0);
         tt.setToX(-40);
@@ -37,29 +37,52 @@ public class GameMenu extends Application {
         tt.play();
     }
 
+    // Khai bao background
+    private Image image = new Image(pathBackground);
+    private ImageView background = new ImageView(image);
+
+    // Ball and Paddle
+    private Image ball = new Image(Objects.requireNonNull(getClass().
+            getResourceAsStream("/assets/Ball/defaultBall.png")));
+    private ImageView ballImage = new ImageView(ball);
+
+    private Image paddle = new Image("assets/Paddle/defaultPaddle.png");
+    private ImageView paddleImage = new ImageView(paddle);
+
+
+    // Constructor GameMenu
+    public GameMenu() {}
+    public GameMenu(ImageView background, ImageView ballImage, ImageView paddleImage) {
+        this.background = background;
+        this.ballImage = ballImage;
+        this.paddleImage = paddleImage;
+    }
+
+    private StackPane contentLayer;
+    private VBox menuBox;
+
+    // Getter
+    public StackPane getContentLayer() {
+        return contentLayer;
+    }
+
+    public VBox getMenuBox() {
+        return menuBox;
+    }
+
     @Override
     public void start(Stage primaryStage) {
         // Root
         StackPane root = new StackPane();
 
-        // Background
-        Image image = new Image(pathBackground);
-        ImageView background = new ImageView(image);
         Transition(background);
 
-        Image ball = new Image(Objects.requireNonNull(getClass().
-                getResourceAsStream("/assets/Ball/defaultBall.png")));
-        ImageView ballImage = new ImageView(ball);
-
-        Image paddle = new Image("assets/Paddle/defaultPaddle.png");
-        ImageView paddleImage = new ImageView(paddle);
-
         // Layer chứa menu thay đổi
-        StackPane contentLayer = new StackPane();
+        contentLayer = new StackPane();
 
         root.getChildren().addAll(background, contentLayer);
 
-        Scene scene = new Scene(root, Width, Height);
+        Scene scene = new Scene(root, WIDTH, HEIGHT);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Game Menu");
         primaryStage.show();
@@ -86,7 +109,7 @@ public class GameMenu extends Application {
             b.setFont(buttonFont);
         }
 
-        VBox menuBox = new VBox(30, title, btnPlay, btnOptions, btnExit);
+        menuBox = new VBox(30, title, btnPlay, btnOptions, btnExit);
         menuBox.setAlignment(Pos.CENTER);
         FadeSmooth.smoothContent(contentLayer, menuBox);
 
@@ -112,8 +135,9 @@ public class GameMenu extends Application {
             FadeSmooth.smoothContent(contentLayer, playBox);
 
             btnBack.setOnAction(e1 -> FadeSmooth.smoothContent(contentLayer, menuBox));
+
             btnAsian.setOnAction(e2 -> {
-                GameMain gameMain = new GameMain();
+                GameMain gameMain = new GameMain(primaryStage);
                 gameMain.setBackgroundTexture(background);
                 gameMain.setBallTexture(ballImage);
                 gameMain.setPaddleTexture(paddleImage);
@@ -125,7 +149,7 @@ public class GameMenu extends Application {
                 }
             });
             btnVeryHard.setOnAction(e3 -> {
-                GameMain gameMain = new GameMain();
+                GameMain gameMain = new GameMain(primaryStage);
                 gameMain.setBackgroundTexture(background);
                 gameMain.setBallTexture(ballImage);
                 gameMain.setPaddleTexture(paddleImage);
@@ -137,7 +161,7 @@ public class GameMenu extends Application {
                 }
             });
             btnHard.setOnAction(e4 -> {
-                GameMain gameMain = new GameMain();
+                GameMain gameMain = new GameMain(primaryStage);
                 gameMain.setBackgroundTexture(background);
                 gameMain.setBallTexture(ballImage);
                 gameMain.setPaddleTexture(paddleImage);

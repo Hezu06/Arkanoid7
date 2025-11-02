@@ -8,6 +8,7 @@ import com.arkanoid.level.Level;
 import com.arkanoid.level.LevelLoader;
 import com.arkanoid.ui.ButtonEffects;
 import com.arkanoid.ui.GameButton;
+import com.arkanoid.ui.ScoreScreen;
 import javafx.application.Application;
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Pos;
@@ -42,9 +43,9 @@ public class GameMain extends Application {
     private final List<Ball> listBalls = new ArrayList<>();
     private List<PowerUp> powerUps = new ArrayList<>();
 
+    public static ImageView ballTexture;
     // --- Texture field ---
     private ImageView backgroundTexture;
-    private ImageView ballTexture;
     private ImageView paddleTexture;
 
     // --- Game State Manager ---
@@ -52,13 +53,48 @@ public class GameMain extends Application {
     private boolean playAgainShown = false;
     private boolean paused = false;
     private Pane gamePane;
+    private Stage primaryStage;
+
+    // --- Constructor GameMain  ---
+    public GameMain() {}
+    public GameMain(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+    }
+
+    // --- Getter gamePane  ---
+    public Pane getGamePane() {
+        return gamePane;
+    }
+
+    // --- Getter/Setter Paused  ---
+    public boolean isPaused() {
+        return paused;
+    }
+    public void setPaused(boolean paused) {
+        this.paused = paused;
+    }
+
+    // --- Getter backgroundTexture  ---
+    public ImageView getBackgroundTexture() {
+        return backgroundTexture;
+    }
+
+    // --- Getter ballTexture  ---
+    public ImageView getBallTexture() {
+        return ballTexture;
+    }
+
+    // --- Getter paddleTexture  ---
+    public ImageView getPaddleTexture() {
+        return paddleTexture;
+    }
 
     // --- Launch State ---
     private boolean isBallReadyToLaunch = true;
 
     // --- Setter field ---
     public void setBallTexture(ImageView ballTexture) {
-        this.ballTexture = ballTexture;
+        GameMain.ballTexture = ballTexture;
     }
 
     public void setPaddleTexture(ImageView paddleTexture) {
@@ -257,8 +293,8 @@ public class GameMain extends Application {
                     }
                     else {
                         // Game Over, show Play Again.
-                        if (!playAgainShown && isLevelComplete()) {
-                            showPlayAgainButton();
+                        if (!playAgainShown) {
+                            showPlayAgain();
                             playAgainShown = true;
                         }
                     }
@@ -321,8 +357,8 @@ public class GameMain extends Application {
                             if (!affectedCoords.isEmpty()) {
                                 handleExplosion(affectedCoords, bricksToRemove);
                             }
+                            bricksToRemove.add(brick);
                         }
-                        bricksToRemove.add(brick);
                     }
                 }
             }
@@ -366,7 +402,7 @@ public class GameMain extends Application {
         activeExplosion.removeIf(ExplosionEffect::isFinished);
 
         if (listBalls.isEmpty() && Ball.getNumberOfBalls() <= 0 && !playAgainShown) {
-            showPlayAgainButton(); // Hàm này sẽ set paused = true
+            showPlayAgain(); // Hàm này sẽ set paused = true
             playAgainShown = true; // Đặt cờ này ở đây
         }
     }
@@ -397,7 +433,7 @@ public class GameMain extends Application {
         }
     }
 
-    private void resetGame() {
+    public void resetGame() {
         System.out.println("Resetting Game");
         playAgainShown = false;
 
@@ -431,27 +467,29 @@ public class GameMain extends Application {
         gamePane.getChildren().addAll(backgroundTexture, canvas);
     }
 
-    private void showPlayAgainButton() {
+    private void showPlayAgain() {
         paused = true;
+        ScoreScreen scoreScreen = new ScoreScreen(primaryStage, 10, this);
 
-        String gameOverMessage = "PLAY AGAIN";
-        GameButton playAgainBtn = new GameButton(gameOverMessage);
-
-        playAgainBtn.setFont(Font.loadFont(
-                getClass().getResourceAsStream("/fonts/ALIEN5.TTF"), 36
-        ));
-        ButtonEffects.applyHoverEffect(playAgainBtn);
-        VBox box = new VBox(playAgainBtn);
-        box.setAlignment(Pos.CENTER);
-        box.setPrefSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-
-        gamePane.getChildren().add(box);
-
-        playAgainBtn.setOnAction(e -> {
-            gamePane.getChildren().clear(); // Delete everything.
-            paused = false;
-            resetGame(); // Re-initialize.
-        });
+        scoreScreen.show();
+//        'String gameOverMessage = "PLAY AGAIN";
+//        GameButton playAgainBtn = new GameButton(gameOverMessage);
+//
+//        playAgainBtn.setFont(Font.loadFont(
+//                getClass().getResourceAsStream("/fonts/ALIEN5.TTF"), 36
+//        ));
+//        ButtonEffects.applyHoverEffect(playAgainBtn);
+//        VBox box = new VBox(playAgainBtn);
+//        box.setAlignment(Pos.CENTER);
+//        box.setPrefSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+//
+//        gamePane.getChildren().add(box);
+//
+//        playAgainBtn.setOnAction(e -> {
+//            gamePane.getChildren().clear(); // Delete everything.
+//            paused = false;
+//            resetGame(); // Re-initialize.
+//        });'
     }
 
     public GameStateManager getGameStateManager() {
@@ -473,5 +511,9 @@ public class GameMain extends Application {
                 1, -1,
                 DifficultySettings.getBallSpeed(levelDifficulty), 15,
                 ballTexture.getImage()));
+    }
+
+    public List<Ball> getListBalls() {
+        return listBalls;
     }
 }
