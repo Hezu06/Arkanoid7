@@ -224,9 +224,9 @@ public class GameMain extends Application {
         // Remove all explosions that have finished their animation.
         activeExplosion.removeIf(ExplosionEffect::isFinished);
 
-        for (Ball ball : listBalls) {
-            ball.move(deltaTime);
-        }
+//        for (Ball ball : listBalls) {
+//            ball.move(deltaTime);
+//        }
 
         for (PowerUp powerUp : powerUps) {
             powerUp.update();
