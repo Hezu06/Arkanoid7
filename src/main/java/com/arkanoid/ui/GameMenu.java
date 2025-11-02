@@ -123,6 +123,7 @@ public class GameMenu extends Application {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
+
             });
             btnVeryHard.setOnAction(e3 -> {
                 GameMain gameMain = new GameMain();
