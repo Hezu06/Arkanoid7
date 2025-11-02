@@ -50,11 +50,11 @@ public class GameMain extends Application {
     private List<PowerUp> powerUps = new ArrayList<>();
     private ImageView backgroundTexture;
 
-    private ImageView ballTexture;
+    public static ImageView ballTexture;
     private ImageView paddleTexture;
 
     public void setBallTexture(ImageView ballTexture) {
-        this.ballTexture = ballTexture;
+        GameMain.ballTexture = ballTexture;
     }
 
     public void setPaddleTexture(ImageView paddleTexture) {
@@ -213,28 +213,54 @@ public class GameMain extends Application {
 
             for (Ball ball : listBalls) {
                 if (ball.checkCollision(brick)) {
-                    ball.bounceOff(brick);
+                    if (ball.isFireBall()) {
+                        if (brick instanceof UnbreakableBrick) {
+                            ball.bounceOff(brick);
+                            break;
+                        } else {
+                            if (brick.takeHit()) {
+                                PowerUp newPowerUp = PowerUpFactory.createPowerUp(brick.getX(), brick.getY(), levelDifficulty);
+                                if (newPowerUp != null) {
+                                    powerUps.add(newPowerUp);
+                                }
 
-                    if (brick.takeHit()) {
-                        if (!(brick instanceof UnbreakableBrick)) {
-                            PowerUp newPowerUp = PowerUpFactory.createPowerUp(brick.getX(), brick.getY(), levelDifficulty);
-                            if (newPowerUp != null) {
-                                powerUps.add(newPowerUp);
+                                activeExplosion.add(new ExplosionEffect(
+                                        brick.getX(), brick.getY(),
+                                        brick.getWidth(), brick.getHeight(),
+                                        brick
+                                ));
+                                if (brick instanceof ExplosiveBrick) {
+                                    List<int[]> affectedCoords = brick.triggerSpecialAction();
+                                    if (!affectedCoords.isEmpty()) {
+                                        handleExplosion(affectedCoords, bricksToRemove);
+                                    }
+                                }
+                                bricksToRemove.add(brick);
                             }
+                        }
+                    } else {
+                        ball.bounceOff(brick);
+                        if (brick.takeHit()) {
+                            if (!(brick instanceof UnbreakableBrick)) {
+                                PowerUp newPowerUp = PowerUpFactory.createPowerUp(brick.getX(), brick.getY(), levelDifficulty);
+                                if (newPowerUp != null) {
+                                    powerUps.add(newPowerUp);
+                                }
 
-                            activeExplosion.add(new ExplosionEffect(
-                                    brick.getX(), brick.getY(),
-                                    brick.getWidth(), brick.getHeight(),
-                                    brick
-                            ));
-                        }
-                        if (brick instanceof ExplosiveBrick) {
-                            List<int[]> affectedCoords = brick.triggerSpecialAction();
-                            if (!affectedCoords.isEmpty()) {
-                                handleExplosion(affectedCoords, bricksToRemove);
+                                activeExplosion.add(new ExplosionEffect(
+                                        brick.getX(), brick.getY(),
+                                        brick.getWidth(), brick.getHeight(),
+                                        brick
+                                ));
                             }
+                            if (brick instanceof ExplosiveBrick) {
+                                List<int[]> affectedCoords = brick.triggerSpecialAction();
+                                if (!affectedCoords.isEmpty()) {
+                                    handleExplosion(affectedCoords, bricksToRemove);
+                                }
+                            }
+                            bricksToRemove.add(brick);
                         }
-                        bricksToRemove.add(brick);
                     }
                 }
             }
@@ -364,5 +390,9 @@ public class GameMain extends Application {
                 3, -1, DifficultySettings.getBallSpeed(levelDifficulty), 15,  ballTexture.getImage()));
         listBalls.add(new Ball(listBalls.getFirst().getX(), listBalls.getFirst().getY(),
                 1, -1, DifficultySettings.getBallSpeed(levelDifficulty), 15,  ballTexture.getImage()));
+    }
+
+    public List<Ball> getListBalls() {
+        return listBalls;
     }
 }
