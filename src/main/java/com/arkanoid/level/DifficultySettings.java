@@ -10,9 +10,9 @@ public class DifficultySettings {
     private static final int WIDTH_VERY_HARD = 120;
     private static final int WIDTH_ASIAN = 100;
 
-    private static final double CHANCE_HARD = 0.35;
-    private static final double CHANCE_VERY_HARD = 0.2;
-    private static final double CHANCE_ASIAN = 0.1;
+    private static final double CHANCE_HARD = 0.5;
+    private static final double CHANCE_VERY_HARD = 0.3;
+    private static final double CHANCE_ASIAN = 0.2;
 
     public static double getPowerUpChance(Level.LevelDifficulty difficulty) {
         return switch (difficulty) {

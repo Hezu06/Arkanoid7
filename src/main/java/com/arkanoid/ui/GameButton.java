@@ -12,7 +12,8 @@ public class GameButton extends Button {
         super(text);
 
         setPrefSize(250, 70);
-        setFont(Font.font("Verdana", FontWeight.BOLD, 22));
+        setFont(Font.loadFont(
+                getClass().getResourceAsStream("/fonts/ALIEN5.TTF"), 36));
         setTextFill(Color.BLACK);
         setOpacity(0.6); // để đồng bộ với ButtonEffects
 
@@ -37,20 +38,20 @@ public class GameButton extends Button {
         setEffect(textGlow);
     }
 
-    public static void setBackground(Button btn, String pathBackgroundButton) {
-        btn.setStyle(
-                "-fx-background-image: url('file:" + pathBackgroundButton + "');" +
-                        "-fx-background-size: 100% 100%;" +          // Ảnh phủ kín toàn bộ
-                        "-fx-background-repeat: no-repeat;" +
-                        "-fx-background-position: center center;" +
-                        "-fx-background-radius: 12;" +               // Giữ bo góc
-                        "-fx-border-radius: 12;" +
-                        "-fx-background-color: transparent;" +
-                        "-fx-border-color: transparent;" +
-                        "-fx-focus-color: transparent;" +
-                        "-fx-faint-focus-color: transparent;" +
-                        "-fx-padding: 0;" +
-                        "-fx-cursor: hand;"                           // Giữ hiệu ứng chuột
-        );
-    }
+//    public static void setBackground(Button btn, String pathBackgroundButton) {
+//        btn.setStyle(
+//                "-fx-background-image: url('file:" + pathBackgroundButton + "');" +
+//                        "-fx-background-size: 100% 100%;" +          // Ảnh phủ kín toàn bộ
+//                        "-fx-background-repeat: no-repeat;" +
+//                        "-fx-background-position: center center;" +
+//                        "-fx-background-radius: 12;" +               // Giữ bo góc
+//                        "-fx-border-radius: 12;" +
+//                        "-fx-background-color: transparent;" +
+//                        "-fx-border-color: transparent;" +
+//                        "-fx-focus-color: transparent;" +
+//                        "-fx-faint-focus-color: transparent;" +
+//                        "-fx-padding: 0;" +
+//                        "-fx-cursor: hand;"                           // Giữ hiệu ứng chuột
+//        );
+//    }
 }

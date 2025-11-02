@@ -40,8 +40,4 @@ public class Level {
     public double getBallSpeed() { return ballSpeed; }
     public double getPaddleWidth() { return paddleWidth; }
     public double getPowerUpChance() { return powerUpChance; }
-
-    // HARDCODE MAXIMUM GRID DIMENSIONS
-    private static final int MAX_GRID_COLUMNS = 12;
-    private static final int MAX_GRID_ROWS = 10;
 }

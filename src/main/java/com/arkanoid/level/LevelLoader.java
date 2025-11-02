@@ -27,8 +27,6 @@ public class LevelLoader {
     public Level loadLevel(String fileName, Level.LevelDifficulty difficulty) throws Exception {
         List<Brick> bricks = new ArrayList<>();
 
-        double powerUpChance = DifficultySettings.getPowerUpChance(difficulty);
-
         final String resourcePath = "/difficulty/" + fileName;
 
         try (InputStream inputStream = getClass().getResourceAsStream(resourcePath);
@@ -57,6 +55,9 @@ public class LevelLoader {
                  }
                  gridY++;
              }
+        }
+        catch (Exception e) {
+            System.err.println(e.getMessage());
         }
 
         return new Level(bricks, difficulty);
