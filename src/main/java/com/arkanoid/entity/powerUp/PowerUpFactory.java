@@ -21,7 +21,7 @@ public class PowerUpFactory {
         double roll = random.nextDouble();
         if (roll < DifficultySettings.getPowerUpChance(levelDifficulty)) {
             // Update later when all PowerUps are done.
-            PowerUpType[] dropTypes = { PowerUpType.EXPAND_PADDLE, PowerUpType.MULTI_BALL };
+            PowerUpType[] dropTypes = { PowerUpType.EXPAND_PADDLE, PowerUpType.MULTI_BALL, PowerUpType.FIRE_BALL };
 
             // Randomly select one power-up.
             PowerUpType type = dropTypes[random.nextInt(dropTypes.length)];
@@ -29,7 +29,8 @@ public class PowerUpFactory {
             return switch (type) {
                 case EXPAND_PADDLE -> new ExpandPaddle(x, y);
                 case MULTI_BALL -> new MultiBall(x, y);
-                case FIRE_BALL, IMMORTAL, EXTRA_COINS, EXTRA_LIVES -> null;
+                case FIRE_BALL -> new FireBall(x, y);
+                case IMMORTAL, EXTRA_COINS, EXTRA_LIVES -> null;
             };
         }
         return null;
