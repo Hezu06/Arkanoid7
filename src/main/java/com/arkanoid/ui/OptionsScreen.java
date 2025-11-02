@@ -6,45 +6,56 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 
 public class OptionsScreen {
     public static void show(StackPane contentLayer, VBox menuBox, ImageView background,
                             ImageView ballImage, ImageView paddleImage) {
-//        String pathBall = "";
-//        String pathPaddle = "";
+    // Step 1
         GameButton btnSetBackground = new GameButton("BACKGROUND");
         GameButton btnSetBall = new GameButton("BALL");
         GameButton btnSetPaddle = new GameButton("PADDLE");
         GameButton btnBack = new GameButton("BACK");
 
+    //  SetFont
+        for (Button b : new Button[]{btnSetBackground, btnSetBall, btnSetPaddle, btnBack}) {
+            ButtonEffects.applyHoverEffect(b);
+            b.setFont(Font.loadFont(
+                    OptionsScreen.class.getResourceAsStream("/fonts/ALIEN5.TTF"), 36
+            ));
+        }
+
+    //Step 2: Set Background
         GameButton btnBackground1 = new GameButton("GALAXY");
         GameButton btnBackground2 = new GameButton("BLACK");
         GameButton btnBackground3 = new GameButton("BEACH");
         GameButton btnBackground4 = new GameButton("GRASS");
 
-        GameButton btnDefaultBall = new GameButton("Default Ball");
-        GameButton btnBasketball = new GameButton("Basketball");
-        GameButton btnVolleyball = new GameButton("Volleyball");
+        GameButton btnDefaultBall = new GameButton("DEFAULT");
+        GameButton btnBasketball = new GameButton("BASKETBALL");
+        GameButton btnVolleyball = new GameButton("VOLLEYBALL");
 
-        GameButton btnDefaultPaddle = new GameButton("Default Paddle");
-        GameButton btnGrassPaddle = new GameButton("Grass Paddle");
-        GameButton btnSandPaddle = new GameButton("Sand Paddle");
+        GameButton btnDefaultPaddle = new GameButton("DEFAULT");
+        GameButton btnGrassPaddle = new GameButton("GRASS");
+        GameButton btnSandPaddle = new GameButton("SAND");
 
         GameButton btnBackOfBackground = new GameButton("BACK");
         GameButton btnBackOfBall = new GameButton("BACK");
         GameButton btnBackOfPaddle = new GameButton("BACK");
 
-        for (Button b : new Button[]{btnSetBackground, btnSetBall, btnSetPaddle, btnBack}) {
-            ButtonEffects.applyHoverEffect(b);
-        }
+
 
         VBox optionsBox = new VBox(30, btnSetBackground, btnSetBall, btnSetPaddle, btnBack);
         optionsBox.setAlignment(Pos.CENTER);
         FadeSmooth.smoothContent(contentLayer, optionsBox);
 
         btnSetBackground.setOnAction(e -> {
+            //SetFont
             for (Button b : new Button[]{btnBackground1, btnBackground2, btnBackground3, btnBackground4, btnBackOfBackground}) {
                 ButtonEffects.applyHoverEffect(b);
+                b.setFont(Font.loadFont(
+                        OptionsScreen.class.getResourceAsStream("/fonts/ALIEN5.TTF"), 36
+                ));
             }
 
             VBox backgroundsBox = new VBox(30, btnBackground1, btnBackground2, btnBackground3, btnBackground4, btnBackOfBackground);
@@ -71,8 +82,12 @@ public class OptionsScreen {
         });
 
         btnSetBall.setOnAction(e -> {
+            //SetFont
             for (Button b : new Button[]{btnDefaultBall, btnBasketball, btnVolleyball, btnBackOfBall}) {
                 ButtonEffects.applyHoverEffect(b);
+                b.setFont(Font.loadFont(
+                        OptionsScreen.class.getResourceAsStream("/fonts/ALIEN5.TTF"), 36
+                ));
             }
 
             ImageView previewBall = new ImageView(ballImage.getImage());
@@ -104,9 +119,13 @@ public class OptionsScreen {
         });
 
         btnSetPaddle.setOnAction(e -> {
-           for (Button b : new Button[]{btnDefaultPaddle, btnGrassPaddle, btnSandPaddle, btnBackOfPaddle}) {
-               ButtonEffects.applyHoverEffect(b);
-           }
+            //SetFont
+            for (Button b : new Button[]{btnDefaultPaddle, btnGrassPaddle, btnSandPaddle, btnBackOfPaddle}) {
+                ButtonEffects.applyHoverEffect(b);
+                b.setFont(Font.loadFont(
+                        OptionsScreen.class.getResourceAsStream("/fonts/ALIEN5.TTF"), 36
+                ));
+            }
 
             ImageView previewPaddle = new ImageView(paddleImage.getImage());
             previewPaddle.setFitWidth(120);
