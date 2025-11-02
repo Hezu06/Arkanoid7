@@ -11,7 +11,7 @@ public class ExtraCoins extends PowerUp {
     public ExtraCoins(double x, double y) {
         super(x, y, 32, 32);
         super.setImage(new Image(Objects.requireNonNull(getClass().getClassLoader().
-                getResourceAsStream("powerUpItem/bigPurple.png"))));
+                getResourceAsStream("powerUpItem/green.png"))));
     }
 
     @Override
