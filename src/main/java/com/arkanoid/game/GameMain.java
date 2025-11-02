@@ -214,8 +214,23 @@ public class GameMain extends Application {
         for (ExplosionEffect effect : activeExplosion) {
             effect.update(deltaTime);
         }
+
+        for (Brick brick : bricks) {
+            brick.update();
+        }
+
+        paddle.update(deltaTime);
+
         // Remove all explosions that have finished their animation.
         activeExplosion.removeIf(ExplosionEffect::isFinished);
+
+        for (Ball ball : listBalls) {
+            ball.move(deltaTime);
+        }
+
+        for (PowerUp powerUp : powerUps) {
+            powerUp.update();
+        }
 
         Iterator<Ball> iterator = listBalls.iterator();
         while (iterator.hasNext()) {
@@ -300,10 +315,8 @@ public class GameMain extends Application {
                     }
                 }
             }
-            bricks.removeIf(b -> b.isBroken() && !b.isFading() && b.getOpacity() <= 0);
         }
         this.bricks.removeAll(bricksToRemove);
-        paddle.update(deltaTime);
 
         // Ball - Paddle Collision.
         for (Ball ball : listBalls) {
@@ -316,7 +329,6 @@ public class GameMain extends Application {
 
         // Power-up Interaction.
         for(PowerUp powerUp : powerUps) {
-            powerUp.update();
             if (powerUp.isActive() && powerUp.checkCollision(paddle)) {
                 powerUp.takeHit();
                 powerUp.applyEffect(this);
