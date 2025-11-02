@@ -32,7 +32,6 @@ public class ExplosionEffect {
     }
 
     private final List<Particle> particles = new ArrayList<>();
-    private final Random rand = new Random();
     private boolean finished = false;
 
     public ExplosionEffect(double x, double y, double width, double height, Brick brick) {
@@ -44,15 +43,16 @@ public class ExplosionEffect {
         // Saturation (1.0): Full color
         // Brightness (1.0): Full brightness
 
-        int numsOfParticles = 0;
-        int speedConstant1 = 0;
-        int speedConstant2 = 0;
-        double lifeConstant1 = 0.0;
-        double lifeConstant2 = 0.0;
-        int sizeConstant1 = 0;
-        int sizeConstant2 = 0;
-        Color color = null;
+        int numsOfParticles;
+        int speedConstant1;
+        int speedConstant2;
+        double lifeConstant1;
+        double lifeConstant2;
+        int sizeConstant1;
+        int sizeConstant2;
+        Color color;
 
+        Random rand = new Random();
         if (brick instanceof ExplosiveBrick) {
             /* Explosive brick (BIG)
                 Number of particles: 80.
@@ -72,7 +72,7 @@ public class ExplosionEffect {
             sizeConstant2 = 3;
 
             // From Orange to Yellow (Hue 40 to 60)
-            color = Color.hsb(40 + 20 * rand.nextDouble(), 1, 1);
+            color = Color.hsb(40 + 20 * rand.nextDouble(), 0.9, 1);
         }
         else {
             /* Other bricks (SMALL)
@@ -94,12 +94,12 @@ public class ExplosionEffect {
 
             // ---- Set Color for specific Brick ----
             if (brick instanceof NormalBrick) {
-                color = Color.hsb(300 + 30 * rand.nextDouble(), 1, 1);
+                color = Color.hsb(300 + 30 * rand.nextDouble(), 0.5, 1);
                 // Pink/Magenta (Hue 300 to 330)
             }
             else  {
                 // StrongBrick.
-                color = Color.hsb(190 + 20 * rand.nextDouble(), 0.5, 0.5);
+                color = Color.hsb(190 + 20 * rand.nextDouble(), 0.5, 1);
                 // Steel Gray / Cool Blue (Hue 190 to 210, Low Saturation/Brightness)
             }
         }

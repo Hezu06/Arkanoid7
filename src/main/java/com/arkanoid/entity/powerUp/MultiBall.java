@@ -10,12 +10,12 @@ public class MultiBall extends PowerUp {
     public MultiBall(double x, double y) {
         super(x, y, 32, 32);
         super.setImage(new Image(Objects.requireNonNull(getClass().getClassLoader().
-                getResourceAsStream("powerUpItem/pink.png"))));
+                getResourceAsStream("powerUpItem/multiBall.png"))));
     }
 
     @Override
     protected Color getColor() {
-        return Color.ORANGE;
+        return Color.HOTPINK;
     }
 
     @Override
