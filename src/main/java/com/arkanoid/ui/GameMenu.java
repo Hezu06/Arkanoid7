@@ -158,8 +158,4 @@ public class GameMenu extends Application {
         // ====================== NÚT EXIT ======================
         btnExit.setOnAction(e3 -> primaryStage.close());
     }
-
-    public static void main(String[] args) {
-        launch(args);
-    }
 }
