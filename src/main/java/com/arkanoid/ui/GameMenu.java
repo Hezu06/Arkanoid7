@@ -68,10 +68,10 @@ public class GameMenu extends Application {
         Label title = new Label("BRICK BREAKER");
         Font titleFont = Font.loadFont(
                 getClass().getResourceAsStream("/fonts/ALIEN5.TTF"),
-                50 // cỡ chữ
+                80 // cỡ chữ
         );
         title.setFont(titleFont);
-        title.setTextFill(Color.WHITESMOKE);
+        title.setTextFill(Color.WHEAT);
 
         GameButton btnPlay = new GameButton("PLAY");
         GameButton btnOptions = new GameButton("OPTIONS");
@@ -88,7 +88,7 @@ public class GameMenu extends Application {
 
         VBox menuBox = new VBox(30, title, btnPlay, btnOptions, btnExit);
         menuBox.setAlignment(Pos.CENTER);
-        fadeSmooth.smoothContent(contentLayer, menuBox);
+        FadeSmooth.smoothContent(contentLayer, menuBox);
 
         // ====================== NÚT PLAY ======================
         btnPlay.setOnAction(e -> {
@@ -109,9 +109,9 @@ public class GameMenu extends Application {
             VBox playBox = new VBox(30, startLabel, btnHard, btnVeryHard, btnAsian, btnBack);
             playBox.setAlignment(Pos.CENTER);
 
-            fadeSmooth.smoothContent(contentLayer, playBox);
+            FadeSmooth.smoothContent(contentLayer, playBox);
 
-            btnBack.setOnAction(e1 -> fadeSmooth.smoothContent(contentLayer, menuBox));
+            btnBack.setOnAction(e1 -> FadeSmooth.smoothContent(contentLayer, menuBox));
             btnAsian.setOnAction(e2 -> {
                 GameMain gameMain = new GameMain();
                 gameMain.setBackgroundTexture(background);
@@ -152,7 +152,7 @@ public class GameMenu extends Application {
 
         // ====================== NÚT OPTIONS ======================
         btnOptions.setOnAction(e2 -> {
-            optionsScreen.show(contentLayer, menuBox, background, ballImage, paddleImage);
+            OptionsScreen.show(contentLayer, menuBox, background, ballImage, paddleImage);
         });
 
         // ====================== NÚT EXIT ======================

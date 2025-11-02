@@ -10,6 +10,7 @@ import javafx.scene.paint.Color;
 import java.util.Objects;
 
 public abstract class PowerUp extends GameObject {
+    private final double fallSpeed = 3.0;
     private boolean active = true;
 
     public void setImage(Image image) {
