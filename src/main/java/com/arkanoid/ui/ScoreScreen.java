@@ -75,6 +75,7 @@ public class ScoreScreen  {
                 GameMenu gameMenu = new GameMenu(gameMain.getBackgroundTexture(),
                                                     gameMain.getBallTexture(), gameMain.getPaddleTexture());
                 gameMain.getGamePane().getChildren().clear();
+                gameMain.getListBalls().clear();
                 gameMain.setPaused(false);
                 gameMenu.start(primaryStage);
             }
