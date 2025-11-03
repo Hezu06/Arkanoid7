@@ -1,8 +1,6 @@
 package com.arkanoid.game;
 
 import com.arkanoid.entity.Ball;
-
-import com.arkanoid.entity.GameObject;
 import com.arkanoid.entity.brick.*;
 import com.arkanoid.entity.powerUp.PowerUp;
 import com.arkanoid.entity.powerUp.PowerUpFactory;
@@ -20,16 +18,10 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import com.arkanoid.entity.Paddle;
 import com.arkanoid.entity.powerUp.LaserBeam;
-import javafx.scene.shape.Rectangle;
-import java.awt.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
-import java.util.Objects;
-
-import javafx.scene.image.Image;
-
-
 
 import com.arkanoid.level.DifficultySettings;
 import com.arkanoid.ui.GameMenu;
@@ -64,7 +56,6 @@ public class GameMain extends Application {
     private ImageView paddleTexture;
 
     // --- Game State Manager ---
-    private GameStateManager gameStateManager;
     private boolean playAgainShown = false;
     private boolean paused = false;
     private Pane gamePane;
@@ -312,6 +303,10 @@ public class GameMain extends Application {
         return true;
     }
 
+    public boolean getLevelComplete() {
+        return  isLevelComplete();
+    }
+
     private void update(double deltaTime) {
         for (ExplosionEffect effect : activeExplosion) {
             effect.update(deltaTime);
@@ -323,25 +318,25 @@ public class GameMain extends Application {
 
         paddle.update(deltaTime);
 
-        Iterator<LaserBeam> it = laserBeams.iterator();
-        while (it.hasNext()) {
-            LaserBeam beam = it.next();
-            beam.update();
-
-            // Kiểm tra va chạm với gạch
-            for (Brick brick : bricks) {
-                if (beam.collidesWith(brick)) {
-                    brick.takeHit();
-                    it.remove();
-                    break;
-                }
-            }
-
-            // Xóa laser nếu bay ra ngoài màn
-            if (beam.getY() < 0) {
-                it.remove();
-            }
-        }
+//        Iterator<LaserBeam> it = laserBeams.iterator();
+//        while (it.hasNext()) {
+//            LaserBeam beam = it.next();
+//            beam.update();
+//
+//            // Kiểm tra va chạm với gạch
+//            for (Brick brick : bricks) {
+//                if (beam.collidesWith(brick)) {
+//                    brick.takeHit();
+//                    it.remove();
+//                    break;
+//                }
+//            }
+//
+//            // Xóa laser nếu bay ra ngoài màn
+//            if (beam.getY() < 0) {
+//                it.remove();
+//            }
+//        }
 
 
         // Remove all explosions that have finished their animation.
@@ -363,7 +358,7 @@ public class GameMain extends Application {
                     if (!GameStateManager.getInstance().isGameOver()) {
                         resetBallAndPaddle();
                         paddle.setLaserInterrupted(true);
-                        paddle.setLaserPowerupInEffect(false);
+                        paddle.setLaserPowerUpInEffect(false);
                         break;
                     }
                     else {
@@ -421,6 +416,28 @@ public class GameMain extends Application {
             }
         }
         this.bricks.removeAll(bricksToRemove);
+
+        Iterator<LaserBeam> it = laserBeams.iterator();
+        while (it.hasNext()) {
+            LaserBeam beam = it.next();
+            beam.update();
+
+            // Kiểm tra va chạm với gạch
+            for (Brick brick : bricks) {
+                if (beam.collidesWith(brick)) {
+                    if (brick.takeHit()) {
+                        handleBrickBreak(brick, bricksToRemove);
+                        it.remove();
+                        break;
+                    }
+                }
+            }
+
+            // Xóa laser nếu bay ra ngoài màn
+            if (beam.getY() < 0) {
+                it.remove();
+            }
+        }
 
         // --- Level Completion Check (Win) ---
         if (isLevelComplete() && !playAgainShown) {
@@ -518,15 +535,9 @@ public class GameMain extends Application {
 
     public void resetGame() {
         System.out.println("Resetting Game");
+
         playAgainShown = false;
-
-        // Reset Game State if this is Game Over / Level Completion.
-
-
         Ball.setNumberOfBalls(0);
-
-        playAgainShown = false;
-
         bricks = loadLevel();
         listBalls.clear();
 
@@ -559,7 +570,6 @@ public class GameMain extends Application {
         }
     }
 
-
     private void showPlayAgain() {
         paused = true;
         ScoreScreen scoreScreen = new ScoreScreen(primaryStage, GameStateManager.getInstance().getScore(), this);
@@ -567,20 +577,9 @@ public class GameMain extends Application {
         scoreScreen.show();
     }
 
-
     public Paddle getPaddle() {
         return paddle;
     }
-
-    public void fireLasersFromPaddle() {
-        double paddleY = paddle.getY();
-        double leftX = paddle.getX() + 10;
-        double rightX = paddle.getX() + paddle.getWidth() - 10;
-
-        laserBeams.add(new LaserBeam(leftX, paddleY));
-        laserBeams.add(new LaserBeam(rightX, paddleY));
-    }
-
 
     public void spawnExtraBalls() {
         listBalls.add(new Ball(
@@ -593,26 +592,6 @@ public class GameMain extends Application {
                 1, -1,
                 DifficultySettings.getBallSpeed(levelDifficulty), 15,
                 ballTexture.getImage()));
-    }
-
-    public void spawnLaserBeams() {
-        Paddle paddle = getPaddle();
-        if (!paddle.isLaserActive()) return;
-
-        // Vị trí hai đầu paddle để bắn ra 2 tia laser
-        double leftX = paddle.getX() + 10;
-        double rightX = paddle.getX() + paddle.getWidth() - 10;
-        double y = paddle.getY() - 10;
-
-        laserBeams.add(new LaserBeam(leftX, y));
-        laserBeams.add(new LaserBeam(rightX, y));
-
-        System.out.println("Laser beams fired!");
-    }
-
-    private Canvas canvas;
-    public Canvas getCanvas() {
-        return canvas;
     }
 
     public List<Ball> getListBalls() {

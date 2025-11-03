@@ -101,7 +101,7 @@ public abstract class Brick extends GameObject {
         gc.strokeRect(this.x, this.y, width, height);
 
         // --- Layer 3: Inner core glow (Narrow and Brightest) ---
-        gc.setGlobalAlpha(currentGlowAlpha * 1.0);
+        gc.setGlobalAlpha(currentGlowAlpha);
         gc.setStroke(Color.WHEAT.darker()); // Use white for the core glow for intensity
         gc.setLineWidth(2.0);
         gc.strokeRect(this.x, this.y, width, height);
@@ -140,10 +140,6 @@ public abstract class Brick extends GameObject {
 
     public boolean isBroken() {
         return isBroken;
-    }
-
-    public boolean isFading() {
-        return fading;
     }
 
     public void setFading(boolean fading) { this.fading = fading; }

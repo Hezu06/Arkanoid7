@@ -23,7 +23,7 @@ public class Immortal extends PowerUp {
 
         // Kích hoạt barrier ở GameMain
         game.activateBarrier();
-        paddle.setImmortalPowerupInEffect(true);
+        paddle.setImmortalPowerUpInEffect(true);
         System.out.println("Immortal power-up activated!");
 
         // Sau 5s thì tắt hiệu ứng
@@ -34,7 +34,7 @@ public class Immortal extends PowerUp {
                 e.printStackTrace();
             }
 
-            paddle.setImmortalPowerupInEffect(false);
+            paddle.setImmortalPowerUpInEffect(false);
             game.deactivateBarrier();
             System.out.println("Immortal power-up ended!");
         }).start();

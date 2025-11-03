@@ -35,7 +35,7 @@ public class LevelLoader {
             int gridY = 0;
 
             if (inputStream.available() == 0) {
-                System.err.println("DEBUG: Input stream for " + fileName + " is empty (0 bytes available). Check file content.");
+                System.err.println("DEBUG: Input stream for " + fileName + " is empty.");
                 return new Level(bricks, difficulty);
             }
 

@@ -31,12 +31,14 @@ public class ScoreScreen  {
     }
 
     public void show() {
-        Label title = new Label("GAME OVER!");
-        Font titleFont = Font.loadFont(
+
+        String endMessage = (gameMain.getLevelComplete()) ? "LEVEL COMPLETE!" : "GAME OVER!";
+        Label endTitle = new Label(endMessage);
+        Font endTitleFont = Font.loadFont(
                 getClass().getResourceAsStream(FONT_PATH),
                 40);
-        title.setFont(titleFont);
-        title.setTextFill(Color.WHITESMOKE);
+        endTitle.setFont(endTitleFont);
+        endTitle.setTextFill(Color.WHITESMOKE);
 
         Label scoreLabel = new Label("SCORE: " + score);
         Font scoreLabelFont = Font.loadFont(
@@ -54,7 +56,7 @@ public class ScoreScreen  {
             ButtonEffects.applyHoverEffect(b);
         }
 
-        VBox root = new VBox(20, title, scoreLabel, retryBtn, mainMenuBtn, exitBtn);
+        VBox root = new VBox(20, endTitle, scoreLabel, retryBtn, mainMenuBtn, exitBtn);
         root.setAlignment(Pos.CENTER);
         root.setPrefSize(WIDTH, HEIGHT);
 

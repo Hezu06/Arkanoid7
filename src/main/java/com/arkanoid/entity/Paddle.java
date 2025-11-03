@@ -4,9 +4,8 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 public class Paddle extends MovableObject {
-    private final Image smallPaddleImage;
-    private final Image largePaddleImage;
-    private String paddleType;
+
+    private final Image paddleImage;
 
     private final double speed;
     private boolean movingLeft = false;
@@ -14,15 +13,13 @@ public class Paddle extends MovableObject {
 
     private boolean expanded = false;
     private long expandEndTime = 0;
-    private double originalWidth;
+    private final double originalWidth;
 
-    private long laserEndTime = 0;
     private boolean laserInterrupted = false;
     private boolean laserActive = false;
-    private boolean laserPowerupInEffect = false;
+    private boolean laserPowerUpInEffect = false;
 
-    private long immortalEndTime = 0;  // thời điểm hết hiệu lực Immortal
-    private boolean immortalPowerupInEffect = false;
+    private boolean immortalPowerUpInEffect = false;
 
     private static final int WINDOW_WIDTH = 750;
 
@@ -30,9 +27,7 @@ public class Paddle extends MovableObject {
         super(x, y, width, 20, 0, 0);
         this.speed = speed;
         this.originalWidth = width;
-        this.paddleType = paddleType;
-        this.smallPaddleImage = image;
-        this.largePaddleImage = image;
+        this.paddleImage = image;
 
         removeAllPowerUpEffects();
     }
@@ -48,14 +43,17 @@ public class Paddle extends MovableObject {
         }
 
         // Hết hiệu ứng laser
+        long laserEndTime = 0;
         if (laserActive && System.currentTimeMillis() > laserEndTime) {
             laserActive = false;
             System.out.println("Laser mode ended!");
         }
 
         // Hết hiệu ứng bất tử
-        if (immortalPowerupInEffect && System.currentTimeMillis() > immortalEndTime) {
-            immortalPowerupInEffect = false;
+        // thời điểm hết hiệu lực Immortal
+        long immortalEndTime = 0;
+        if (immortalPowerUpInEffect && System.currentTimeMillis() > immortalEndTime) {
+            immortalPowerUpInEffect = false;
             System.out.println("Immortal mode ended!");
         }
     }
@@ -63,6 +61,10 @@ public class Paddle extends MovableObject {
     @Override
     public void render(GraphicsContext gc) {
         gc.drawImage(getImage(), x, y, width, height);
+    }
+
+    private Image getImage() {
+        return paddleImage;
     }
 
     @Override
@@ -77,10 +79,6 @@ public class Paddle extends MovableObject {
 
         if (x < 0) x = 0;
         if (x + width > WINDOW_WIDTH) x = WINDOW_WIDTH - width;
-    }
-
-    private Image getImage() {
-        return largePaddleImage;
     }
 
     // ---------------------
@@ -98,50 +96,26 @@ public class Paddle extends MovableObject {
         }
     }
 
-    public void activateLaserTemporarily(long durationMs) {
-        laserActive = true;
-        laserEndTime = System.currentTimeMillis() + durationMs;
-        System.out.println("Laser mode activated for " + (durationMs / 1000) + "s!");
-    }
-
-    public void activateImmortalTemporarily(long durationMs) {
-        immortalPowerupInEffect = true;
-        immortalEndTime = System.currentTimeMillis() + durationMs;
-        System.out.println("Immortal mode activated for " + (durationMs / 1000) + "s!");
-    }
-
     public void removeAllPowerUpEffects() {
         expanded = false;
         width = originalWidth;
         laserActive = false;
-        laserPowerupInEffect = false;
-        immortalPowerupInEffect = false;
+        laserPowerUpInEffect = false;
+        immortalPowerUpInEffect = false;
     }
 
     // ---------------------
     // Getters & Setters
     // ---------------------
 
-    public boolean isLaserActive() { return laserActive; }
-
-    public void setLaserActive(boolean laserActive) { this.laserActive = laserActive; }
-
-    public boolean isLaserPowerupInEffect() { return laserPowerupInEffect; }
-
-    public void setLaserPowerupInEffect(boolean value) { this.laserPowerupInEffect = value; }
-
+    public boolean isLaserPowerUpInEffect() { return laserPowerUpInEffect; }
+    public void setLaserPowerUpInEffect(boolean value) { this.laserPowerUpInEffect = value; }
     public boolean isLaserInterrupted() { return laserInterrupted; }
-
     public void setLaserInterrupted(boolean laserInterrupted) { this.laserInterrupted = laserInterrupted; }
 
-    public boolean isExpanded() { return expanded; }
-
-    public void setExpanded(boolean expanded) { this.expanded = expanded; }
-
-    public boolean isImmortalPowerupInEffect() { return immortalPowerupInEffect; }
-
-    public void setImmortalPowerupInEffect(boolean immortalPowerupInEffect) {
-        this.immortalPowerupInEffect = immortalPowerupInEffect;
+    public boolean isImmortalPowerUpInEffect() { return immortalPowerUpInEffect; }
+    public void setImmortalPowerUpInEffect(boolean immortalPowerUpInEffect) {
+        this.immortalPowerUpInEffect = immortalPowerUpInEffect;
     }
 
     public void setMovingLeft(boolean value) { movingLeft = value; }
