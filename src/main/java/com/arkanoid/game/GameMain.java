@@ -6,20 +6,15 @@ import com.arkanoid.entity.powerUp.PowerUp;
 import com.arkanoid.entity.powerUp.PowerUpFactory;
 import com.arkanoid.level.Level;
 import com.arkanoid.level.LevelLoader;
-import com.arkanoid.ui.ButtonEffects;
-import com.arkanoid.ui.GameButton;
 import com.arkanoid.ui.ScoreScreen;
 import javafx.application.Application;
 import javafx.animation.AnimationTimer;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import com.arkanoid.entity.Paddle;
 
@@ -53,10 +48,9 @@ public class GameMain extends Application {
     private boolean playAgainShown = false;
     private boolean paused = false;
     private Pane gamePane;
-    private Stage primaryStage;
+    private final Stage primaryStage;
 
     // --- Constructor GameMain  ---
-    public GameMain() {}
     public GameMain(Stage primaryStage) {
         this.primaryStage = primaryStage;
     }
@@ -67,9 +61,6 @@ public class GameMain extends Application {
     }
 
     // --- Getter/Setter Paused  ---
-    public boolean isPaused() {
-        return paused;
-    }
     public void setPaused(boolean paused) {
         this.paused = paused;
     }
@@ -275,9 +266,11 @@ public class GameMain extends Application {
         // Remove all explosions that have finished their animation.
         activeExplosion.removeIf(ExplosionEffect::isFinished);
 
-//        for (Ball ball : listBalls) {
-//            ball.move(deltaTime);
-//        }
+/*
+        for (Ball ball : listBalls) {
+            ball.move(deltaTime);
+        }
+*/
 
         for (PowerUp powerUp : powerUps) {
             powerUp.update();

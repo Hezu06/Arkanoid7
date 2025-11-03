@@ -2,11 +2,9 @@ package com.arkanoid.ui;
 
 import com.arkanoid.game.GameMain;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -14,14 +12,10 @@ import javafx.stage.Stage;
 public class ScoreScreen  {
     static final int WIDTH = 750;
     static final int HEIGHT = 800;
-    private int score;
-    private Stage stage;
-    private GameMain gameMain;
-    private Stage primaryStage;
-
-    public ScoreScreen() {
-
-    }
+    private final int score;
+//    private Stage stage;
+    private final GameMain gameMain;
+    private final Stage primaryStage;
 
     public ScoreScreen(Stage primaryStage, int score, GameMain gameMain) {
         this.primaryStage = primaryStage;
