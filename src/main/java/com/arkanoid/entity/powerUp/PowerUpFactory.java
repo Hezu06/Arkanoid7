@@ -11,7 +11,8 @@ public class PowerUpFactory {
         IMMORTAL,
         MULTI_BALL,
         EXTRA_LIVES,
-        EXTRA_COINS
+        EXTRA_COINS,
+        LASER
     }
 
     public static final Random random = new Random();
@@ -26,7 +27,9 @@ public class PowerUpFactory {
                     PowerUpType.MULTI_BALL,
                     PowerUpType.EXTRA_LIVES,
                     PowerUpType.EXTRA_COINS,
-                    PowerUpType.FIRE_BALL
+                    PowerUpType.FIRE_BALL,
+                    PowerUpType.LASER,
+                    PowerUpType.IMMORTAL
             };
 
             // Randomly select one power-up.
@@ -38,7 +41,8 @@ public class PowerUpFactory {
                 case EXTRA_LIVES -> new ExtraLives(x, y);
                 case EXTRA_COINS ->  new ExtraCoins(x, y);
                 case FIRE_BALL -> new FireBall(x, y);
-                case IMMORTAL -> null;
+                case LASER -> new Laser(x, y);
+                case IMMORTAL -> new Immortal(x,y);
             };
         }
         return null;

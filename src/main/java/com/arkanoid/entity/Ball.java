@@ -130,6 +130,9 @@ public class Ball extends MovableObject {
 
         hitSound.play();
     }
+    public void reverseY() {
+        dy = -dy;
+    }
 
 
     /**
@@ -255,5 +258,9 @@ public class Ball extends MovableObject {
 
     public boolean isFireBall() {
         return isFireBall;
+    }
+
+    public double getRadius() {
+        return radius;
     }
 }
