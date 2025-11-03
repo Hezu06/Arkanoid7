@@ -1,6 +1,8 @@
 package com.arkanoid.game;
 
 import com.arkanoid.entity.Ball;
+
+import com.arkanoid.entity.GameObject;
 import com.arkanoid.entity.brick.*;
 import com.arkanoid.entity.powerUp.PowerUp;
 import com.arkanoid.entity.powerUp.PowerUpFactory;
@@ -22,10 +24,17 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import com.arkanoid.entity.Paddle;
-
+import com.arkanoid.entity.powerUp.LaserBeam;
+import javafx.scene.shape.Rectangle;
+import java.awt.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Iterator;
+import java.util.Objects;
+
+import javafx.scene.image.Image;
+
+
 
 import com.arkanoid.level.DifficultySettings;
 import com.arkanoid.ui.GameMenu;
@@ -42,6 +51,17 @@ public class GameMain extends Application {
     private final List<ExplosionEffect> activeExplosion = new ArrayList<>();
     private final List<Ball> listBalls = new ArrayList<>();
     private List<PowerUp> powerUps = new ArrayList<>();
+    private List<LaserBeam> laserBeams = new ArrayList<>();
+    private boolean barrierActive = false;
+    private long barrierStartTime;
+    private final long BARRIER_DURATION = 5000; // 5 giây
+    private final double BARRIER_HEIGHT = 10;
+
+    public List<LaserBeam> getLaserBeams() {
+        return laserBeams;
+    }
+
+
 
     public static ImageView ballTexture;
     // --- Texture field ---
@@ -205,6 +225,7 @@ public class GameMain extends Application {
         paddle = new Paddle(350, 775, DifficultySettings.getPaddleWidth(levelDifficulty), 600, paddleTexture.getImage());
         paddle.setMovingLeft(false);
         paddle.setMovingRight(false);
+
         // Initialise a new ball.
         listBalls.add(new Ball(
                 400, 400, 0, -1,
@@ -272,6 +293,27 @@ public class GameMain extends Application {
 
         paddle.update(deltaTime);
 
+        Iterator<LaserBeam> it = laserBeams.iterator();
+        while (it.hasNext()) {
+            LaserBeam beam = it.next();
+            beam.update();
+
+            // Kiểm tra va chạm với gạch
+            for (Brick brick : bricks) {
+                if (beam.collidesWith(brick)) {
+                    brick.takeHit();
+                    it.remove();
+                    break;
+                }
+            }
+
+            // Xóa laser nếu bay ra ngoài màn
+            if (beam.getY() < 0) {
+                it.remove();
+            }
+        }
+
+
         // Remove all explosions that have finished their animation.
         activeExplosion.removeIf(ExplosionEffect::isFinished);
 
@@ -294,6 +336,8 @@ public class GameMain extends Application {
                     gameStateManager.decreaseLives();   // Life lost.
                     if (!gameStateManager.isGameOver()) {
                         resetBallAndPaddle();
+                        paddle.setLaserInterrupted(true);
+                        paddle.setLaserPowerupInEffect(false);
                     }
                     else {
                         // Game Over, show Play Again.
@@ -419,6 +463,27 @@ public class GameMain extends Application {
             }
         }
 
+        // Ball - Immortal Barrier Collision (nếu đang có)
+        // === HANDLE BARRIER (IMMORTAL POWERUP) ===
+
+// Kiểm tra thời gian tồn tại của barrier
+        if (barrierActive && System.currentTimeMillis() - barrierStartTime > BARRIER_DURATION) {
+            barrierActive = false;
+            System.out.println("Barrier deactivated!");
+        }
+
+// Kiểm tra va chạm bóng với barrier
+        if (barrierActive) {
+            for (Ball ball : listBalls) {
+                double bottom = ball.getY() + ball.getRadius();
+                if (bottom >= WINDOW_HEIGHT - BARRIER_HEIGHT) {
+                    ball.reverseY();
+                    ball.setY(WINDOW_HEIGHT - BARRIER_HEIGHT - ball.getRadius());
+                }
+            }
+        }
+
+
         // Power-up Interaction.
         for(PowerUp powerUp : powerUps) {
             if (powerUp.isActive() && powerUp.checkCollision(paddle)) {
@@ -464,9 +529,19 @@ public class GameMain extends Application {
             ball.render(gc);
         }
 
+        for (LaserBeam laser : laserBeams) {
+            laser.render(gc);
+        }
+
         paddle.render(gc);
+
         for (PowerUp powerUp : powerUps) {
             powerUp.render(gc);
+        }
+
+        if (barrierActive) {
+            gc.setFill(Color.GOLD);
+            gc.fillRect(0, WINDOW_HEIGHT - BARRIER_HEIGHT, WINDOW_WIDTH, BARRIER_HEIGHT);
         }
     }
 
@@ -494,6 +569,7 @@ public class GameMain extends Application {
         paddle = new Paddle(350, 775,
                 DifficultySettings.getPaddleWidth(levelDifficulty), 600,
                 paddleTexture.getImage());
+
         powerUps = new ArrayList<>();
 
         // Re-add the canvas.
@@ -505,6 +581,15 @@ public class GameMain extends Application {
         GameMenu.Transition(backgroundTexture);
         gamePane.getChildren().addAll(backgroundTexture, canvas);
     }
+
+    public void activateBarrier() {
+        if (!barrierActive) {
+            barrierActive = true;
+            barrierStartTime = System.currentTimeMillis();
+            System.out.println("Barrier activated!");
+        }
+    }
+
 
     private void showPlayAgain() {
         paused = true;
@@ -539,6 +624,16 @@ public class GameMain extends Application {
         return paddle;
     }
 
+    public void fireLasersFromPaddle() {
+        double paddleY = paddle.getY();
+        double leftX = paddle.getX() + 10;
+        double rightX = paddle.getX() + paddle.getWidth() - 10;
+
+        laserBeams.add(new LaserBeam(leftX, paddleY));
+        laserBeams.add(new LaserBeam(rightX, paddleY));
+    }
+
+
     public void spawnExtraBalls() {
         listBalls.add(new Ball(
                 listBalls.getFirst().getX(), listBalls.getFirst().getY(),
@@ -552,7 +647,30 @@ public class GameMain extends Application {
                 ballTexture.getImage()));
     }
 
+    public void spawnLaserBeams() {
+        Paddle paddle = getPaddle();
+        if (!paddle.isLaserActive()) return;
+
+        // Vị trí hai đầu paddle để bắn ra 2 tia laser
+        double leftX = paddle.getX() + 10;
+        double rightX = paddle.getX() + paddle.getWidth() - 10;
+        double y = paddle.getY() - 10;
+
+        laserBeams.add(new LaserBeam(leftX, y));
+        laserBeams.add(new LaserBeam(rightX, y));
+
+        System.out.println("Laser beams fired!");
+    }
+
+    private Canvas canvas;
+    public Canvas getCanvas() {
+        return canvas;
+    }
+
     public List<Ball> getListBalls() {
         return listBalls;
+    }
+
+    public void deactivateBarrier() {
     }
 }
