@@ -1,6 +1,5 @@
 package com.arkanoid.entity.powerUp;
 
-import com.arkanoid.entity.powerUp.LaserBeam;
 import com.arkanoid.entity.Paddle;
 import com.arkanoid.game.GameMain;
 import javafx.scene.paint.Color;
@@ -21,7 +20,7 @@ public class Laser extends PowerUp {
     public void applyEffect(GameMain game) {
         Paddle paddle = game.getPaddle();
 
-        paddle.setLaserPowerupInEffect(true);
+        paddle.setLaserPowerUpInEffect(true);
         paddle.setLaserInterrupted(false);
         System.out.println("Laser PowerUp activated!");
 
@@ -46,7 +45,7 @@ public class Laser extends PowerUp {
                 }
             }
 
-            paddle.setLaserPowerupInEffect(false);
+            paddle.setLaserPowerUpInEffect(false);
             System.out.println("Laser PowerUp ended!");
         }).start();
 

@@ -7,8 +7,6 @@ import javafx.scene.paint.Color;
 import java.util.Objects;
 
 public class ExpandPaddle extends PowerUp {
-    private final double maxLength = 300;
-
     public ExpandPaddle(double x, double y) {
         super(x, y, 32, 32);
         super.setImage(new Image(Objects.requireNonNull(getClass().getClassLoader().

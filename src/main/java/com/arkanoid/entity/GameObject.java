@@ -56,8 +56,6 @@ public abstract class GameObject {
         this.height = height;
     }
 
-    public Rectangle getRect() { return this.rect; }
-
     protected Rectangle2D getBounds() {
         return new Rectangle2D(x, y, width, height);
     }

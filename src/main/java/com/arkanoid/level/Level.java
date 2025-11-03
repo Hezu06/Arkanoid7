@@ -36,8 +36,4 @@ public class Level {
     }
 
     public List<Brick> getBricks() { return bricks; }
-    public LevelDifficulty getDifficulty() { return difficulty; }
-    public double getBallSpeed() { return ballSpeed; }
-    public double getPaddleWidth() { return paddleWidth; }
-    public double getPowerUpChance() { return powerUpChance; }
 }

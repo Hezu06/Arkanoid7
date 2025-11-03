@@ -7,9 +7,9 @@ import javafx.scene.paint.Color;
 public class LaserBeam {
     private double x;
     private double y;
-    private double speed = 8;
-    private double width = 4;
-    private double height = 15;
+    private final double speed = 8;
+    private final double width = 4;
+    private final double height = 15;
 
     public LaserBeam(double x, double y) {
         this.x = x;
