@@ -405,7 +405,7 @@ public class GameMain extends Application {
         // --- Level Completion Check (Win) ---
         if (isLevelComplete() && !playAgainShown) {
             System.out.println("Level Complete!");
-//            showPlayAgainButton();
+            showPlayAgain();
             playAgainShown = true;
             return; // Stop processing and rendering once game is paused.
         }
@@ -437,11 +437,6 @@ public class GameMain extends Application {
 
         // Xóa các hiệu ứng nổ đã kết thúc
         activeExplosion.removeIf(ExplosionEffect::isFinished);
-
-        if (listBalls.isEmpty() && Ball.getNumberOfBalls() <= 0 && !playAgainShown) {
-            showPlayAgain(); // Hàm này sẽ set paused = true
-            playAgainShown = true; // Đặt cờ này ở đây
-        }
     }
 
     private void render() {
@@ -474,10 +469,8 @@ public class GameMain extends Application {
         System.out.println("Resetting Game");
         playAgainShown = false;
 
-        // Reset Game State if this is a true restart (GAME OVER).
-        if (gameStateManager.isGameOver()) {
-            gameStateManager = new GameStateManager();
-        }
+        // Reset Game State if this is Game Over / Level Completion.
+        gameStateManager = new GameStateManager();
 
         Ball.setNumberOfBalls(0);
 
@@ -511,24 +504,6 @@ public class GameMain extends Application {
         ScoreScreen scoreScreen = new ScoreScreen(primaryStage, gameStateManager.getScore(), this);
 
         scoreScreen.show();
-//        'String gameOverMessage = "PLAY AGAIN";
-//        GameButton playAgainBtn = new GameButton(gameOverMessage);
-//
-//        playAgainBtn.setFont(Font.loadFont(
-//                getClass().getResourceAsStream("/fonts/ALIEN5.TTF"), 36
-//        ));
-//        ButtonEffects.applyHoverEffect(playAgainBtn);
-//        VBox box = new VBox(playAgainBtn);
-//        box.setAlignment(Pos.CENTER);
-//        box.setPrefSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-//
-//        gamePane.getChildren().add(box);
-//
-//        playAgainBtn.setOnAction(e -> {
-//            gamePane.getChildren().clear(); // Delete everything.
-//            paused = false;
-//            resetGame(); // Re-initialize.
-//        });'
     }
 
     public GameStateManager getGameStateManager() {

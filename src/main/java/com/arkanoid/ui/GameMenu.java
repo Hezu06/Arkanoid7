@@ -1,6 +1,7 @@
 package com.arkanoid.ui;
 
 import com.arkanoid.game.GameMain;
+import com.arkanoid.game.GameStateManager;
 import com.arkanoid.level.Level;
 import javafx.animation.*;
 import javafx.application.Application;
@@ -48,7 +49,6 @@ public class GameMenu extends Application {
 
     private Image paddle = new Image("assets/Paddle/defaultPaddle.png");
     private ImageView paddleImage = new ImageView(paddle);
-
 
     // Constructor GameMenu
     public GameMenu() {}
