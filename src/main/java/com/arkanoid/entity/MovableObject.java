@@ -20,4 +20,12 @@ public abstract class MovableObject extends GameObject {
     }
 
     public abstract void move(double deltaTime);
+
+    public double getDx() {
+        return dx;
+    }
+
+    public double getDy() {
+        return dy;
+    }
 }
