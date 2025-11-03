@@ -1,6 +1,5 @@
 package com.arkanoid.entity;
 
-import com.arkanoid.entity.powerUp.PowerUp;
 import com.arkanoid.game.GameMain;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
@@ -15,7 +14,7 @@ public class Ball extends MovableObject {
     private static Image image;
     private static final int WINDOW_WIDTH = 750;
     private static final int WINDOW_HEIGHT = 800;
-    private final AudioClip hitSound;
+    private AudioClip hitSound;
     private static int numberOfBalls = 0;
 
     private boolean isFireBall = false;
@@ -35,9 +34,13 @@ public class Ball extends MovableObject {
         }
         numberOfBalls++;
         Ball.image = image;
-        hitSound = new AudioClip(
-                Objects.requireNonNull(getClass().getResource("/sounds/collision_sound.wav")).toExternalForm()
-        );
+        try {
+            hitSound = new AudioClip(
+                    Objects.requireNonNull(getClass().getResource("/sounds/collision_sound.wav")).toExternalForm()
+            );
+        } catch (Exception ex) {
+            System.out.println("Sound Error");
+        }
     }
 
     public static void setImage(Image image) {
@@ -63,7 +66,9 @@ public class Ball extends MovableObject {
                 dx = Math.sin(angle);
                 dy = -Math.cos(angle); // Luôn nảy lên
                 y = paddle.getY() - radius * 2 - 0.1; // Đẩy bóng ra khỏi paddle một chút
-                hitSound.play();
+                if (hitSound != null) {
+                    hitSound.play();
+                }
                 return; // Kết thúc sớm vì logic paddle là đặc biệt
             }
             // Nếu bóng đập vào CẠNH của paddle, nó sẽ rơi vào logic chung (Brick/Wall)
@@ -128,7 +133,9 @@ public class Ball extends MovableObject {
             dy /= len;
         }
 
-        hitSound.play();
+        if (hitSound != null) {
+            hitSound.play();
+        }
     }
     public void reverseY() {
         dy = -dy;
@@ -192,19 +199,25 @@ public class Ball extends MovableObject {
             if (x <= 0) {
                 x = 0;
                 dx = Math.abs(dx);
-                hitSound.play();
+                if (hitSound != null) {
+                    hitSound.play();
+                }
             }
 
             if (x + radius * 2 >= WINDOW_WIDTH) {
                 x = WINDOW_WIDTH - radius * 2;
                 dx = -Math.abs(dx);
-                hitSound.play();
+                if (hitSound != null) {
+                    hitSound.play();
+                }
             }
 
             if (y <= 0) {
                 y = 0;
                 dy = Math.abs(dy);
-                hitSound.play();
+                if (hitSound != null) {
+                    hitSound.play();
+                }
             }
 
             if (y > WINDOW_HEIGHT) {
@@ -231,11 +244,6 @@ public class Ball extends MovableObject {
             System.out.println("Can't render ball");
         }
         gc.drawImage(image, x, y, radius * 2, radius * 2);
-    }
-
-
-    public static int getNumberOfBalls() {
-        return numberOfBalls;
     }
 
     public static void setNumberOfBalls(int numberOfBalls) {
