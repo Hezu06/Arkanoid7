@@ -294,6 +294,7 @@ public class GameMain extends Application {
                     gameStateManager.decreaseLives();   // Life lost.
                     if (!gameStateManager.isGameOver()) {
                         resetBallAndPaddle();
+                        break;
                     }
                     else {
                         // Game Over, show Play Again.
@@ -302,6 +303,7 @@ public class GameMain extends Application {
                             playAgainShown = true;
                         }
                     }
+                    break;
                 }
                 continue;
             }
