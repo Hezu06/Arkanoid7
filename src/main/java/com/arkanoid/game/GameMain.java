@@ -133,7 +133,6 @@ public class GameMain extends Application {
         gamePane.getChildren().addAll(backgroundTexture, canvas);
 
         // --- 2. Initialize Game State and Level ---
-        gameStateManager = new  GameStateManager();
         bricks = loadLevel();
 
         listBalls.add(new Ball(400, 400, 0, -1, DifficultySettings.getBallSpeed(levelDifficulty), 15, ballTexture.getImage()));
