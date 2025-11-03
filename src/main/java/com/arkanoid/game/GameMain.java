@@ -266,10 +266,10 @@ public class GameMain extends Application {
     private void handleBrickBreak(Brick brick, List<Brick> bricksToRemove) {
         // Increase score
         if (brick instanceof StrongBrick) {
-            gameStateManager.addScoreForStrongBrick();
+            GameStateManager.getInstance().addScoreForStrongBrick();
         }
         else {
-            gameStateManager.addScoreForNormalBrick();
+            GameStateManager.getInstance().addScoreForNormalBrick();
         }
 
         // Power-ups drop
