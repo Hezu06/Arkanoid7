@@ -9,6 +9,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
 public class OptionsScreen {
+
+    private static final String FONT_PATH = "/fonts/GameFont.TTF";
+
     public static void show(StackPane contentLayer, VBox menuBox, ImageView background,
                             ImageView ballImage, ImageView paddleImage) {
     // Step 1
@@ -21,7 +24,7 @@ public class OptionsScreen {
         for (Button b : new Button[]{btnSetBackground, btnSetBall, btnSetPaddle, btnBack}) {
             ButtonEffects.applyHoverEffect(b);
             b.setFont(Font.loadFont(
-                    OptionsScreen.class.getResourceAsStream("/fonts/ALIEN5.TTF"), 36
+                    OptionsScreen.class.getResourceAsStream(FONT_PATH), 36
             ));
         }
 
@@ -54,7 +57,7 @@ public class OptionsScreen {
             for (Button b : new Button[]{btnBackground1, btnBackground2, btnBackground3, btnBackground4, btnBackOfBackground}) {
                 ButtonEffects.applyHoverEffect(b);
                 b.setFont(Font.loadFont(
-                        OptionsScreen.class.getResourceAsStream("/fonts/ALIEN5.TTF"), 36
+                        OptionsScreen.class.getResourceAsStream(FONT_PATH), 36
                 ));
             }
 
@@ -86,7 +89,7 @@ public class OptionsScreen {
             for (Button b : new Button[]{btnDefaultBall, btnBasketball, btnVolleyball, btnBackOfBall}) {
                 ButtonEffects.applyHoverEffect(b);
                 b.setFont(Font.loadFont(
-                        OptionsScreen.class.getResourceAsStream("/fonts/ALIEN5.TTF"), 36
+                        OptionsScreen.class.getResourceAsStream(FONT_PATH), 36
                 ));
             }
 
@@ -123,7 +126,7 @@ public class OptionsScreen {
             for (Button b : new Button[]{btnDefaultPaddle, btnGrassPaddle, btnSandPaddle, btnBackOfPaddle}) {
                 ButtonEffects.applyHoverEffect(b);
                 b.setFont(Font.loadFont(
-                        OptionsScreen.class.getResourceAsStream("/fonts/ALIEN5.TTF"), 36
+                        OptionsScreen.class.getResourceAsStream(FONT_PATH), 36
                 ));
             }
 
