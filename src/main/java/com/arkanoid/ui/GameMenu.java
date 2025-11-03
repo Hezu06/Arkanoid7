@@ -26,6 +26,8 @@ public class GameMenu extends Application {
     static final int WIDTH_BACKGROUND = 850;
     static final int HEIGHT_BACKGROUND = 950;
     public static String pathBackground = "assets/Background/galaxyBackground.jpg";
+    private static final String FONT_PATH = "/fonts/GameFont.TTF";
+
     // Animation background
     public static void Transition(ImageView background) {
         background.setFitWidth(WIDTH_BACKGROUND);
@@ -38,7 +40,7 @@ public class GameMenu extends Application {
         tt.play();
     }
 
-    // Khai bao background
+    // Initialize Background
     private Image image = new Image(pathBackground);
     private ImageView background = new ImageView(image);
 
@@ -90,18 +92,18 @@ public class GameMenu extends Application {
         // ====================== MENU CHÍNH ======================
         Label title = new Label("BRICK BREAKER");
         Font titleFont = Font.loadFont(
-                getClass().getResourceAsStream("/fonts/ALIEN5.TTF"),
+                getClass().getResourceAsStream(FONT_PATH),
                 80 // cỡ chữ
         );
         title.setFont(titleFont);
-        title.setTextFill(Color.WHEAT);
+        title.setTextFill(Color.WHITESMOKE);
 
         GameButton btnPlay = new GameButton("PLAY");
         GameButton btnOptions = new GameButton("OPTIONS");
         GameButton btnExit = new GameButton("EXIT");
 
         Font buttonFont = Font.loadFont(
-                getClass().getResourceAsStream("/fonts/ALIEN5.TTF"),
+                getClass().getResourceAsStream(FONT_PATH),
                 30
         );
         for (Button b : new Button[]{btnPlay, btnOptions, btnExit}) {

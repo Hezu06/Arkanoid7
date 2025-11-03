@@ -237,6 +237,47 @@ public class GameMain extends Application {
         }
     }
 
+
+    /**
+     * Helper function to handle brick broken.
+     *
+     * @param brick         brick that has been hit
+     * @param bricksToRemove    brick that are eligible to be removed
+     */
+    private void handleBrickBreak(Brick brick, List<Brick> bricksToRemove) {
+        // Increase score
+        if (brick instanceof StrongBrick) {
+            gameStateManager.addScoreForStrongBrick();
+        }
+        else {
+            gameStateManager.addScoreForNormalBrick();
+        }
+
+        // Power-ups drop
+        PowerUp newPowerUp = PowerUpFactory.createPowerUp(
+                brick.getX(), brick.getY(),
+                levelDifficulty
+        );
+        if  (newPowerUp != null) {
+            powerUps.add(newPowerUp);
+        }
+
+        // Explosion effect
+        activeExplosion.add(new ExplosionEffect(
+                brick.getX(), brick.getY(),
+                brick.getWidth(), brick.getHeight(),
+                brick
+        ));
+
+        // Explosive Brick
+        if (brick instanceof ExplosiveBrick) {
+            List<int[]> affectedCoords = brick.triggerSpecialAction();
+            if (!affectedCoords.isEmpty()) {
+                handleExplosion(affectedCoords, bricksToRemove);
+            }
+        }
+    }
+
     private boolean isLevelComplete() {
         if (bricks == null || bricks.isEmpty()) {
             return true;
@@ -265,12 +306,6 @@ public class GameMain extends Application {
 
         // Remove all explosions that have finished their animation.
         activeExplosion.removeIf(ExplosionEffect::isFinished);
-
-/*
-        for (Ball ball : listBalls) {
-            ball.move(deltaTime);
-        }
-*/
 
         for (PowerUp powerUp : powerUps) {
             powerUp.update();
@@ -328,33 +363,7 @@ public class GameMain extends Application {
                             break;
                         } else {
                             if (brick.takeHit()) {
-                                // Adding points for breaking a brick.
-                                if (brick instanceof StrongBrick) {
-                                    gameStateManager.addScoreForStrongBrick();
-                                } else {
-                                    gameStateManager.addScoreForNormalBrick();
-                                }
-
-                                // Making bricks dropping power-ups.
-                                PowerUp newPowerUp = PowerUpFactory.createPowerUp(brick.getX(), brick.getY(), levelDifficulty);
-                                if (newPowerUp != null) {
-                                    powerUps.add(newPowerUp);
-                                }
-
-                                // Particle explosion effect for bricks.
-                                activeExplosion.add(new ExplosionEffect(
-                                        brick.getX(), brick.getY(),
-                                        brick.getWidth(), brick.getHeight(),
-                                        brick
-                                ));
-
-                                if (brick instanceof ExplosiveBrick) {
-                                    List<int[]> affectedCoords = brick.triggerSpecialAction();
-                                    if (!affectedCoords.isEmpty()) {
-                                        handleExplosion(affectedCoords, bricksToRemove);
-                                    }
-                                }
-
+                                handleBrickBreak(brick, bricksToRemove);
                             }
                         }
                     }
@@ -363,33 +372,7 @@ public class GameMain extends Application {
                         ball.bounceOff(brick);
 
                         if (brick.takeHit()) {
-                            // Adding points for breaking a brick.
-                            if (brick instanceof StrongBrick) {
-                                gameStateManager.addScoreForStrongBrick();
-                            } else {
-                                gameStateManager.addScoreForNormalBrick();
-                            }
-
-                            // Making bricks dropping power-ups.
-                            PowerUp newPowerUp = PowerUpFactory.createPowerUp(brick.getX(), brick.getY(), levelDifficulty);
-                            if (newPowerUp != null) {
-                                powerUps.add(newPowerUp);
-                            }
-
-                            // Particle explosion effect for bricks.
-                            activeExplosion.add(new ExplosionEffect(
-                                    brick.getX(), brick.getY(),
-                                    brick.getWidth(), brick.getHeight(),
-                                    brick
-                            ));
-
-                            if (brick instanceof ExplosiveBrick) {
-                                List<int[]> affectedCoords = brick.triggerSpecialAction();
-                                if (!affectedCoords.isEmpty()) {
-                                    handleExplosion(affectedCoords, bricksToRemove);
-                                }
-                            }
-
+                            handleBrickBreak(brick, bricksToRemove);
                         }
                     }
                 }

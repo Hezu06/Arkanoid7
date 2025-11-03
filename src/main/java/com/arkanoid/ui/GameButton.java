@@ -5,19 +5,21 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 
 public class GameButton extends Button {
+
+    private static final String FONT_PATH = "/fonts/GameFont.TTF";
+
     public GameButton(String text) {
         super(text);
 
         setPrefSize(250, 70);
         setFont(Font.loadFont(
-                getClass().getResourceAsStream("/fonts/ALIEN5.TTF"), 36));
+                getClass().getResourceAsStream(FONT_PATH), 36));
         setTextFill(Color.BLACK);
-        setOpacity(0.6); // để đồng bộ với ButtonEffects
+        setOpacity(0.6); // sync w/ ButtonEffects
 
-        // Style mặc định
+        // Default style
         setStyle(
                 "-fx-background-color: white;" +
                         "-fx-background-radius: 12;" +
@@ -37,21 +39,4 @@ public class GameButton extends Button {
         textGlow.setInput(glow);
         setEffect(textGlow);
     }
-
-//    public static void setBackground(Button btn, String pathBackgroundButton) {
-//        btn.setStyle(
-//                "-fx-background-image: url('file:" + pathBackgroundButton + "');" +
-//                        "-fx-background-size: 100% 100%;" +          // Ảnh phủ kín toàn bộ
-//                        "-fx-background-repeat: no-repeat;" +
-//                        "-fx-background-position: center center;" +
-//                        "-fx-background-radius: 12;" +               // Giữ bo góc
-//                        "-fx-border-radius: 12;" +
-//                        "-fx-background-color: transparent;" +
-//                        "-fx-border-color: transparent;" +
-//                        "-fx-focus-color: transparent;" +
-//                        "-fx-faint-focus-color: transparent;" +
-//                        "-fx-padding: 0;" +
-//                        "-fx-cursor: hand;"                           // Giữ hiệu ứng chuột
-//        );
-//    }
 }

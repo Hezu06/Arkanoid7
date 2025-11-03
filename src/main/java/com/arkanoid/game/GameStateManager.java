@@ -29,6 +29,8 @@ public class GameStateManager {
     private final Image fullHeartImage;
     private final Image emptyHeartImage;
 
+    private static final String FONT_PATH = "/fonts/GameFont.TTF";
+
     public GameStateManager() {
         lives = INITIAL_LIVES;
         score = 0;
@@ -83,7 +85,7 @@ public class GameStateManager {
         // Render Score (TOP LEFT)
         gc.setFill(Color.WHITE);
         Font scoreFont = Font.loadFont(
-                getClass().getResourceAsStream("/fonts/ALIEN5.TTF"), 36
+                getClass().getResourceAsStream(FONT_PATH), 36
         );
         gc.setFont(scoreFont);
         gc.fillText("SCORE: " + getScore(), 10, 35);
