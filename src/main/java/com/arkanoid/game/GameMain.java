@@ -216,14 +216,13 @@ public class GameMain extends Application {
         paddle = new Paddle(350, 775, DifficultySettings.getPaddleWidth(levelDifficulty), 600, paddleTexture.getImage());
         paddle.setMovingLeft(false);
         paddle.setMovingRight(false);
-
         // Initialise a new ball.
         listBalls.add(new Ball(
                 400, 400, 0, -1,
                 DifficultySettings.getBallSpeed(levelDifficulty), 15,
                 ballTexture.getImage()));
 
-        System.out.println("Life Lost. Resetting Ball and Paddle. Lives remaining: " + gameStateManager.getLives());
+        System.out.println("Life Lost. Resetting Ball and Paddle. Lives remaining: " + GameStateManager.getInstance().getLives());
     }
 
     /**
@@ -247,7 +246,7 @@ public class GameMain extends Application {
                         continue;
                     }
 
-                    gameStateManager.addScoreForNormalBrick();
+                    GameStateManager.getInstance().addScoreForNormalBrick();
 
                     activeBrick.setBroken(true);
                     activeBrick.setFading(true);
@@ -361,8 +360,8 @@ public class GameMain extends Application {
 
                 // --- Life Management ---
                 if (listBalls.isEmpty()) {
-                    gameStateManager.decreaseLives();   // Life lost.
-                    if (!gameStateManager.isGameOver()) {
+                    GameStateManager.getInstance().decreaseLives();   // Life lost.
+                    if (!GameStateManager.getInstance().isGameOver()) {
                         resetBallAndPaddle();
                         paddle.setLaserInterrupted(true);
                         paddle.setLaserPowerupInEffect(false);
@@ -486,7 +485,7 @@ public class GameMain extends Application {
         gc.clearRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         // --- Lives and Scores UI ---
-        gameStateManager.render(gc, WINDOW_WIDTH, WINDOW_HEIGHT);
+        GameStateManager.getInstance().render(gc, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         // --- Rendering entities ---
 
@@ -523,7 +522,7 @@ public class GameMain extends Application {
         playAgainShown = false;
 
         // Reset Game State if this is Game Over / Level Completion.
-        gameStateManager = new GameStateManager();
+
 
         Ball.setNumberOfBalls(0);
 
@@ -564,14 +563,11 @@ public class GameMain extends Application {
 
     private void showPlayAgain() {
         paused = true;
-        ScoreScreen scoreScreen = new ScoreScreen(primaryStage, gameStateManager.getScore(), this);
+        ScoreScreen scoreScreen = new ScoreScreen(primaryStage, GameStateManager.getInstance().getScore(), this);
 
         scoreScreen.show();
     }
 
-    public GameStateManager getGameStateManager() {
-        return gameStateManager;
-    }
 
     public Paddle getPaddle() {
         return paddle;
@@ -622,6 +618,10 @@ public class GameMain extends Application {
 
     public List<Ball> getListBalls() {
         return listBalls;
+    }
+
+    public GameStateManager getGameStateManager() {
+        return GameStateManager.getInstance();
     }
 
     public void deactivateBarrier() {

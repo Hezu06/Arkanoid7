@@ -8,6 +8,7 @@ import javafx.scene.text.Font;
 import java.util.Objects;
 
 public class GameStateManager {
+    private static GameStateManager instance;
 
     private int lives;
     private int score;
@@ -31,13 +32,21 @@ public class GameStateManager {
 
     private static final String FONT_PATH = "/fonts/GameFont.TTF";
 
-    public GameStateManager() {
+    private GameStateManager() {
         lives = INITIAL_LIVES;
         score = 0;
         fullHeartImage = new Image(Objects.requireNonNull(
                 getClass().getClassLoader().getResourceAsStream(FULL_HEART_PATH)));
         emptyHeartImage = new Image(Objects.requireNonNull(
                 getClass().getClassLoader().getResourceAsStream(EMPTY_HEART_PATH)));
+        instance = this;
+    }
+
+    public static GameStateManager getInstance() {
+        if (instance == null) {
+            instance = new GameStateManager();
+        }
+        return instance;
     }
 
     public int getLives() {
