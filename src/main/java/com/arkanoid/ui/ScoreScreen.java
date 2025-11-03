@@ -2,22 +2,23 @@ package com.arkanoid.ui;
 
 import com.arkanoid.game.GameMain;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class ScoreScreen  {
+
     static final int WIDTH = 750;
     static final int HEIGHT = 800;
     private int score;
     private Stage stage;
     private GameMain gameMain;
     private Stage primaryStage;
+    private static final String FONT_PATH = "/fonts/GameFont.TTF";
 
     public ScoreScreen() {
 
@@ -30,11 +31,20 @@ public class ScoreScreen  {
     }
 
     public void show() {
-        Label title = new Label("🎮 Game Over!");
-        title.setStyle("-fx-font-size: 32px; -fx-text-fill: red; -fx-font-weight: bold;");
+        Label title = new Label("GAME OVER!");
+        Font titleFont = Font.loadFont(
+                getClass().getResourceAsStream(FONT_PATH),
+                40);
+        title.setFont(titleFont);
+        title.setTextFill(Color.WHITESMOKE);
 
-        Label scoreLabel = new Label("Your score: " + score);
-        scoreLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: #222;");
+        Label scoreLabel = new Label("SCORE: " + score);
+        Font scoreLabelFont = Font.loadFont(
+                getClass().getResourceAsStream(FONT_PATH),
+                40
+        );
+        scoreLabel.setFont(scoreLabelFont);
+        scoreLabel.setTextFill(Color.WHITESMOKE);
 
         GameButton retryBtn = new GameButton("PLAY AGAIN");
         GameButton mainMenuBtn = new GameButton("MAIN MENU");
@@ -52,15 +62,15 @@ public class ScoreScreen  {
         gameMain.getGamePane().getChildren().add(overPane);
         // Set Font
         retryBtn.setFont(Font.loadFont(
-                getClass().getResourceAsStream("/fonts/ALIEN5.TTF"), 36
+                getClass().getResourceAsStream(FONT_PATH), 36
         ));
 
         mainMenuBtn.setFont(Font.loadFont(
-                getClass().getResourceAsStream("/fonts/ALIEN5.TTF"), 36
+                getClass().getResourceAsStream(FONT_PATH), 36
         ));
 
         exitBtn.setFont(Font.loadFont(
-                getClass().getResourceAsStream("/fonts/ALIEN5.TTF"), 36
+                getClass().getResourceAsStream(FONT_PATH), 36
         ));
         // Nút chơi lại
         retryBtn.setOnAction(e -> {
@@ -75,6 +85,7 @@ public class ScoreScreen  {
                 GameMenu gameMenu = new GameMenu(gameMain.getBackgroundTexture(),
                                                     gameMain.getBallTexture(), gameMain.getPaddleTexture());
                 gameMain.getGamePane().getChildren().clear();
+                gameMain.getListBalls().clear();
                 gameMain.setPaused(false);
                 gameMenu.start(primaryStage);
             }

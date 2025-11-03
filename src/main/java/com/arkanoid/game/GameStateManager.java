@@ -4,7 +4,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 
 import java.util.Objects;
 
@@ -29,6 +28,8 @@ public class GameStateManager {
     private static final String EMPTY_HEART_PATH = "assets/Heart/heart_dead.png";
     private final Image fullHeartImage;
     private final Image emptyHeartImage;
+
+    private static final String FONT_PATH = "/fonts/GameFont.TTF";
 
     public GameStateManager() {
         lives = INITIAL_LIVES;
@@ -84,7 +85,7 @@ public class GameStateManager {
         // Render Score (TOP LEFT)
         gc.setFill(Color.WHITE);
         Font scoreFont = Font.loadFont(
-                getClass().getResourceAsStream("/fonts/ALIEN5.TTF"), 36
+                getClass().getResourceAsStream(FONT_PATH), 36
         );
         gc.setFont(scoreFont);
         gc.fillText("SCORE: " + getScore(), 10, 35);

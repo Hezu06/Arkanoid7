@@ -8,20 +8,15 @@ import com.arkanoid.entity.powerUp.PowerUp;
 import com.arkanoid.entity.powerUp.PowerUpFactory;
 import com.arkanoid.level.Level;
 import com.arkanoid.level.LevelLoader;
-import com.arkanoid.ui.ButtonEffects;
-import com.arkanoid.ui.GameButton;
 import com.arkanoid.ui.ScoreScreen;
 import javafx.application.Application;
 import javafx.animation.AnimationTimer;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import com.arkanoid.entity.Paddle;
 import com.arkanoid.entity.powerUp.LaserBeam;
@@ -73,10 +68,9 @@ public class GameMain extends Application {
     private boolean playAgainShown = false;
     private boolean paused = false;
     private Pane gamePane;
-    private Stage primaryStage;
+    private final Stage primaryStage;
 
     // --- Constructor GameMain  ---
-    public GameMain() {}
     public GameMain(Stage primaryStage) {
         this.primaryStage = primaryStage;
     }
@@ -87,9 +81,6 @@ public class GameMain extends Application {
     }
 
     // --- Getter/Setter Paused  ---
-    public boolean isPaused() {
-        return paused;
-    }
     public void setPaused(boolean paused) {
         this.paused = paused;
     }
@@ -267,6 +258,47 @@ public class GameMain extends Application {
         }
     }
 
+
+    /**
+     * Helper function to handle brick broken.
+     *
+     * @param brick         brick that has been hit
+     * @param bricksToRemove    brick that are eligible to be removed
+     */
+    private void handleBrickBreak(Brick brick, List<Brick> bricksToRemove) {
+        // Increase score
+        if (brick instanceof StrongBrick) {
+            gameStateManager.addScoreForStrongBrick();
+        }
+        else {
+            gameStateManager.addScoreForNormalBrick();
+        }
+
+        // Power-ups drop
+        PowerUp newPowerUp = PowerUpFactory.createPowerUp(
+                brick.getX(), brick.getY(),
+                levelDifficulty
+        );
+        if  (newPowerUp != null) {
+            powerUps.add(newPowerUp);
+        }
+
+        // Explosion effect
+        activeExplosion.add(new ExplosionEffect(
+                brick.getX(), brick.getY(),
+                brick.getWidth(), brick.getHeight(),
+                brick
+        ));
+
+        // Explosive Brick
+        if (brick instanceof ExplosiveBrick) {
+            List<int[]> affectedCoords = brick.triggerSpecialAction();
+            if (!affectedCoords.isEmpty()) {
+                handleExplosion(affectedCoords, bricksToRemove);
+            }
+        }
+    }
+
     private boolean isLevelComplete() {
         if (bricks == null || bricks.isEmpty()) {
             return true;
@@ -317,10 +349,6 @@ public class GameMain extends Application {
         // Remove all explosions that have finished their animation.
         activeExplosion.removeIf(ExplosionEffect::isFinished);
 
-//        for (Ball ball : listBalls) {
-//            ball.move(deltaTime);
-//        }
-
         for (PowerUp powerUp : powerUps) {
             powerUp.update();
         }
@@ -338,6 +366,7 @@ public class GameMain extends Application {
                         resetBallAndPaddle();
                         paddle.setLaserInterrupted(true);
                         paddle.setLaserPowerupInEffect(false);
+                        break;
                     }
                     else {
                         // Game Over, show Play Again.
@@ -346,6 +375,7 @@ public class GameMain extends Application {
                             playAgainShown = true;
                         }
                     }
+                    break;
                 }
                 continue;
             }
@@ -377,33 +407,7 @@ public class GameMain extends Application {
                             break;
                         } else {
                             if (brick.takeHit()) {
-                                // Adding points for breaking a brick.
-                                if (brick instanceof StrongBrick) {
-                                    gameStateManager.addScoreForStrongBrick();
-                                } else {
-                                    gameStateManager.addScoreForNormalBrick();
-                                }
-
-                                // Making bricks dropping power-ups.
-                                PowerUp newPowerUp = PowerUpFactory.createPowerUp(brick.getX(), brick.getY(), levelDifficulty);
-                                if (newPowerUp != null) {
-                                    powerUps.add(newPowerUp);
-                                }
-
-                                // Particle explosion effect for bricks.
-                                activeExplosion.add(new ExplosionEffect(
-                                        brick.getX(), brick.getY(),
-                                        brick.getWidth(), brick.getHeight(),
-                                        brick
-                                ));
-
-                                if (brick instanceof ExplosiveBrick) {
-                                    List<int[]> affectedCoords = brick.triggerSpecialAction();
-                                    if (!affectedCoords.isEmpty()) {
-                                        handleExplosion(affectedCoords, bricksToRemove);
-                                    }
-                                }
-
+                                handleBrickBreak(brick, bricksToRemove);
                             }
                         }
                     }
@@ -412,33 +416,7 @@ public class GameMain extends Application {
                         ball.bounceOff(brick);
 
                         if (brick.takeHit()) {
-                            // Adding points for breaking a brick.
-                            if (brick instanceof StrongBrick) {
-                                gameStateManager.addScoreForStrongBrick();
-                            } else {
-                                gameStateManager.addScoreForNormalBrick();
-                            }
-
-                            // Making bricks dropping power-ups.
-                            PowerUp newPowerUp = PowerUpFactory.createPowerUp(brick.getX(), brick.getY(), levelDifficulty);
-                            if (newPowerUp != null) {
-                                powerUps.add(newPowerUp);
-                            }
-
-                            // Particle explosion effect for bricks.
-                            activeExplosion.add(new ExplosionEffect(
-                                    brick.getX(), brick.getY(),
-                                    brick.getWidth(), brick.getHeight(),
-                                    brick
-                            ));
-
-                            if (brick instanceof ExplosiveBrick) {
-                                List<int[]> affectedCoords = brick.triggerSpecialAction();
-                                if (!affectedCoords.isEmpty()) {
-                                    handleExplosion(affectedCoords, bricksToRemove);
-                                }
-                            }
-
+                            handleBrickBreak(brick, bricksToRemove);
                         }
                     }
                 }
@@ -449,7 +427,7 @@ public class GameMain extends Application {
         // --- Level Completion Check (Win) ---
         if (isLevelComplete() && !playAgainShown) {
             System.out.println("Level Complete!");
-//            showPlayAgainButton();
+            showPlayAgain();
             playAgainShown = true;
             return; // Stop processing and rendering once game is paused.
         }
@@ -502,11 +480,6 @@ public class GameMain extends Application {
 
         // Xóa các hiệu ứng nổ đã kết thúc
         activeExplosion.removeIf(ExplosionEffect::isFinished);
-
-        if (listBalls.isEmpty() && Ball.getNumberOfBalls() <= 0 && !playAgainShown) {
-            showPlayAgain(); // Hàm này sẽ set paused = true
-            playAgainShown = true; // Đặt cờ này ở đây
-        }
     }
 
     private void render() {
@@ -549,10 +522,8 @@ public class GameMain extends Application {
         System.out.println("Resetting Game");
         playAgainShown = false;
 
-        // Reset Game State if this is a true restart (GAME OVER).
-        if (gameStateManager.isGameOver()) {
-            gameStateManager = new GameStateManager();
-        }
+        // Reset Game State if this is Game Over / Level Completion.
+        gameStateManager = new GameStateManager();
 
         Ball.setNumberOfBalls(0);
 
@@ -596,24 +567,6 @@ public class GameMain extends Application {
         ScoreScreen scoreScreen = new ScoreScreen(primaryStage, gameStateManager.getScore(), this);
 
         scoreScreen.show();
-//        'String gameOverMessage = "PLAY AGAIN";
-//        GameButton playAgainBtn = new GameButton(gameOverMessage);
-//
-//        playAgainBtn.setFont(Font.loadFont(
-//                getClass().getResourceAsStream("/fonts/ALIEN5.TTF"), 36
-//        ));
-//        ButtonEffects.applyHoverEffect(playAgainBtn);
-//        VBox box = new VBox(playAgainBtn);
-//        box.setAlignment(Pos.CENTER);
-//        box.setPrefSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-//
-//        gamePane.getChildren().add(box);
-//
-//        playAgainBtn.setOnAction(e -> {
-//            gamePane.getChildren().clear(); // Delete everything.
-//            paused = false;
-//            resetGame(); // Re-initialize.
-//        });'
     }
 
     public GameStateManager getGameStateManager() {
