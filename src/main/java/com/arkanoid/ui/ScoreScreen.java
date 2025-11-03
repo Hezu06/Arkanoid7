@@ -88,6 +88,8 @@ public class ScoreScreen  {
                                                     gameMain.getBallTexture(), gameMain.getPaddleTexture());
                 gameMain.getGamePane().getChildren().clear();
                 gameMain.getListBalls().clear();
+                gameMain.getLaserBeams().clear();
+                gameMain.getPowerUps().clear();
                 gameMain.setPaused(false);
                 gameMenu.start(primaryStage);
             }
