@@ -48,7 +48,7 @@ public class GameMain extends Application {
     private boolean playAgainShown = false;
     private boolean paused = false;
     private Pane gamePane;
-    private Stage primaryStage;
+    private final Stage primaryStage;
 
     // --- Constructor GameMain  ---
     public GameMain(Stage primaryStage) {
@@ -322,6 +322,7 @@ public class GameMain extends Application {
                     gameStateManager.decreaseLives();   // Life lost.
                     if (!gameStateManager.isGameOver()) {
                         resetBallAndPaddle();
+                        break;
                     }
                     else {
                         // Game Over, show Play Again.
@@ -330,6 +331,7 @@ public class GameMain extends Application {
                             playAgainShown = true;
                         }
                     }
+                    break;
                 }
                 continue;
             }
