@@ -75,6 +75,10 @@ public class GameStateManager {
         return score;
     }
 
+    public void setScore(int score) {
+        this.score = score;
+    }
+
     public void addScoreForNormalBrick() {
         score += NORMAL_BRICK_SCORE;
     }

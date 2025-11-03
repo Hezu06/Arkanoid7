@@ -8,6 +8,7 @@ import javafx.scene.image.ImageView;
 import java.util.Objects;
 
 class FireBall extends PowerUp {
+
     public FireBall(double x, double y) {
         super(x, y, 32, 32);
         super.setImage(new Image(Objects.requireNonNull(getClass().getClassLoader().

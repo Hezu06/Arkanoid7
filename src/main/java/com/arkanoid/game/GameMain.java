@@ -376,7 +376,6 @@ public class GameMain extends Application {
             if (isBallReadyToLaunch) {
                 ball.setX(paddle.getX() + (paddle.getWidth() / 2) - (ball.getWidth() / 2));
                 ball.setY(paddle.getY() - ball.getHeight());
-                // Subtract 1 pixel to prevent ball - paddle collision.
             }
             else {
                 ball.move(deltaTime);
@@ -425,6 +424,10 @@ public class GameMain extends Application {
             // Kiểm tra va chạm với gạch
             for (Brick brick : bricks) {
                 if (beam.collidesWith(brick)) {
+                    if (brick instanceof UnbreakableBrick) {
+                        it.remove();
+                        break;
+                    }
                     if (brick.takeHit()) {
                         handleBrickBreak(brick, bricksToRemove);
                         it.remove();
@@ -459,13 +462,13 @@ public class GameMain extends Application {
         // Ball - Immortal Barrier Collision (nếu đang có)
         // === HANDLE BARRIER (IMMORTAL POWERUP) ===
 
-// Kiểm tra thời gian tồn tại của barrier
+        // Kiểm tra thời gian tồn tại của barrier
         if (barrierActive && System.currentTimeMillis() - barrierStartTime > BARRIER_DURATION) {
             barrierActive = false;
             System.out.println("Barrier deactivated!");
         }
 
-// Kiểm tra va chạm bóng với barrier
+        // Kiểm tra va chạm bóng với barrier
         if (barrierActive) {
             for (Ball ball : listBalls) {
                 double bottom = ball.getY() + ball.getRadius();
@@ -573,8 +576,8 @@ public class GameMain extends Application {
     private void showPlayAgain() {
         paused = true;
         ScoreScreen scoreScreen = new ScoreScreen(primaryStage, GameStateManager.getInstance().getScore(), this);
-
         scoreScreen.show();
+        GameStateManager.getInstance().setScore(0);
     }
 
     public Paddle getPaddle() {
