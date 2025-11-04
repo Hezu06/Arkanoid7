@@ -21,8 +21,8 @@ import javafx.util.Duration;
 import java.util.Objects;
 
 public class GameMenu extends Application {
-    static final int WIDTH = 750;
-    static final int HEIGHT = 800;
+    private static final int WIDTH = 750;
+    private static final int HEIGHT = 800;
     static final int WIDTH_BACKGROUND = 850;
     static final int HEIGHT_BACKGROUND = 950;
     public static String pathBackground = "assets/Background/galaxyBackground.jpg";
@@ -86,6 +86,7 @@ public class GameMenu extends Application {
 
         Scene scene = new Scene(root, WIDTH, HEIGHT);
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);  // vô hiệu hóa thay đổi size;
         primaryStage.setTitle("Game Menu");
         primaryStage.show();
 
