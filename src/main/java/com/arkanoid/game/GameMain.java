@@ -126,8 +126,15 @@ public class GameMain extends Application {
         // --- 2. Initialize Game State and Level ---
         bricks = loadLevel();
 
-        listBalls.add(new Ball(400, 400, 0, -1, DifficultySettings.getBallSpeed(levelDifficulty), 15, ballTexture.getImage()));
+
         paddle = new Paddle(350, 775, DifficultySettings.getPaddleWidth(levelDifficulty), 600, paddleTexture.getImage());
+        listBalls.add(new Ball(
+                paddle.getX() + (paddle.getWidth() / 2) - 15,
+                paddle.getY() - 30,
+                0,
+                -1,
+                DifficultySettings.getBallSpeed(levelDifficulty), 15, ballTexture.getImage()));
+
 
         scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
@@ -208,9 +215,11 @@ public class GameMain extends Application {
         paddle.setMovingRight(false);
         // Initialise a new ball.
         listBalls.add(new Ball(
-                400, 400, 0, -1,
-                DifficultySettings.getBallSpeed(levelDifficulty), 15,
-                ballTexture.getImage()));
+                paddle.getX() + (paddle.getWidth() / 2) - 15,
+                paddle.getY() - 30,
+                0,
+                -1,
+                DifficultySettings.getBallSpeed(levelDifficulty), 15, ballTexture.getImage()));
 
         System.out.println("Life Lost. Resetting Ball and Paddle. Lives remaining: " + GameStateManager.getInstance().getLives());
     }
@@ -552,9 +561,12 @@ public class GameMain extends Application {
 
         // Set the state for launching a new ball.
         isBallReadyToLaunch = true;
-        listBalls.add(new Ball(400, 400, 0, -1,
-                DifficultySettings.getBallSpeed(levelDifficulty), 15,
-                ballTexture.getImage()));
+        listBalls.add(new Ball(
+                paddle.getX() + (paddle.getWidth() / 2) - 15,
+                paddle.getY() - 30,
+                0,
+                -1,
+                DifficultySettings.getBallSpeed(levelDifficulty), 15, ballTexture.getImage()));
         paddle = new Paddle(350, 775,
                 DifficultySettings.getPaddleWidth(levelDifficulty), 600,
                 paddleTexture.getImage());
