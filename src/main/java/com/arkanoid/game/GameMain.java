@@ -6,6 +6,7 @@ import com.arkanoid.entity.powerUp.PowerUp;
 import com.arkanoid.entity.powerUp.PowerUpFactory;
 import com.arkanoid.level.Level;
 import com.arkanoid.level.LevelLoader;
+import com.arkanoid.ui.PausedScreen;
 import com.arkanoid.ui.ScoreScreen;
 import javafx.application.Application;
 import javafx.animation.AnimationTimer;
@@ -562,6 +563,10 @@ public class GameMain extends Application {
 
         powerUps = new ArrayList<>();
 
+        //Reload score and lives
+        GameStateManager.getInstance().resetScore();
+        GameStateManager.getInstance().resetLives();
+
         // Re-add the canvas.
         Canvas canvas = new Canvas(WINDOW_WIDTH, WINDOW_HEIGHT);
         gc = canvas.getGraphicsContext2D();
@@ -582,10 +587,15 @@ public class GameMain extends Application {
 
     private void showPlayAgain() {
         paused = true;
-        ScoreScreen scoreScreen = new ScoreScreen(primaryStage, GameStateManager.getInstance().getScore(), this);
+        ScoreScreen scoreScreen = new ScoreScreen(primaryStage,
+                GameStateManager.getInstance().getScore(), this);
         scoreScreen.show();
-        GameStateManager.getInstance().resetScore();
-        GameStateManager.getInstance().resetLives();
+    }
+
+    private void showPaused() {
+        paused = true;
+        PausedScreen pausedScreen = new PausedScreen(primaryStage, this);
+        pausedScreen.show();
     }
 
     public Paddle getPaddle() {
