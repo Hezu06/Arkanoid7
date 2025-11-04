@@ -40,6 +40,9 @@ public class PausedScreen {
 
         Pane panePause = new Pane(pauseBox);
 
+        //Làm mờ nền
+        panePause.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);");
+
         gameMain.getGamePane().getChildren().add(panePause);
 
         //Set font

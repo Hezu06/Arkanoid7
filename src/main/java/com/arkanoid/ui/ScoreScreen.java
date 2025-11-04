@@ -61,7 +61,12 @@ public class ScoreScreen  {
         root.setPrefSize(WIDTH, HEIGHT);
 
         Pane overPane = new Pane(root);
+
+        //Làm mờ nền
+        overPane.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);");
+
         gameMain.getGamePane().getChildren().add(overPane);
+
         // Set Font
         retryBtn.setFont(Font.loadFont(
                 getClass().getResourceAsStream(FONT_PATH), 36
