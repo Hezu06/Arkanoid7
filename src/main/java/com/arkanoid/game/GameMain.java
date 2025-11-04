@@ -231,13 +231,19 @@ public class GameMain extends Application {
                 if (bricksToRemove.contains(activeBrick)) {
                     continue;
                 }
+
                 if (activeBrick.getGridX() == targetX && activeBrick.getGridY() == targetY) {
 
                     if (activeBrick instanceof UnbreakableBrick) {
                         continue;
                     }
 
-                    GameStateManager.getInstance().addScoreForNormalBrick();
+                    if (activeBrick instanceof StrongBrick) {
+                        GameStateManager.getInstance().addScoreForStrongBrick();
+                    }
+                    else {
+                        GameStateManager.getInstance().addScoreForNormalBrick();
+                    }
 
                     activeBrick.setBroken(true);
                     activeBrick.setFading(true);
@@ -578,7 +584,8 @@ public class GameMain extends Application {
         paused = true;
         ScoreScreen scoreScreen = new ScoreScreen(primaryStage, GameStateManager.getInstance().getScore(), this);
         scoreScreen.show();
-        GameStateManager.getInstance().setScore(0);
+        GameStateManager.getInstance().resetScore();
+        GameStateManager.getInstance().resetLives();
     }
 
     public Paddle getPaddle() {

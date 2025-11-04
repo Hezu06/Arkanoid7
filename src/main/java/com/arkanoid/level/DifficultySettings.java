@@ -4,7 +4,7 @@ public class DifficultySettings {
     // Constants for ballSpeed, paddleWidth and powerUpChance
     private static final double SPEED_HARD = 450;
     private static final double SPEED_VERY_HARD = 600;
-    private static final double SPEED_ASIAN = 800;
+    private static final double SPEED_ASIAN = 700;
 
     private static final int WIDTH_HARD = 150;
     private static final int WIDTH_VERY_HARD = 120;
