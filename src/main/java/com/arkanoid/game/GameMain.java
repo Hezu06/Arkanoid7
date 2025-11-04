@@ -2,6 +2,7 @@ package com.arkanoid.game;
 
 import com.arkanoid.entity.Ball;
 import com.arkanoid.entity.brick.*;
+import com.arkanoid.entity.powerUp.Laser;
 import com.arkanoid.entity.powerUp.PowerUp;
 import com.arkanoid.entity.powerUp.PowerUpFactory;
 import com.arkanoid.level.Level;
@@ -44,6 +45,7 @@ public class GameMain extends Application {
     private long barrierStartTime;
     private final long BARRIER_DURATION = 5000; // 5 giây
     private final double BARRIER_HEIGHT = 10;
+    private boolean isRunning = true;
 
     public List<LaserBeam> getLaserBeams() {
         return laserBeams;
@@ -207,7 +209,8 @@ public class GameMain extends Application {
     private void resetBallAndPaddle() {
         powerUps.clear();
         listBalls.clear();
-
+        paddle.setLaserPowerUpInEffect(false);
+        getLaserBeams().clear();
         // Set the state to wait for user's input.
         this.isBallReadyToLaunch = true;
 
@@ -554,12 +557,12 @@ public class GameMain extends Application {
 
     public void resetGame() {
         System.out.println("Resetting Game");
-
         playAgainShown = false;
         Ball.setNumberOfBalls(0);
+        paddle.setLaserPowerUpInEffect(false);
+        getLaserBeams().clear();
         bricks = loadLevel();
         listBalls.clear();
-
         // Set the state for launching a new ball.
         isBallReadyToLaunch = true;
         listBalls.add(new Ball(
@@ -633,4 +636,11 @@ public class GameMain extends Application {
     }
 
 
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    public void stopRunning() {
+        isRunning = false;
+    }
 }
