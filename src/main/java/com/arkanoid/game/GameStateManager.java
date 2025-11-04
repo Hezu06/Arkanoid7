@@ -14,6 +14,7 @@ public class GameStateManager {
     private int score;
 
     // Constants for scoring
+    private static final int INITIAL_SCORE = 0;
     private static final int NORMAL_BRICK_SCORE = 50;
     private static final int STRONG_BRICK_SCORE = 150;
     private static final int SCORE_PER_COIN_POWER_UP = 500;
@@ -49,8 +50,14 @@ public class GameStateManager {
         return instance;
     }
 
+    // --- LIVES MANAGEMENT ---
+
     public int getLives() {
         return lives;
+    }
+
+    public void resetLives() {
+        this.lives = INITIAL_LIVES;
     }
 
     public void increaseLives() {
@@ -75,8 +82,8 @@ public class GameStateManager {
         return score;
     }
 
-    public void setScore(int score) {
-        this.score = score;
+    public void resetScore() {
+        this.score = INITIAL_SCORE;
     }
 
     public void addScoreForNormalBrick() {
