@@ -144,6 +144,13 @@ public class GameMain extends Application {
                         isBallReadyToLaunch = false;
                     }
                 }
+
+                // Pause game
+                case ESCAPE -> {
+                    if (!paused) {
+                        showPaused();
+                    }
+                }
             }
         });
 
