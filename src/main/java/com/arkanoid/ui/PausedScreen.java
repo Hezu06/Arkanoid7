@@ -65,18 +65,21 @@ public class PausedScreen {
 
         //Set activities
         btnResume.setOnAction(e-> {
+            SoundEffect.playButtonClick();
             gameMain.getGamePane().getChildren().remove(panePause);
             gameMain.setLastUpdate(0);
             gameMain.setPaused(false);
         });
 
         btnPlayAgain.setOnAction(e1-> {
+            SoundEffect.playButtonClick();
             gameMain.getGamePane().getChildren().clear(); // Xóa toàn bộ
             gameMain.setPaused(false);
             gameMain.resetGame(); // Khởi tạo lại
         });
 
         btnMainMenu.setOnAction(e2-> {
+            SoundEffect.playButtonClick();
             try {
                 GameMenu gameMenu = new GameMenu(gameMain.getBackgroundTexture(),
                         gameMain.getBallTexture(), gameMain.getPaddleTexture());
@@ -95,6 +98,7 @@ public class PausedScreen {
         });
 
         btnExit.setOnAction(e3-> {
+            SoundEffect.playButtonClick();
             primaryStage.close();
         });
     }
