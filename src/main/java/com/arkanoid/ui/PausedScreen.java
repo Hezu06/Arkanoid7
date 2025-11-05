@@ -1,6 +1,7 @@
 package com.arkanoid.ui;
 
 import com.arkanoid.game.GameMain;
+import com.arkanoid.game.GameStateManager;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
@@ -65,6 +66,7 @@ public class PausedScreen {
         //Set activities
         btnResume.setOnAction(e-> {
             gameMain.getGamePane().getChildren().remove(panePause);
+            gameMain.setLastUpdate(0);
             gameMain.setPaused(false);
         });
 
@@ -82,6 +84,8 @@ public class PausedScreen {
                 gameMain.getListBalls().clear();
                 gameMain.getLaserBeams().clear();
                 gameMain.getPowerUps().clear();
+                GameStateManager.getInstance().resetScore();
+                GameStateManager.getInstance().resetLives();
                 gameMain.setPaused(false);
                 gameMenu.start(primaryStage);
             }

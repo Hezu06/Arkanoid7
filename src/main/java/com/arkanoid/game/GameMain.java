@@ -40,10 +40,17 @@ public class GameMain extends Application {
     private List<PowerUp> powerUps = new ArrayList<>();
     private final List<LaserBeam> laserBeams = new ArrayList<>();
     private boolean barrierActive = false;
-    private long barrierStartTime;
+    private double barrierTimeRemaining = 0.0; // Bộ đếm ngược (tính bằng giây)
+    private final double BARRIER_DURATION_SECONDS = 5.0; // 5 giây (dùng double)
     private final long BARRIER_DURATION = 5000; // 5 giây
     private final double BARRIER_HEIGHT = 10;
     private boolean isRunning = true;
+
+    public void setLastUpdate(long lastUpdate) {
+        this.lastUpdate = lastUpdate;
+    }
+
+    public long lastUpdate = 0;
 
     public List<LaserBeam> getLaserBeams() {
         return laserBeams;
@@ -163,7 +170,7 @@ public class GameMain extends Application {
 
         // --- Start the Game Loop ---
         new AnimationTimer() {
-            private long lastUpdate = 0;
+
             @Override
             public void handle(long now) {
                 if (paused) return;
@@ -495,9 +502,14 @@ public class GameMain extends Application {
         // === HANDLE BARRIER (IMMORTAL POWERUP) ===
 
         // Kiểm tra thời gian tồn tại của barrier
-        if (barrierActive && System.currentTimeMillis() - barrierStartTime > BARRIER_DURATION) {
-            barrierActive = false;
-            System.out.println("Barrier deactivated!");
+        if (barrierActive) {
+            barrierTimeRemaining -= deltaTime; // Đếm ngược bằng thời gian game
+
+            if (barrierTimeRemaining <= 0) {
+                barrierActive = false;
+                barrierTimeRemaining = 0; // Reset về 0 cho chắc
+                System.out.println("Barrier deactivated!");
+            }
         }
 
         // Kiểm tra va chạm bóng với barrier
@@ -605,11 +617,10 @@ public class GameMain extends Application {
     }
 
     public void activateBarrier() {
-        if (!barrierActive) {
-            barrierActive = true;
-            barrierStartTime = System.currentTimeMillis();
-            System.out.println("Barrier activated!");
-        }
+        barrierActive = true;
+        // Đặt lại bộ đếm, ngay cả khi nó đang hoạt động (để nhận power-up mới)
+        barrierTimeRemaining = BARRIER_DURATION_SECONDS;
+        System.out.println("Barrier activated!");
     }
 
     private void showPlayAgain() {

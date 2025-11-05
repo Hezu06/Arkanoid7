@@ -1,5 +1,7 @@
 package com.arkanoid.entity;
 
+import com.arkanoid.entity.powerUp.LaserBeam;
+import com.arkanoid.game.GameMain;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
@@ -21,7 +23,23 @@ public class Paddle extends MovableObject {
 
     private boolean immortalPowerUpInEffect = false;
 
+    private static final double LASER_DURATION_SECONDS = 5.0; // 5 giây
+    private static final double LASER_SHOOT_INTERVAL = 0.25; // 250ms
+
+    private GameMain gameRef;
+
+    private double laserTimeRemaining = 0.0;
+    private double laserShootCooldown = 0.0;
+
     private static final int WINDOW_WIDTH = 750;
+
+    public void activateLaserPowerUp(GameMain game) {
+        this.gameRef = game; // Lưu lại tham chiếu đến GameMain
+        this.laserPowerUpInEffect = true;
+        this.laserInterrupted = false;
+        this.laserTimeRemaining = LASER_DURATION_SECONDS; // Đặt lại bộ đếm 5 giây
+        this.laserShootCooldown = 0.0; // Bắn ngay lập tức
+    }
 
     public Paddle(double x, double y, int width, double speed, Image image) {
         super(x, y, width, 20, 0, 0);
@@ -42,12 +60,6 @@ public class Paddle extends MovableObject {
             System.out.println("Paddle shrank!");
         }
 
-        // Hết hiệu ứng laser
-        long laserEndTime = 0;
-        if (laserActive && System.currentTimeMillis() > laserEndTime) {
-            laserActive = false;
-            System.out.println("Laser mode ended!");
-        }
 
         // Hết hiệu ứng bất tử
         // thời điểm hết hiệu lực Immortal
@@ -56,6 +68,48 @@ public class Paddle extends MovableObject {
             immortalPowerUpInEffect = false;
             System.out.println("Immortal mode ended!");
         }
+        if (this.laserPowerUpInEffect) {
+
+            // 1. Đếm ngược tổng thời gian
+            this.laserTimeRemaining -= deltaTime;
+
+            // 2. Đếm ngược thời gian giữa 2 lần bắn
+            this.laserShootCooldown -= deltaTime;
+
+            // 3. Kiểm tra nếu hết hạn hoặc bị ngắt (mất mạng)
+            if (this.laserTimeRemaining <= 0 || this.laserInterrupted) {
+                this.laserPowerUpInEffect = false;
+                this.laserTimeRemaining = 0;
+                this.laserShootCooldown = 0;
+                this.gameRef = null; // Xóa tham chiếu
+                System.out.println("Laser PowerUp ended!");
+                return; // Dừng xử lý laser cho frame này
+            }
+
+            if (this.laserShootCooldown <= 0) {
+                // Đặt lại thời gian chờ
+                this.laserShootCooldown = LASER_SHOOT_INTERVAL;
+
+                // Bắn!
+                shootLasers();
+            }
+        }
+    }
+
+    private void shootLasers() {
+        // Đảm bảo gameRef không bị null
+        if (this.gameRef == null) {
+            return;
+        }
+
+        // (Code của bạn từ Timeline cũ)
+        double leftX = this.x + 10;
+        double rightX = this.x + this.width - 14;
+        double y = this.y - 15; // 'this.y' là tọa độ Y của paddle
+
+        // Dùng gameRef để thêm laser vào danh sách của GameMain
+        this.gameRef.getLaserBeams().add(new LaserBeam(leftX, y));
+        this.gameRef.getLaserBeams().add(new LaserBeam(rightX, y));
     }
 
     @Override
