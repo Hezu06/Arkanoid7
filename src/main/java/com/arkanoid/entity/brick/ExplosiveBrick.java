@@ -32,6 +32,7 @@ public class ExplosiveBrick extends Brick {
         return affectedCoords;
     }
 
+
     @Override
     public void updateAppearance() {
         /* No change since it breaks immediately after 1 hit */

@@ -1,7 +1,6 @@
 package com.arkanoid.ui;
 
 import com.arkanoid.game.GameMain;
-import com.arkanoid.game.GameStateManager;
 import com.arkanoid.level.Level;
 import javafx.animation.*;
 import javafx.application.Application;
@@ -87,7 +86,10 @@ public class GameMenu extends Application {
         Scene scene = new Scene(root, WIDTH, HEIGHT);
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);  // vô hiệu hóa thay đổi size;
-        primaryStage.setTitle("Game Menu");
+        primaryStage.setTitle("BRICK BREAKER 36.0");
+        Image stageIcon = new Image(Objects.requireNonNull(
+                getClass().getResourceAsStream("/assets/Ball/defaultBall.png")));
+        primaryStage.getIcons().add(stageIcon);
         primaryStage.show();
 
         // ====================== MENU CHÍNH ======================
