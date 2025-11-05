@@ -8,6 +8,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
@@ -92,6 +93,23 @@ public class GameMenu extends Application {
         primaryStage.getIcons().add(stageIcon);
         primaryStage.show();
 
+        // ====================== NHẠC NỀN ======================
+        SoundBackground.getInstance().playBackgroundMusic();
+
+        Slider volumeSlider = new Slider();
+        volumeSlider.setMin(0);
+        volumeSlider.setMax(100);
+        volumeSlider.setValue(50); // Đặt âm lượng mặc định là 50%
+        volumeSlider.setShowTickLabels(true);
+        volumeSlider.setShowTickMarks(true);
+        volumeSlider.setMajorTickUnit(25);
+
+        // Đặt chiều rộng mong muốn là 300 pixels
+        volumeSlider.setMaxWidth(250);
+
+        // ====================== CLICK SOUND =====================
+        SoundEffect.load();
+
         // ====================== MENU CHÍNH ======================
         Label title = new Label("BRICK BREAKER");
         Font titleFont = Font.loadFont(
@@ -120,6 +138,7 @@ public class GameMenu extends Application {
 
         // ====================== NÚT PLAY ======================
         btnPlay.setOnAction(e -> {
+            SoundEffect.playButtonClick();
             Label startLabel = new Label("CHOOSE");
             startLabel.setFont(titleFont);
             startLabel.setTextFill(Color.WHITESMOKE);
@@ -139,9 +158,13 @@ public class GameMenu extends Application {
 
             FadeSmooth.smoothContent(contentLayer, playBox);
 
-            btnBack.setOnAction(e1 -> FadeSmooth.smoothContent(contentLayer, menuBox));
+            btnBack.setOnAction(e1 -> {
+                SoundEffect.playButtonClick();
+                FadeSmooth.smoothContent(contentLayer, menuBox);
+            });
 
             btnAsian.setOnAction(e2 -> {
+                SoundEffect.playButtonClick();
                 GameMain gameMain = new GameMain(primaryStage);
                 gameMain.setBackgroundTexture(background);
                 gameMain.setBallTexture(ballImage);
@@ -155,6 +178,7 @@ public class GameMenu extends Application {
 
             });
             btnVeryHard.setOnAction(e3 -> {
+                SoundEffect.playButtonClick();
                 GameMain gameMain = new GameMain(primaryStage);
                 gameMain.setBackgroundTexture(background);
                 gameMain.setBallTexture(ballImage);
@@ -167,6 +191,7 @@ public class GameMenu extends Application {
                 }
             });
             btnHard.setOnAction(e4 -> {
+                SoundEffect.playButtonClick();
                 GameMain gameMain = new GameMain(primaryStage);
                 gameMain.setBackgroundTexture(background);
                 gameMain.setBallTexture(ballImage);
@@ -182,10 +207,14 @@ public class GameMenu extends Application {
 
         // ====================== NÚT OPTIONS ======================
         btnOptions.setOnAction(e2 -> {
+            SoundEffect.playButtonClick();
             OptionsScreen.show(contentLayer, menuBox, background, ballImage, paddleImage);
         });
 
         // ====================== NÚT EXIT ======================
-        btnExit.setOnAction(e3 -> primaryStage.close());
+        btnExit.setOnAction(e3 -> {
+            SoundEffect.playButtonClick();
+            primaryStage.close();
+        });
     }
 }

@@ -82,6 +82,7 @@ public class ScoreScreen  {
         ));
         // Nút chơi lại
         retryBtn.setOnAction(e -> {
+            SoundEffect.playButtonClick();
             gameMain.getGamePane().getChildren().clear(); // Xóa toàn bộ
             gameMain.setPaused(false);
             gameMain.resetGame(); // Khởi tạo lại
@@ -89,6 +90,7 @@ public class ScoreScreen  {
 
         // Nút quay về menu chính
         mainMenuBtn.setOnAction(e -> {
+            SoundEffect.playButtonClick();
             try {
                 GameMenu gameMenu = new GameMenu(gameMain.getBackgroundTexture(),
                                                     gameMain.getBallTexture(), gameMain.getPaddleTexture());
@@ -107,6 +109,9 @@ public class ScoreScreen  {
         });
 
         // Nút thoát
-        exitBtn.setOnAction(e -> primaryStage.close());
+        exitBtn.setOnAction(e -> {
+            SoundEffect.playButtonClick();
+            primaryStage.close();
+        });
     }
 }
