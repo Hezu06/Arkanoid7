@@ -9,12 +9,12 @@
 -----NN-----
 ----NXXN----
 ----XNNX----
----XXNNXX---
+---XNNNNX---
 ---SN--NS---
 --XXN--NXX--
---XX----XX--
--XXNSSSSNXX-
--XNNUUUUNNX-
+--XS----SX--
+-XNNSSSSNNX-
+-XNNSUUSNNX-
 -XSNNXXNNSX-
 ------------
 ------------

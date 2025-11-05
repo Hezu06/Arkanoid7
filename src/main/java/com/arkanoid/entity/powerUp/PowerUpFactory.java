@@ -33,8 +33,7 @@ public class PowerUpFactory {
             };
 
             // Randomly select one power-up.
-//            PowerUpType type = dropTypes[random.nextInt(dropTypes.length)];
-            PowerUpType type = PowerUpType.LASER;
+            PowerUpType type = dropTypes[random.nextInt(dropTypes.length)];
 
             return switch (type) {
                 case EXPAND_PADDLE -> new ExpandPaddle(x, y);

@@ -2,7 +2,6 @@ package com.arkanoid.game;
 
 import com.arkanoid.entity.Ball;
 import com.arkanoid.entity.brick.*;
-import com.arkanoid.entity.powerUp.Laser;
 import com.arkanoid.entity.powerUp.PowerUp;
 import com.arkanoid.entity.powerUp.PowerUpFactory;
 import com.arkanoid.level.Level;
@@ -21,9 +20,7 @@ import javafx.stage.Stage;
 import com.arkanoid.entity.Paddle;
 import com.arkanoid.entity.powerUp.LaserBeam;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Iterator;
+import java.util.*;
 
 import com.arkanoid.level.DifficultySettings;
 import com.arkanoid.ui.GameMenu;
@@ -51,8 +48,6 @@ public class GameMain extends Application {
     public List<LaserBeam> getLaserBeams() {
         return laserBeams;
     }
-
-
 
     public static ImageView ballTexture;
     // --- Texture field ---
@@ -121,16 +116,14 @@ public class GameMain extends Application {
         gamePane = new Pane();
         Scene scene = new Scene(gamePane, WINDOW_WIDTH, WINDOW_HEIGHT, Color.CYAN);
 
-        // --- 1. Canvas Setup ---
+        // --- Canvas Setup ---
         Canvas canvas = new Canvas(WINDOW_WIDTH, WINDOW_HEIGHT);
         gc = canvas.getGraphicsContext2D();
         GameMenu.Transition(backgroundTexture);
         gamePane.getChildren().addAll(backgroundTexture, canvas);
 
-        // --- 2. Initialize Game State and Level ---
+        // --- Initialize Game State and Level ---
         bricks = loadLevel();
-
-
         paddle = new Paddle(350, 775, DifficultySettings.getPaddleWidth(levelDifficulty), 600, paddleTexture.getImage());
         listBalls.add(new Ball(
                 paddle.getX() + (paddle.getWidth() / 2) - 15,
@@ -139,7 +132,7 @@ public class GameMain extends Application {
                 -1,
                 DifficultySettings.getBallSpeed(levelDifficulty), 15, ballTexture.getImage()));
 
-
+        // --- KeyBoard Handling ---
         scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
                 case LEFT -> paddle.setMovingLeft(true);
@@ -160,7 +153,8 @@ public class GameMain extends Application {
                 case RIGHT -> paddle.setMovingRight(false);
             }
         });
-        // --- 3. Start the Game Loop ---
+
+        // --- Start the Game Loop ---
         new AnimationTimer() {
             private long lastUpdate = 0;
             @Override
@@ -176,8 +170,7 @@ public class GameMain extends Application {
             }
         }.start();
 
-        // --- 4. Stage Setup ---
-        primaryStage.setTitle("Arkanoid Renderer");
+        primaryStage.setTitle("BRICK BREAKER 36.0");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -229,53 +222,68 @@ public class GameMain extends Application {
         System.out.println("Life Lost. Resetting Ball and Paddle. Lives remaining: " + GameStateManager.getInstance().getLives());
     }
 
+
     /**
      * Explosion Handler.
-     * @param affectedCoords Coords that are affected by the Explosive Brick
-     * @param bricksToRemove The bricks affected are added to the list.
+     * @param affectedCoords The list of [x, y] coordinates to check.
+     * @param bricksToRemove The global list of bricks to be removed after the game loop update.
+     * @param processedCoords A set of already processed coordinates.
      */
-    private void handleExplosion(List<int[]> affectedCoords, List<Brick> bricksToRemove) {
+    private void handleExplosion(List<int[]> affectedCoords,
+                                 List<Brick> bricksToRemove,
+                                 Set<String> processedCoords) {
 
         for (int[] targetCoords : affectedCoords) {
             int targetX = targetCoords[0];
             int targetY = targetCoords[1];
+            String targetCoordsKey = targetX + "," + targetY;
 
-            for (Brick activeBrick : this.bricks) {
-                if (bricksToRemove.contains(activeBrick)) {
-                    continue;
-                }
+            // Skip if this coordinate has already been checked
+            if (processedCoords.contains(targetCoordsKey)) {
+                continue;
+            }
+            processedCoords.add(targetCoordsKey); // Mark as processed for this chain
 
+            // Find the brick at the target coordinates
+            Brick brickToProcess = null;
+            for (Brick activeBrick : bricks) {
                 if (activeBrick.getGridX() == targetX && activeBrick.getGridY() == targetY) {
-
-                    if (activeBrick instanceof UnbreakableBrick) {
-                        continue;
-                    }
-
-                    if (activeBrick instanceof StrongBrick) {
-                        GameStateManager.getInstance().addScoreForStrongBrick();
-                    }
-                    else {
-                        GameStateManager.getInstance().addScoreForNormalBrick();
-                    }
-
-                    activeBrick.setBroken(true);
-                    activeBrick.setFading(true);
-                    bricksToRemove.add(activeBrick);
+                    brickToProcess = activeBrick;
                     break;
                 }
             }
+
+            // Skip if no brick, or already scheduled for removal, or is unbreakable
+            if (    brickToProcess == null ||
+                    bricksToRemove.contains(brickToProcess) ||
+                    brickToProcess instanceof UnbreakableBrick)
+            {
+                continue;
+            }
+
+            List<int[]> nextExplosionCoords = new ArrayList<>();
+
+            // Explore to get all Explosive Brick in the brickToRemove
+            if (brickToProcess instanceof ExplosiveBrick) {
+                // Recursively get the surroundings of each Explosive Brick.
+                nextExplosionCoords.addAll(brickToProcess.triggerSpecialAction());
+            }
+
+            // Recursively search for the "last" Explosive Brick in the chain reaction.
+            // Then process each explosion starting from that "last" Explosive Brick.
+            if (!nextExplosionCoords.isEmpty()) {
+                handleExplosion(nextExplosionCoords,  bricksToRemove, processedCoords);
+            }
+
+            // The entire reaction chain is resolved (All Explosive Bricks are found).
+            // Destroy the surroundings starting from the current brick (The "last" Explosive Brick).
+            breakBrick(brickToProcess);
+            bricksToRemove.remove(brickToProcess);
         }
     }
 
-
-    /**
-     * Helper function to handle brick broken.
-     *
-     * @param brick         brick that has been hit
-     * @param bricksToRemove    brick that are eligible to be removed
-     */
-    private void handleBrickBreak(Brick brick, List<Brick> bricksToRemove) {
-        // Increase score
+    // Brick Break Handler for Explosion Handler specifically.
+    private void breakBrick(Brick brick) {
         if (brick instanceof StrongBrick) {
             GameStateManager.getInstance().addScoreForStrongBrick();
         }
@@ -299,11 +307,29 @@ public class GameMain extends Application {
                 brick
         ));
 
+        brick.setBroken(true);
+        brick.setFading(true);
+    }
+
+
+    /**
+     * Helper function to handle brick broken.
+     *
+     * @param brick         brick that has been hit
+     * @param bricksToRemove    brick that are eligible to be removed
+     */
+    private void handleBrickBreak(Brick brick, List<Brick> bricksToRemove) {
+
+        breakBrick(brick);
+
         // Explosive Brick
         if (brick instanceof ExplosiveBrick) {
             List<int[]> affectedCoords = brick.triggerSpecialAction();
+
+            Set<String> processedCoords = new HashSet<>();
+
             if (!affectedCoords.isEmpty()) {
-                handleExplosion(affectedCoords, bricksToRemove);
+                handleExplosion(affectedCoords, bricksToRemove, processedCoords);
             }
         }
     }
@@ -337,27 +363,6 @@ public class GameMain extends Application {
         }
 
         paddle.update(deltaTime);
-
-//        Iterator<LaserBeam> it = laserBeams.iterator();
-//        while (it.hasNext()) {
-//            LaserBeam beam = it.next();
-//            beam.update();
-//
-//            // Kiểm tra va chạm với gạch
-//            for (Brick brick : bricks) {
-//                if (beam.collidesWith(brick)) {
-//                    brick.takeHit();
-//                    it.remove();
-//                    break;
-//                }
-//            }
-//
-//            // Xóa laser nếu bay ra ngoài màn
-//            if (beam.getY() < 0) {
-//                it.remove();
-//            }
-//        }
-
 
         // Remove all explosions that have finished their animation.
         activeExplosion.removeIf(ExplosionEffect::isFinished);
@@ -578,7 +583,7 @@ public class GameMain extends Application {
 
         powerUps = new ArrayList<>();
 
-        //Reload score and lives
+        // Reload score and lives
         GameStateManager.getInstance().resetScore();
         GameStateManager.getInstance().resetLives();
 
