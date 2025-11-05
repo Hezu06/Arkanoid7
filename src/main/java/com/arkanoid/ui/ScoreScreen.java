@@ -1,6 +1,7 @@
 package com.arkanoid.ui;
 
 import com.arkanoid.game.GameMain;
+import com.arkanoid.game.GameStateManager;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -95,6 +96,8 @@ public class ScoreScreen  {
                 gameMain.getListBalls().clear();
                 gameMain.getLaserBeams().clear();
                 gameMain.getPowerUps().clear();
+                GameStateManager.getInstance().resetScore();
+                GameStateManager.getInstance().resetLives();
                 gameMain.setPaused(false);
                 gameMenu.start(primaryStage);
             }
