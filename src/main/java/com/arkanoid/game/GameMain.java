@@ -10,6 +10,7 @@ import com.arkanoid.ui.PausedScreen;
 import com.arkanoid.ui.ScoreScreen;
 import javafx.application.Application;
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -21,6 +22,9 @@ import com.arkanoid.entity.Paddle;
 import com.arkanoid.entity.powerUp.LaserBeam;
 
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import com.arkanoid.level.DifficultySettings;
 import com.arkanoid.ui.GameMenu;
@@ -29,6 +33,11 @@ public class GameMain extends Application {
 
     private static final int WINDOW_WIDTH = 750;
     private static final int WINDOW_HEIGHT = 800;
+
+    private final Object gameLock = new Object();
+
+    // Dịch vụ để chạy luồng logic game
+    private ScheduledExecutorService gameLogicExecutor;
 
     private GraphicsContext gc;
     private List<Brick> bricks;
@@ -119,6 +128,7 @@ public class GameMain extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        final long targetUpdateInterval = 16_666_667L;
 
         gamePane = new Pane();
         Scene scene = new Scene(gamePane, WINDOW_WIDTH, WINDOW_HEIGHT, Color.CYAN);
@@ -169,18 +179,35 @@ public class GameMain extends Application {
         });
 
         // --- Start the Game Loop ---
+        gameLogicExecutor = Executors.newSingleThreadScheduledExecutor();
+        gameLogicExecutor.scheduleAtFixedRate(() -> {
+            // Chỉ chạy khi game không bị dừng
+            if (!paused && isRunning) {
+                // Tự tính toán deltaTime cho luồng logic
+                long now = System.nanoTime();
+                if (lastUpdate > 0) {
+                    double deltaTime = (now - lastUpdate) / 1_000_000_000.0;
+
+                    // GỌI UPDATE() TRONG LUỒNG RIÊNG
+                    update(deltaTime);
+                }
+                lastUpdate = now;
+            }
+        }, 0, targetUpdateInterval, TimeUnit.NANOSECONDS);
+
         new AnimationTimer() {
 
             @Override
             public void handle(long now) {
                 if (paused) return;
-                if (lastUpdate > 0) {
-                    double deltaTime = (now - lastUpdate) / 1_000_000_000.0;
-                    // Convert nanosecond to second.
-                    update(deltaTime);
-                    render();
-                }
-                lastUpdate = now;
+                render();
+//                if (lastUpdate > 0) {
+//                    double deltaTime = (now - lastUpdate) / 1_000_000_000.0;
+//                    // Convert nanosecond to second.
+//                    update(deltaTime);
+//                    render();
+//                }
+//                lastUpdate = now;
             }
         }.start();
 
@@ -189,6 +216,16 @@ public class GameMain extends Application {
         primaryStage.show();
     }
 
+    public void shutdownExecutor() {
+        // 1. Dừng vòng lặp update
+        this.isRunning = false;
+
+        // 2. Tắt luồng logic game
+        if (gameLogicExecutor != null) {
+            System.out.println("Shutting down game logic executor...");
+            gameLogicExecutor.shutdownNow();
+        }
+    }
 
     private List<Brick> loadLevel() {
         LevelLoader loader = new LevelLoader();
@@ -311,15 +348,19 @@ public class GameMain extends Application {
                 levelDifficulty
         );
         if  (newPowerUp != null) {
-            powerUps.add(newPowerUp);
+            synchronized (gameLock) {
+                powerUps.add(newPowerUp);
+            }
         }
 
         // Explosion effect
-        activeExplosion.add(new ExplosionEffect(
-                brick.getX(), brick.getY(),
-                brick.getWidth(), brick.getHeight(),
-                brick
-        ));
+        synchronized (gameLock) {
+            activeExplosion.add(new ExplosionEffect(
+                    brick.getX(), brick.getY(),
+                    brick.getWidth(), brick.getHeight(),
+                    brick
+            ));
+        }
 
         brick.setBroken(true);
         brick.setFading(true);
@@ -368,8 +409,10 @@ public class GameMain extends Application {
     }
 
     private void update(double deltaTime) {
-        for (ExplosionEffect effect : activeExplosion) {
-            effect.update(deltaTime);
+        synchronized (gameLock) {
+            for (ExplosionEffect effect : activeExplosion) {
+                effect.update(deltaTime);
+            }
         }
 
         for (Brick brick : bricks) {
@@ -379,48 +422,49 @@ public class GameMain extends Application {
         paddle.update(deltaTime);
 
         // Remove all explosions that have finished their animation.
-        activeExplosion.removeIf(ExplosionEffect::isFinished);
+        synchronized (gameLock) {
+            activeExplosion.removeIf(ExplosionEffect::isFinished);
+        }
 
         for (PowerUp powerUp : powerUps) {
             powerUp.update();
         }
+        synchronized (gameLock) {
+            Iterator<Ball> iterator = listBalls.iterator();
+            while (iterator.hasNext()) {
+                Ball ball = iterator.next();
+                if (!ball.isAlive()) {
+                    iterator.remove();
 
-        Iterator<Ball> iterator = listBalls.iterator();
-        while (iterator.hasNext()) {
-            Ball ball = iterator.next();
-            if (!ball.isAlive()) {
-                iterator.remove();
-
-                // --- Life Management ---
-                if (listBalls.isEmpty()) {
-                    GameStateManager.getInstance().decreaseLives();   // Life lost.
-                    if (!GameStateManager.getInstance().isGameOver()) {
-                        resetBallAndPaddle();
-                        paddle.setLaserInterrupted(true);
-                        paddle.setLaserPowerUpInEffect(false);
+                    // --- Life Management ---
+                    if (listBalls.isEmpty()) {
+                        GameStateManager.getInstance().decreaseLives();   // Life lost.
+                        if (!GameStateManager.getInstance().isGameOver()) {
+                            resetBallAndPaddle();
+                            paddle.setLaserInterrupted(true);
+                            paddle.setLaserPowerUpInEffect(false);
+                            break;
+                        } else {
+                            // Game Over, show Play Again.
+                            if (!playAgainShown) {
+                                showPlayAgain();
+                                playAgainShown = true;
+                            }
+                        }
                         break;
                     }
-                    else {
-                        // Game Over, show Play Again.
-                        if (!playAgainShown) {
-                            showPlayAgain();
-                            playAgainShown = true;
-                        }
-                    }
-                    break;
+                    continue;
                 }
-                continue;
-            }
-            // If ball is ready to launch, place it at the paddle center.
-            if (isBallReadyToLaunch) {
-                ball.setX(paddle.getX() + (paddle.getWidth() / 2) - (ball.getWidth() / 2));
-                ball.setY(paddle.getY() - ball.getHeight());
-            }
-            else {
-                ball.move(deltaTime);
+
+                // If ball is ready to launch, place it at the paddle center.
+                if (isBallReadyToLaunch) {
+                    ball.setX(paddle.getX() + (paddle.getWidth() / 2) - (ball.getWidth() / 2));
+                    ball.setY(paddle.getY() - ball.getHeight());
+                } else {
+                    ball.move(deltaTime);
+                }
             }
         }
-
         List<Brick> bricksToRemove = new ArrayList<>();
 
         for (Brick brick : bricks) {
@@ -454,30 +498,31 @@ public class GameMain extends Application {
             }
         }
         this.bricks.removeAll(bricksToRemove);
+        synchronized (gameLock) {
+            Iterator<LaserBeam> it = laserBeams.iterator();
+            while (it.hasNext()) {
+                LaserBeam beam = it.next();
+                beam.update();
 
-        Iterator<LaserBeam> it = laserBeams.iterator();
-        while (it.hasNext()) {
-            LaserBeam beam = it.next();
-            beam.update();
-
-            // Kiểm tra va chạm với gạch
-            for (Brick brick : bricks) {
-                if (beam.collidesWith(brick)) {
-                    if (brick instanceof UnbreakableBrick) {
-                        it.remove();
-                        break;
-                    }
-                    if (brick.takeHit()) {
-                        handleBrickBreak(brick, bricksToRemove);
-                        it.remove();
-                        break;
+                // Kiểm tra va chạm với gạch
+                for (Brick brick : bricks) {
+                    if (beam.collidesWith(brick)) {
+                        if (brick instanceof UnbreakableBrick) {
+                            it.remove();
+                            break;
+                        }
+                        if (brick.takeHit()) {
+                            handleBrickBreak(brick, bricksToRemove);
+                            it.remove();
+                            break;
+                        }
                     }
                 }
-            }
 
-            // Xóa laser nếu bay ra ngoài màn
-            if (beam.getY() < 0) {
-                it.remove();
+                // Xóa laser nếu bay ra ngoài màn
+                if (beam.getY() < 0) {
+                    it.remove();
+                }
             }
         }
 
@@ -532,16 +577,23 @@ public class GameMain extends Application {
             }
         }
 
-        this.bricks.removeAll(bricksToRemove);
+        synchronized (gameLock) {
+            this.bricks.removeAll(bricksToRemove);
+        }
 
         // Xóa các gạch đã hoàn thành hiệu ứng mờ dần (sửa lỗi CME Vị trí 2)
-        this.bricks.removeIf(b -> b.isBroken() && b.getOpacity() <= 0);
+        synchronized (gameLock) {
+            this.bricks.removeIf(b -> b.isBroken() && b.getOpacity() <= 0);
+        }
 
         // Xóa các power-up đã được "ăn" hoặc bay ra khỏi màn hình
-        this.powerUps.removeIf(p -> !p.isActive() || p.getY() > WINDOW_HEIGHT);
-
+        synchronized (gameLock) {
+            this.powerUps.removeIf(p -> !p.isActive() || p.getY() > WINDOW_HEIGHT);
+        }
         // Xóa các hiệu ứng nổ đã kết thúc
-        activeExplosion.removeIf(ExplosionEffect::isFinished);
+        synchronized (gameLock) {
+            activeExplosion.removeIf(ExplosionEffect::isFinished);
+        }
     }
 
     private void render() {
@@ -551,21 +603,22 @@ public class GameMain extends Application {
         GameStateManager.getInstance().render(gc, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         // --- Rendering entities ---
+        synchronized (gameLock) {
+            for (Brick brick : bricks) {
+                brick.render(gc);
+            }
 
-        for (Brick brick : bricks) {
-            brick.render(gc);
-        }
+            for (ExplosionEffect effect : activeExplosion) {
+                effect.render(gc);
+            }
 
-        for (ExplosionEffect effect : activeExplosion) {
-            effect.render(gc);
-        }
+            for (Ball ball : listBalls) {
+                ball.render(gc);
+            }
 
-        for (Ball ball : listBalls) {
-            ball.render(gc);
-        }
-
-        for (LaserBeam laser : laserBeams) {
-            laser.render(gc);
+            for (LaserBeam laser : laserBeams) {
+                laser.render(gc);
+            }
         }
 
         paddle.render(gc);
@@ -581,6 +634,7 @@ public class GameMain extends Application {
     }
 
     public void resetGame() {
+        synchronized (gameLock) {
         System.out.println("Resetting Game");
         playAgainShown = false;
         Ball.setNumberOfBalls(0);
@@ -614,6 +668,7 @@ public class GameMain extends Application {
         gamePane.getChildren().clear();
         GameMenu.Transition(backgroundTexture);
         gamePane.getChildren().addAll(backgroundTexture, canvas);
+        }
     }
 
     public void activateBarrier() {
@@ -625,9 +680,11 @@ public class GameMain extends Application {
 
     private void showPlayAgain() {
         paused = true;
-        ScoreScreen scoreScreen = new ScoreScreen(primaryStage,
-                GameStateManager.getInstance().getScore(), this);
-        scoreScreen.show();
+        Platform.runLater(() -> {
+            ScoreScreen scoreScreen = new ScoreScreen(primaryStage,
+                    GameStateManager.getInstance().getScore(), this);
+            scoreScreen.show();
+        });
     }
 
     private void showPaused() {

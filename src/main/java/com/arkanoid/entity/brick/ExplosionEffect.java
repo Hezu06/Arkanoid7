@@ -32,6 +32,7 @@ public class ExplosionEffect {
     }
 
     private final List<Particle> particles = new ArrayList<>();
+    private final Object particleLock = new Object();
     private boolean finished = false;
 
     public ExplosionEffect(double x, double y, double width, double height, Brick brick) {
@@ -105,15 +106,17 @@ public class ExplosionEffect {
         }
 
         // spawn particles
-        for (int i = 0; i < numsOfParticles; i++) {
-            double angle = rand.nextDouble() * 2 * Math.PI;
-            double speed = speedConstant1 + rand.nextDouble() * speedConstant2;
-            double velocityX = Math.cos(angle) * speed;
-            double velocityY = Math.sin(angle) * speed;
-            double life = lifeConstant1 + rand.nextDouble() * lifeConstant2;
-            double size = sizeConstant1 + rand.nextDouble() * sizeConstant2;
+        synchronized (particleLock) {
+            for (int i = 0; i < numsOfParticles; i++) {
+                double angle = rand.nextDouble() * 2 * Math.PI;
+                double speed = speedConstant1 + rand.nextDouble() * speedConstant2;
+                double velocityX = Math.cos(angle) * speed;
+                double velocityY = Math.sin(angle) * speed;
+                double life = lifeConstant1 + rand.nextDouble() * lifeConstant2;
+                double size = sizeConstant1 + rand.nextDouble() * sizeConstant2;
 
-            particles.add(new Particle(centerX, centerY, velocityX, velocityY, life, size, color));
+                particles.add(new Particle(centerX, centerY, velocityX, velocityY, life, size, color));
+            }
         }
     }
 
@@ -131,13 +134,15 @@ public class ExplosionEffect {
     }
 
     public void render(GraphicsContext gc) {
-        for (Particle p : particles) {
-            double alpha = Math.max(0, p.life);
-            gc.setGlobalAlpha(alpha);
-            gc.setFill(p.color);
-            gc.fillOval(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
+        synchronized (particleLock) {
+            for (Particle p : particles) {
+                double alpha = Math.max(0, p.life);
+                gc.setGlobalAlpha(alpha);
+                gc.setFill(p.color);
+                gc.fillOval(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
+            }
+            gc.setGlobalAlpha(1.0);
         }
-        gc.setGlobalAlpha(1.0);
     }
 
     public boolean isFinished() {
