@@ -57,8 +57,8 @@ public class Ball extends MovableObject {
 
             // Chỉ kích hoạt logic paddle đặc biệt nếu bóng đập vào MẶT TRÊN của paddle
             // và đang đi XUỐNG (dy > 0).
-            // (cy < rect.getMinY() dùng để kiểm tra bóng ở phía trên paddle)
-            if (cy < rect.getMinY() && dy > 0) {
+            // (cy <= rect.getMinY() dùng để kiểm tra bóng ở phía trên paddle)
+            if (cy <= rect.getMinY() && dy > 0) {
                 double hitPos = (cx - paddle.getX()) / paddle.getWidth();
                 hitPos = Math.max(0, Math.min(1, hitPos)); // Giới hạn từ 0 đến 1
                 // Góc nảy từ ±75 độ (150 * (hitPos - 0.5))
@@ -99,7 +99,7 @@ public class Ball extends MovableObject {
 
         // Đảm bảo rằng có va chạm (overlap > 0 trên cả hai trục)
         // Mặc dù checkCollision đã làm điều này, kiểm tra lại ở đây cũng không sao
-        if (overlapX > 0 && overlapY > 0) {
+        if (overlapX >= 0 && overlapY >= 0) {
 
             // 5. So sánh độ xuyên thấu: Trục nào có độ xuyên thấu ÍT HƠN
             // chính là trục xảy ra va chạm.
