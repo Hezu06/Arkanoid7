@@ -107,6 +107,12 @@ public class GameMenu extends Application {
         // Đặt chiều rộng mong muốn là 250 pixels
         volumeSlider.setMaxWidth(250);
 
+        volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            // newValue là giá trị từ 0-100
+            // Chia cho 100 để được giá trị từ 0.0 - 1.0 mà MediaPlayer cần
+            double volume = newValue.doubleValue() / 100.0;
+            SoundBackground.getInstance().setVolume(volume);
+        });
         // ====================== CLICK SOUND =====================
         SoundEffect.load();
 
@@ -208,7 +214,7 @@ public class GameMenu extends Application {
         // ====================== NÚT OPTIONS ======================
         btnOptions.setOnAction(e2 -> {
             SoundEffect.playButtonClick();
-            OptionsScreen.show(contentLayer, menuBox, background, ballImage, paddleImage);
+            OptionsScreen.show(contentLayer, menuBox, background, ballImage, paddleImage, volumeSlider);
         });
 
         // ====================== NÚT EXIT ======================

@@ -2,6 +2,7 @@ package com.arkanoid.ui;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
@@ -13,7 +14,7 @@ public class OptionsScreen {
     private static final String FONT_PATH = "/fonts/GameFont.TTF";
 
     public static void show(StackPane contentLayer, VBox menuBox, ImageView background,
-                            ImageView ballImage, ImageView paddleImage) {
+                            ImageView ballImage, ImageView paddleImage, Slider volumeSlider) {
     // Step 1
         GameButton btnSetBackground = new GameButton("BACKGROUND");
         GameButton btnSetBall = new GameButton("BALL");
@@ -48,7 +49,7 @@ public class OptionsScreen {
 
 
 
-        VBox optionsBox = new VBox(30, btnSetBackground, btnSetBall, btnSetPaddle, btnBack);
+        VBox optionsBox = new VBox(30, btnSetBackground, btnSetBall, btnSetPaddle, btnBack, volumeSlider);
         optionsBox.setAlignment(Pos.CENTER);
         FadeSmooth.smoothContent(contentLayer, optionsBox);
 
