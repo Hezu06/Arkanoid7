@@ -27,6 +27,7 @@ public class GameMenu extends Application {
     static final int HEIGHT_BACKGROUND = 950;
     public static String pathBackground = "assets/Background/galaxyBackground.jpg";
     private static final String FONT_PATH = "/fonts/GameFont.TTF";
+    private GameMain gameMain;
 
     // Animation background
     public static void Transition(ImageView background) {
@@ -173,15 +174,16 @@ public class GameMenu extends Application {
                 FadeSmooth.smoothContent(contentLayer, menuBox);
             });
 
+            this.gameMain = new GameMain(primaryStage);
+
             btnAsian.setOnAction(e2 -> {
                 SoundEffect.playButtonClick();
-                GameMain gameMain = new GameMain(primaryStage);
-                gameMain.setBackgroundTexture(background);
-                gameMain.setBallTexture(ballImage);
-                gameMain.setPaddleTexture(paddleImage);
-                gameMain.setLevelDifficulty(Level.LevelDifficulty.ASIAN);
+                this.gameMain.setBackgroundTexture(background);
+                this.gameMain.setBallTexture(ballImage);
+                this.gameMain.setPaddleTexture(paddleImage);
+                this.gameMain.setLevelDifficulty(Level.LevelDifficulty.ASIAN);
                 try {
-                    gameMain.start(primaryStage); // chuyển sang màn game
+                    this.gameMain.start(primaryStage); // chuyển sang màn game
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -189,26 +191,24 @@ public class GameMenu extends Application {
             });
             btnVeryHard.setOnAction(e3 -> {
                 SoundEffect.playButtonClick();
-                GameMain gameMain = new GameMain(primaryStage);
-                gameMain.setBackgroundTexture(background);
-                gameMain.setBallTexture(ballImage);
-                gameMain.setPaddleTexture(paddleImage);
-                gameMain.setLevelDifficulty(Level.LevelDifficulty.VERY_HARD);
+                this.gameMain.setBackgroundTexture(background);
+                this.gameMain.setBallTexture(ballImage);
+                this.gameMain.setPaddleTexture(paddleImage);
+                this.gameMain.setLevelDifficulty(Level.LevelDifficulty.VERY_HARD);
                 try {
-                    gameMain.start(primaryStage); // chuyển sang màn game
+                    this.gameMain.start(primaryStage); // chuyển sang màn game
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             });
             btnHard.setOnAction(e4 -> {
                 SoundEffect.playButtonClick();
-                GameMain gameMain = new GameMain(primaryStage);
-                gameMain.setBackgroundTexture(background);
-                gameMain.setBallTexture(ballImage);
-                gameMain.setPaddleTexture(paddleImage);
-                gameMain.setLevelDifficulty(Level.LevelDifficulty.HARD);
+                this.gameMain.setBackgroundTexture(background);
+                this.gameMain.setBallTexture(ballImage);
+                this.gameMain.setPaddleTexture(paddleImage);
+                this.gameMain.setLevelDifficulty(Level.LevelDifficulty.HARD);
                 try {
-                    gameMain.start(primaryStage); // chuyển sang màn game
+                    this.gameMain.start(primaryStage); // chuyển sang màn game
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -226,5 +226,27 @@ public class GameMenu extends Application {
             SoundEffect.playButtonClick();
             primaryStage.close();
         });
+    }
+
+    // Thêm hàm này vào cuối lớp GameMenu
+    @Override
+    public void stop() throws Exception {
+        super.stop(); // Gọi hàm stop của lớp cha
+
+        System.out.println("GameMenu is stopping...");
+
+        // 1. Tắt luồng logic game (nếu game đã được khởi tạo)
+        if (this.gameMain != null) {
+            this.gameMain.shutdownExecutor(); // Gọi hàm dọn dẹp của GameMain
+        }
+
+        // 2. Tắt luồng nhạc nền (Giả sử bạn có hàm stopMusic() trong SoundBackground)
+        // Nếu không có, bạn cần thêm nó vào lớp SoundBackground
+        SoundBackground.getInstance().stopMusic();
+
+        // 3. (Biện pháp cuối cùng) Buộc JVM thoát
+        // Điều này đảm bảo mọi thứ đều tắt
+        System.out.println("Forcing application exit.");
+        System.exit(0);
     }
 }
