@@ -16,7 +16,6 @@ public class ScoreScreen  {
     static final int WIDTH = 750;
     static final int HEIGHT = 800;
     private int score;
-    private Stage stage;
     private GameMain gameMain;
     private Stage primaryStage;
     private static final String FONT_PATH = "/fonts/GameFont.TTF";

@@ -64,14 +64,6 @@ public class GameMenu extends Application {
     private StackPane contentLayer;
     private VBox menuBox;
 
-    // Getter
-    public StackPane getContentLayer() {
-        return contentLayer;
-    }
-
-    public VBox getMenuBox() {
-        return menuBox;
-    }
 
     @Override
     public void start(Stage primaryStage) {
@@ -103,8 +95,6 @@ public class GameMenu extends Application {
         volumeSlider.setMin(0);
         volumeSlider.setMax(100);
         volumeSlider.setValue(50); // Đặt âm lượng mặc định là 50%
-        //volumeSlider.setShowTickLabels(true);
-        //volumeSlider.setShowTickMarks(true);
         volumeSlider.setMajorTickUnit(25);
 
         // Đặt chiều rộng mong muốn là 250 pixels

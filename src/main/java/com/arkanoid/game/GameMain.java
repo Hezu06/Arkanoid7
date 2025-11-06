@@ -201,13 +201,6 @@ public class GameMain extends Application {
             public void handle(long now) {
                 if (paused) return;
                 render();
-//                if (lastUpdate > 0) {
-//                    double deltaTime = (now - lastUpdate) / 1_000_000_000.0;
-//                    // Convert nanosecond to second.
-//                    update(deltaTime);
-//                    render();
-//                }
-//                lastUpdate = now;
             }
         }.start();
 
@@ -237,8 +230,8 @@ public class GameMain extends Application {
         } else fileName = "Asian.txt";
         System.out.println(fileName);
         try {
-            Level level = loader.loadLevel(fileName, levelDifficulty);
-            List<Brick> loadedBricks = level.getBricks();
+            Level level = loader.loadLevel(fileName);
+            List<Brick> loadedBricks = level.bricks();
             System.out.println("Final Bricks Loaded into App: " + loadedBricks.size());
             return loadedBricks;
         } catch (Exception e) {
@@ -600,7 +593,7 @@ public class GameMain extends Application {
         gc.clearRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         // --- Lives and Scores UI ---
-        GameStateManager.getInstance().render(gc, WINDOW_WIDTH, WINDOW_HEIGHT);
+        GameStateManager.getInstance().render(gc, WINDOW_WIDTH);
 
         // --- Rendering entities ---
         synchronized (gameLock) {
@@ -724,14 +717,5 @@ public class GameMain extends Application {
 
     public List<PowerUp> getPowerUps() {
         return powerUps;
-    }
-
-
-    public boolean isRunning() {
-        return isRunning;
-    }
-
-    public void stopRunning() {
-        isRunning = false;
     }
 }

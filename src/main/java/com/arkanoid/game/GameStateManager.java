@@ -100,7 +100,7 @@ public class GameStateManager {
 
     // --- UI RENDERING ---
 
-    public void render(GraphicsContext gc, int windowWidth, int windowHeight) {
+    public void render(GraphicsContext gc, int windowWidth) {
 
         // Render Score (TOP LEFT)
         gc.setFill(Color.WHITE);
