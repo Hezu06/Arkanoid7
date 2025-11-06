@@ -6,6 +6,7 @@ import com.arkanoid.entity.powerUp.PowerUp;
 import com.arkanoid.entity.powerUp.PowerUpFactory;
 import com.arkanoid.level.Level;
 import com.arkanoid.level.LevelLoader;
+import com.arkanoid.ui.HighScoreManager;
 import com.arkanoid.ui.PausedScreen;
 import com.arkanoid.ui.ScoreScreen;
 import javafx.application.Application;
@@ -36,13 +37,12 @@ public class GameMain extends Application {
     private Level.LevelDifficulty levelDifficulty;
     private final List<ExplosionEffect> activeExplosion = new ArrayList<>();
     private final List<Ball> listBalls = new ArrayList<>();
-
     private List<PowerUp> powerUps = new ArrayList<>();
     private final List<LaserBeam> laserBeams = new ArrayList<>();
     private boolean barrierActive = false;
     private double barrierTimeRemaining = 0.0; // Bộ đếm ngược (tính bằng giây)
-    private final double BARRIER_DURATION_SECONDS = 5.0; // 5 giây (dùng double)
-    private final long BARRIER_DURATION = 5000; // 5 giây
+
+    private final double BARRIER_DURATION_SECONDS = 5.0; // 5 giây
     private final double BARRIER_HEIGHT = 10;
     private boolean isRunning = true;
 
@@ -625,6 +625,7 @@ public class GameMain extends Application {
 
     private void showPlayAgain() {
         paused = true;
+        HighScoreManager.getInstance().saveScore(GameStateManager.getInstance().getScore());
         ScoreScreen scoreScreen = new ScoreScreen(primaryStage,
                 GameStateManager.getInstance().getScore(), this);
         scoreScreen.show();
