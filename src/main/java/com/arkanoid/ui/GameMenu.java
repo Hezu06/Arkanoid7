@@ -41,15 +41,15 @@ public class GameMenu extends Application {
     }
 
     // Initialize Background
-    private Image image = new Image(pathBackground);
+    private final Image image = new Image(pathBackground);
     private ImageView background = new ImageView(image);
 
     // Ball and Paddle
-    private Image ball = new Image(Objects.requireNonNull(getClass().
+    private final Image ball = new Image(Objects.requireNonNull(getClass().
             getResourceAsStream("/assets/Ball/defaultBall.png")));
     private ImageView ballImage = new ImageView(ball);
 
-    private Image paddle = new Image("assets/Paddle/defaultPaddle.png");
+    private final Image paddle = new Image("assets/Paddle/defaultPaddle.png");
     private ImageView paddleImage = new ImageView(paddle);
 
     // Constructor GameMenu
