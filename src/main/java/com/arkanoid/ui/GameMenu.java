@@ -104,7 +104,7 @@ public class GameMenu extends Application {
         volumeSlider.setShowTickMarks(true);
         volumeSlider.setMajorTickUnit(25);
 
-        // Đặt chiều rộng mong muốn là 300 pixels
+        // Đặt chiều rộng mong muốn là 250 pixels
         volumeSlider.setMaxWidth(250);
 
         // ====================== CLICK SOUND =====================
