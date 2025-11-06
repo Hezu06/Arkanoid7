@@ -218,7 +218,13 @@ public class GameMenu extends Application {
         // ====================== NÚT OPTIONS ======================
         btnOptions.setOnAction(e2 -> {
             SoundEffect.playButtonClick();
-            OptionsScreen.show(contentLayer, menuBox, background, ballImage, paddleImage, volumeSlider);
+            OptionsScreen.show(
+                    contentLayer,
+                    menuBox,
+                    background,
+                    ballImage,
+                    paddleImage,
+                    volumeSlider);
         });
 
         // ====================== NÚT EXIT ======================

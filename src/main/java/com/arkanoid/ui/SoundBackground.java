@@ -5,7 +5,7 @@ public class SoundBackground {
     private SoundBackground() {};
     public static SoundManager getInstance() {
         if(soundManager == null) {
-            soundManager = new SoundManager("/sounds/background_sound.mp3");
+            soundManager = new SoundManager("/sounds/background_music.mp3");
         }
         return soundManager;
     }

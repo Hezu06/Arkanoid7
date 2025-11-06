@@ -6,7 +6,7 @@ import java.net.URL;
 
 public class SoundManager {
     private MediaPlayer mediaPlayer;
-    String soundFile = "/sounds/background_sound.mp3";
+    String soundFile = "/sounds/background_music.mp3";
 
     public SoundManager() {};
     public SoundManager(String soundFile) {

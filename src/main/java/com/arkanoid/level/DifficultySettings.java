@@ -10,7 +10,7 @@ public class DifficultySettings {
     private static final int WIDTH_VERY_HARD = 120;
     private static final int WIDTH_ASIAN = 100;
 
-    private static final double CHANCE_HARD = 0.3;
+    private static final double CHANCE_HARD = 0.2;
     private static final double CHANCE_VERY_HARD = 0.25;
     private static final double CHANCE_ASIAN = 0.2;
 
