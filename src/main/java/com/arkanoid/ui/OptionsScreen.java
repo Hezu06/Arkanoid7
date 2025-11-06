@@ -1,12 +1,15 @@
 package com.arkanoid.ui;
 
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 public class OptionsScreen {
@@ -47,9 +50,40 @@ public class OptionsScreen {
         GameButton btnBackOfBall = new GameButton("BACK");
         GameButton btnBackOfPaddle = new GameButton("BACK");
 
+        Label volumeText = new Label("VOLUME");
+        volumeText.setFont(Font.loadFont(OptionsScreen.class.getResourceAsStream(FONT_PATH), 36)); // Dùng chung font với các nút
+        volumeText.setTextFill(Color.BLACK);
+
+        VBox volumeSliderBox = new VBox(10, volumeText, volumeSlider);
+
+        final String styleNormal =
+                "-fx-background-color: rgba(255, 255, 255, 0.6);" + // 80% trắng
+                        "-fx-background-radius: 15;" +
+                        "-fx-padding: 20px;" +
+                        "-fx-max-width: 250px;";
+
+        final String styleHover =
+                "-fx-background-color: rgba(255, 255, 255, 1.0);" + // 100% trắng (sáng lên)
+                        "-fx-background-radius: 15;" +
+                        "-fx-padding: 20px;" +
+                        "-fx-max-width: 250px;";
+
+        volumeSliderBox.setStyle(styleNormal);
+
+        // 3. Thêm sự kiện khi di chuột VÀO
+        volumeSliderBox.setOnMouseEntered(e -> {
+            volumeSliderBox.setStyle(styleHover);
+        });
+
+        // 4. Thêm sự kiện khi di chuột RA
+        volumeSliderBox.setOnMouseExited(e -> {
+            volumeSliderBox.setStyle(styleNormal);
+        });
+
+        volumeSliderBox.setAlignment(Pos.CENTER);
 
 
-        VBox optionsBox = new VBox(30, btnSetBackground, btnSetBall, btnSetPaddle, btnBack, volumeSlider);
+        VBox optionsBox = new VBox(30, btnSetBackground, btnSetBall, btnSetPaddle, volumeSliderBox, btnBack);
         optionsBox.setAlignment(Pos.CENTER);
         FadeSmooth.smoothContent(contentLayer, optionsBox);
 

@@ -85,6 +85,8 @@ public class GameMenu extends Application {
         root.getChildren().addAll(background, contentLayer);
 
         Scene scene = new Scene(root, WIDTH, HEIGHT);
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/styles.css")).toExternalForm());
+
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);  // vô hiệu hóa thay đổi size;
         primaryStage.setTitle("BRICK BREAKER 36.0");
@@ -100,12 +102,14 @@ public class GameMenu extends Application {
         volumeSlider.setMin(0);
         volumeSlider.setMax(100);
         volumeSlider.setValue(50); // Đặt âm lượng mặc định là 50%
-        volumeSlider.setShowTickLabels(true);
-        volumeSlider.setShowTickMarks(true);
+        //volumeSlider.setShowTickLabels(true);
+        //volumeSlider.setShowTickMarks(true);
         volumeSlider.setMajorTickUnit(25);
 
         // Đặt chiều rộng mong muốn là 250 pixels
         volumeSlider.setMaxWidth(250);
+
+        volumeSlider.getStyleClass().add("volume-slider");
 
         volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             // newValue là giá trị từ 0-100
