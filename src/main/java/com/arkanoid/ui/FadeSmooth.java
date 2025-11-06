@@ -8,7 +8,7 @@ import javafx.util.Duration;
 class FadeSmooth {
     public static void smoothContent(StackPane contentLayer, VBox newContent) {
         if (!contentLayer.getChildren().isEmpty()) {
-            VBox oldContent = (VBox) contentLayer.getChildren().get(0);
+            VBox oldContent = (VBox) contentLayer.getChildren().getFirst();
 
             FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.2), oldContent);
             fadeOut.setFromValue(1.0);

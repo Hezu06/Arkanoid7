@@ -9,7 +9,7 @@ import java.util.Objects;
 
 public class Immortal extends PowerUp {
 
-    private static final int DURATION_MS = 5000; // 5 giây
+    private static final int DURATION_MS = 5000; // 5 sec
 
     public Immortal(double x, double y) {
         super(x, y, 32, 32);
@@ -26,7 +26,7 @@ public class Immortal extends PowerUp {
     public void applyEffect(GameMain game) {
         Paddle paddle = game.getPaddle();
 
-        // Kích hoạt barrier ở GameMain
+        // Activate barrier in GameMain
         game.activateBarrier();
         paddle.setImmortalPowerUpInEffect(true);
         System.out.println("Immortal power-up activated!");
@@ -36,7 +36,7 @@ public class Immortal extends PowerUp {
             try {
                 Thread.sleep(DURATION_MS);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             }
 
             paddle.setImmortalPowerUpInEffect(false);

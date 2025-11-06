@@ -5,9 +5,8 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 public class LaserBeam {
-    private double x;
+    private final double x;
     private double y;
-    private final double speed = 8;
     private final double width = 4;
     private final double height = 15;
 
@@ -17,6 +16,7 @@ public class LaserBeam {
     }
 
     public void update() {
+        double speed = 8;
         y -= speed;
     }
 

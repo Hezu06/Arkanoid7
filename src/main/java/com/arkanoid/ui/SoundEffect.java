@@ -7,7 +7,6 @@ import java.net.URL;
 public class SoundEffect {
 
     private static AudioClip buttonClickSound;
-    private static double CLICK_VOLUME = 0.5;
 
     public static void load() {
         try {
@@ -16,6 +15,7 @@ public class SoundEffect {
 
             if (resource != null) {
                 buttonClickSound = new AudioClip(resource.toExternalForm());
+                double CLICK_VOLUME = 0.5;
                 buttonClickSound.setVolume(CLICK_VOLUME);
             } else {
                 System.err.println("Không tìm thấy file SFX: " + soundFile);

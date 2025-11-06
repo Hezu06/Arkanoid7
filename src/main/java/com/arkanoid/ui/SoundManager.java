@@ -8,7 +8,7 @@ public class SoundManager {
     private MediaPlayer mediaPlayer;
     String soundFile = "/sounds/background_music.mp3";
 
-    public SoundManager() {};
+    public SoundManager() {}
     public SoundManager(String soundFile) {
         this.soundFile = soundFile;
     }

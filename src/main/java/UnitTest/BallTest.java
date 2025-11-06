@@ -1,4 +1,4 @@
-package UnitTest;// import javafx.embed.swing.JFXPanel; // ĐÃ XÓA
+package UnitTest;
 import com.arkanoid.entity.Ball;
 import com.arkanoid.entity.GameObject;
 import com.arkanoid.entity.Paddle;
@@ -15,7 +15,6 @@ import static org.junit.jupiter.api.Assertions.*;
  * Nó chỉ cần cung cấp một Rectangle2D (vùng va chạm).
  */
 class MockGameObject extends GameObject {
-    // ... (Nội dung lớp này không đổi) ...
     private final Rectangle2D bounds;
 
     public MockGameObject(double x, double y, double w, double h) {
@@ -48,22 +47,7 @@ class MockGameObject extends GameObject {
 @DisplayName("Thử nghiệm Lớp Ball - Va chạm & Nảy")
 class BallTest {
 
-    private static final double DELTA = 0.001; // Sai số cho phép khi so sánh số double
-    // private static Image dummyImage; // ĐÃ XÓA
-
-    /*
-    // ĐÃ XÓA PHẦN @BeforeAll VÌ KHÔNG CẦN KHỞI TẠO JFXPanel NỮA
-    @BeforeAll
-    @DisplayName("Khởi tạo Toolkit JavaFX cho các bài test")
-    static void initToolkit() {
-        // Khởi tạo JavaFX Toolkit để có thể tạo Image
-        // mà không cần chạy Application.start()
-        new JFXPanel();
-        dummyImage = new WritableImage(1, 1); // Một ảnh giả 1x1
-    }
-    */
-
-    // --- Test cho checkCollision() ---
+    private static final double DELTA = 0.001;
 
     @Test
     @DisplayName("checkCollision: Trả về TRUE khi bóng LỒNG vào vật thể")

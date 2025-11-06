@@ -14,12 +14,11 @@ public class PausedScreen {
     static final int HEIGHT = 800;
 
     private Stage primaryStage;
-    private int score;
     private GameMain gameMain;
 
     private static final String FONT_PATH = "/fonts/GameFont.TTF";
 
-    public PausedScreen() {};
+    public PausedScreen() {}
     public PausedScreen(Stage primaryStage, GameMain gameMain) {
         this.primaryStage = primaryStage;
         this.gameMain = gameMain;

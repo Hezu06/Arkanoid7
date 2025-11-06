@@ -7,10 +7,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
-import java.util.Objects;
-
 public abstract class PowerUp extends GameObject {
-    private final double fallSpeed = 3.0;
     private boolean active = true;
 
     public void setImage(Image image) {
@@ -76,6 +73,6 @@ public abstract class PowerUp extends GameObject {
         return powerUpRect.intersects(otherRect);
     }
 
-    // Hành động khi được paddle hứng
+    // Paddle gets effect from power-ups
     public abstract void applyEffect(GameMain game);
 }
