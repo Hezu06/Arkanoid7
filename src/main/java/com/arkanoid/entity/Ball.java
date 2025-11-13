@@ -65,11 +65,11 @@ public class Ball extends MovableObject {
                 double angle = Math.toRadians(150 * (hitPos - 0.5));
                 dx = Math.sin(angle);
                 dy = -Math.cos(angle); // Luôn nảy lên
-                y = paddle.getY() - radius * 2 - 0.1; // Đẩy bóng ra khỏi paddle một chút
+                y = paddle.getY() - radius * 2 - 0.1; // Đẩy bóng ra khỏi paddle
                 if (hitSound != null) {
                     hitSound.play();
                 }
-                return; // Kết thúc sớm vì logic paddle là đặc biệt
+                return;
             }
             // Nếu bóng đập vào CẠNH của paddle, nó sẽ rơi vào logic chung (Brick/Wall)
         }
@@ -93,12 +93,10 @@ public class Ball extends MovableObject {
         double diffY = cy - ry;
 
         // 4. Tính toán độ xuyên thấu (overlap) trên cả hai trục
-        // Chúng ta quan tâm đến giá trị tuyệt đối của diffX/diffY
         double overlapX = sumHalfWidths - Math.abs(diffX);
         double overlapY = sumHalfHeights - Math.abs(diffY);
 
-        // Đảm bảo rằng có va chạm (overlap > 0 trên cả hai trục)
-        // Mặc dù checkCollision đã làm điều này, kiểm tra lại ở đây cũng không sao
+        // Đảm bảo rằng có va chạm (overlap >= 0 trên cả hai trục)
         if (overlapX >= 0 && overlapY >= 0) {
 
             // 5. So sánh độ xuyên thấu: Trục nào có độ xuyên thấu ÍT HƠN
@@ -126,7 +124,6 @@ public class Ball extends MovableObject {
             }
         }
 
-        // Chuẩn hóa vector vận tốc (giữ lại từ code gốc của bạn, điều này tốt)
         double len = Math.sqrt(dx * dx + dy * dy);
         if (len != 0) {
             dx /= len;
@@ -142,10 +139,7 @@ public class Ball extends MovableObject {
     }
 
 
-    /**
-     * Kiểm tra va chạm (Không thay đổi).
-     * Logic này đã chính xác để PHÁT HIỆN va chạm giữa hình tròn và hình chữ nhật.
-     */
+    // kiểm tra va chạm
     public boolean checkCollision(GameObject other) {
         Rectangle2D rect = other.getBounds();
 
@@ -166,8 +160,6 @@ public class Ball extends MovableObject {
         return distanceSq <= (radius * radius);
     }
 
-    // ... (Phần còn lại của class giữ nguyên) ...
-
     public double getCenterX() {
         return x + radius;
     }
@@ -186,7 +178,7 @@ public class Ball extends MovableObject {
         }
 
         // Tăng số bước để cải thiện độ chính xác va chạm (chia nhỏ bước đi)
-        // Điều này giúp ngăn bóng "lọt" qua các vật thể mỏng ở tốc độ cao
+        // ngăn bóng lọt qua các vật thể ở tốc độ cao
         int steps = (int) Math.ceil(speed * deltaTime / (radius * 0.5)); // Tăng số bước
         if (steps == 0) steps = 1;
         double stepTime = deltaTime / steps;

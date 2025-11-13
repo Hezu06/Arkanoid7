@@ -94,17 +94,13 @@ public class GameMenu extends Application {
         Slider volumeSlider = new Slider();
         volumeSlider.setMin(0);
         volumeSlider.setMax(100);
-        volumeSlider.setValue(50); // Đặt âm lượng mặc định là 50%
+        volumeSlider.setValue(50);
         volumeSlider.setMajorTickUnit(25);
-
-        // Đặt chiều rộng mong muốn là 250 pixels
         volumeSlider.setMaxWidth(250);
 
         volumeSlider.getStyleClass().add("volume-slider");
 
         volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            // newValue là giá trị từ 0-100
-            // Chia cho 100 để được giá trị từ 0.0 - 1.0 mà MediaPlayer cần
             double volume = newValue.doubleValue() / 100.0;
             SoundBackground.getInstance().setVolume(volume);
         });
@@ -224,24 +220,18 @@ public class GameMenu extends Application {
         });
     }
 
-    // Thêm hàm này vào cuối lớp GameMenu
     @Override
     public void stop() throws Exception {
-        super.stop(); // Gọi hàm stop của lớp cha
+        super.stop();
 
         System.out.println("GameMenu is stopping...");
 
-        // 1. Tắt luồng logic game (nếu game đã được khởi tạo)
         if (this.gameMain != null) {
-            this.gameMain.shutdownExecutor(); // Gọi hàm dọn dẹp của GameMain
+            this.gameMain.shutdownExecutor();
         }
 
-        // 2. Tắt luồng nhạc nền (Giả sử bạn có hàm stopMusic() trong SoundBackground)
-        // Nếu không có, bạn cần thêm nó vào lớp SoundBackground
         SoundBackground.getInstance().stopMusic();
 
-        // 3. (Biện pháp cuối cùng) Buộc JVM thoát
-        // Điều này đảm bảo mọi thứ đều tắt
         System.out.println("Forcing application exit.");
         System.exit(0);
     }

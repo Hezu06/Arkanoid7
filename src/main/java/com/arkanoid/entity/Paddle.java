@@ -34,11 +34,11 @@ public class Paddle extends MovableObject {
     private static final int WINDOW_WIDTH = 750;
 
     public void activateLaserPowerUp(GameMain game) {
-        this.gameRef = game; // Lưu lại tham chiếu đến GameMain
+        this.gameRef = game;
         this.laserPowerUpInEffect = true;
         this.laserInterrupted = false;
-        this.laserTimeRemaining = LASER_DURATION_SECONDS; // Đặt lại bộ đếm 5 giây
-        this.laserShootCooldown = 0.0; // Bắn ngay lập tức
+        this.laserTimeRemaining = LASER_DURATION_SECONDS;
+        this.laserShootCooldown = 0.0;
     }
 
     public Paddle(double x, double y, int width, double speed, Image image) {
@@ -90,22 +90,19 @@ public class Paddle extends MovableObject {
                 // Đặt lại thời gian chờ
                 this.laserShootCooldown = LASER_SHOOT_INTERVAL;
 
-                // Bắn!
                 shootLasers();
             }
         }
     }
 
     private void shootLasers() {
-        // Đảm bảo gameRef không bị null
         if (this.gameRef == null) {
             return;
         }
 
-        // (Code của bạn từ Timeline cũ)
         double leftX = this.x + 10;
         double rightX = this.x + this.width - 14;
-        double y = this.y - 15; // 'this.y' là tọa độ Y của paddle
+        double y = this.y - 15;
 
         // Dùng gameRef để thêm laser vào danh sách của GameMain
         this.gameRef.getLaserBeams().add(new LaserBeam(leftX, y));

@@ -287,7 +287,7 @@ public class OptionsScreen {
                         "-fx-max-width: 250px;";
 
         final String styleHover =
-                "-fx-background-color: rgba(255, 255, 255, 1.0);" + // 100% trắng (sáng lên)
+                "-fx-background-color: rgba(255, 255, 255, 1.0);" + // 100% trắng
                         "-fx-background-radius: 15;" +
                         "-fx-padding: 20px;" +
                         "-fx-max-width: 250px;";

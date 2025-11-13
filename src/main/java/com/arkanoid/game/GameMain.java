@@ -545,7 +545,7 @@ public class GameMain extends Application {
 
             if (barrierTimeRemaining <= 0) {
                 barrierActive = false;
-                barrierTimeRemaining = 0; // Reset về 0 cho chắc
+                barrierTimeRemaining = 0;
                 System.out.println("Barrier deactivated!");
             }
         }
@@ -574,12 +574,12 @@ public class GameMain extends Application {
             this.bricks.removeAll(bricksToRemove);
         }
 
-        // Xóa các gạch đã hoàn thành hiệu ứng mờ dần (sửa lỗi CME Vị trí 2)
+        // Xóa các gạch đã hoàn thành hiệu ứng mờ dần
         synchronized (gameLock) {
             this.bricks.removeIf(b -> b.isBroken() && b.getOpacity() <= 0);
         }
 
-        // Xóa các power-up đã được "ăn" hoặc bay ra khỏi màn hình
+        // Xóa các power-up
         synchronized (gameLock) {
             this.powerUps.removeIf(p -> !p.isActive() || p.getY() > WINDOW_HEIGHT);
         }
@@ -666,7 +666,6 @@ public class GameMain extends Application {
 
     public void activateBarrier() {
         barrierActive = true;
-        // Đặt lại bộ đếm, ngay cả khi nó đang hoạt động (để nhận power-up mới)
         barrierTimeRemaining = BARRIER_DURATION_SECONDS;
         System.out.println("Barrier activated!");
     }
