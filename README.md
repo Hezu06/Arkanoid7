@@ -6,6 +6,17 @@ A modern JavaFX implementation of the classic Arkanoid/Breakout game with enhanc
 ![JavaFX](https://img.shields.io/badge/JavaFX-19+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
+<h2>🎮 Demo</h2>
+
+<p align="center">
+  <video 
+    src="https://github.com/user-attachments/assets/0f5f99f2-3a8f-4c09-9aed-db872086db7a" 
+    width="700" 
+    controls 
+  ></video>
+</p>
+
+
 ## 🎯 Features
 
 ### Core Gameplay
